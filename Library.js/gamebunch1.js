@@ -1,5 +1,5 @@
 [
-    {
+{
     id: 1,
     title: "Binding Of Isaac",
     desc: "Top-down, 2D roguelike shooter where you play as a crying child",
