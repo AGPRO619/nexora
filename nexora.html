@@ -278,6 +278,13 @@
     </style>
 </head>
 <body onmousemove="handleMouseMove(event)" onmouseup="stopDragging()">
+    
+    <div id="debug-terminal" style="display:block; position:fixed; bottom:20px; right:20px; width:360px; height:260px; background:rgba(3,3,7,0.95); border:1px solid #2b82c9; border-radius:10px; z-index:999999; font-family:monospace; color:#00ff00; padding:15px; overflow-y:auto; font-size:11px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); pointer-events: none;">
+    <div style="border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px; color:#2b82c9; font-weight:bold; pointer-events: auto;">
+        SYSTEM_DIAGNOSTICS [CTRL + ~]
+    </div>
+    <div id="terminal-content"></div>
+</div>
    
     <div id="home-view" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; flex-direction: column; align-items: center; justify-content: center;">
     
@@ -662,6 +669,7 @@
     </div>
 
     <script>
+        
 // //feature// SEARCH_SYSTEM //feature//
 // //feature// SEARCH_ROUTING_ONLY //feature//
 // //feature// SEARCH_SYSTEM_FIXED //feature//
@@ -1344,9 +1352,85 @@ window.addEventListener('keyup', (e) => {
             };
 
         // --- MERGED MASTERCOPY GAMES LIST WITH BASE64 PERMITTED PLACEHOLDERS FOR DATA LIMITS ---
-        games here
+        // //feature// DATABASE //feature//
+
+// --- THE INJECTION ENGINE (Revo Style) ---
+// //feature// DATABASE //feature//
+// //feature// DATABASE //feature//
+// //feature// DATABASE //feature//
+// //feature// DATABASE //feature//
+const arcade = [];
+const exclusiveGames = [];
+
+// --- TERMINAL SYSTEM (Completely Isolated) ---
+function nexoraLog(msg, type = 'info') {
+    const term = document.getElementById('terminal-content');
+    if (!term) return;
+    const color = type === 'error' ? '#ff4444' : (type === 'warn' ? '#ffff00' : '#00ff00');
+    term.innerHTML += `<div style="color:${color}; margin-bottom:2px;">> ${msg}</div>`;
+    const debugTerm = document.getElementById('debug-terminal');
+    if(debugTerm) debugTerm.scrollTop = debugTerm.scrollHeight;
+}
+
+// --- THE FOLDER INJECTION ENGINE ---
+async function bootNexoraData() {
+    const USER = "AGPRO619";
+    const REPO = "nexora";
+    const FOLDER = "Library.js"; 
+    
+    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
+    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+    
+    nexoraLog("NEXORA_BOOT: Handshake Initiated...");
+
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Connection Failed");
         
-        excusives here
+        const files = await response.json();
+
+        for (const file of files) {
+            if (file.name.includes('.js')) {
+                const fileRes = await fetch(RAW_BASE + file.name);
+                if (fileRes.ok) {
+                    let rawText = await fileRes.text();
+                    
+                    // Evaluate raw data safely
+                    const gameData = eval("(" + rawText + ")");
+                    
+                    const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
+                    
+                    if (Array.isArray(gameData)) {
+                        targetArray.push(...gameData);
+                    } else {
+                        targetArray.push(gameData);
+                    }
+                    nexoraLog(`Loaded: ${file.name}`);
+                }
+            }
+        }
+
+        // --- THE UI SYNC FIX ---
+        // We wait 100ms to ensure your other scripts have finished setting up the grid
+        setTimeout(() => {
+            nexoraLog("Synchronizing UI Components...");
+            if (typeof renderLibrary === 'function') renderLibrary();
+            if (typeof renderExclusives === 'function') renderExclusives();
+            if (typeof renderTrending === 'function') renderTrending();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            nexoraLog("SYSTEM ONLINE.", "info");
+        }, 100);
+
+    } catch (err) {
+        nexoraLog("BOOT_ERROR: " + err.message, "error");
+    }
+}
+
+// Start only when the page is fully parsed to prevent UI interference
+document.addEventListener('DOMContentLoaded', () => {
+    bootNexoraData();
+});
+
 
         const apps = [
             { id: 501, title: "Google Search", desc: "Access the world's information.", img: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", url: "https://www.google.com/search?igu=1" },
@@ -1385,6 +1469,8 @@ window.addEventListener('keyup', (e) => {
   url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly9kZWVwYWkub3JnL2NoYXQ%253D" 
 }
 ];
+
+
 
         // --- GLOBAL VARIABLES ---
         let favorites = [];
