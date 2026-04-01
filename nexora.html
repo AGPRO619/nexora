@@ -1373,69 +1373,105 @@ const exclusiveGames = [];
 async function bootNexoraData() {
     const USER = "AGPRO619";
     const REPO = "nexora";
-    // We now have two distinct targets
-    const FOLDERS = ["Library.js", "exclusive.js"]; 
+    const FOLDER = "Library.js"; 
     
-    nexoraLog("NEXORA_BOOT: Handshake Initiated...");
+    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
+    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+    
+    nexoraLog("NEXORA_BOOT: Library Handshake...");
 
     try {
-        for (const FOLDER of FOLDERS) {
-            const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
-            const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Library Connection Failed");
+        
+        const files = await response.json();
+        const jsFiles = files.filter(f => f.name.includes('.js'));
 
-            const response = await fetch(API_URL);
-            if (!response.ok) {
-                console.warn(`Folder ${FOLDER} not found or empty.`);
-                continue;
-            }
+        for (let i = 0; i < jsFiles.length; i++) {
+            const file = jsFiles[i];
+            const fileRes = await fetch(RAW_BASE + file.name + '?t=' + Date.now());
             
-            const files = await response.json();
-            const jsFiles = files.filter(f => f.name.includes('.js'));
-
-            for (let i = 0; i < jsFiles.length; i++) {
-                const file = jsFiles[i];
-                const fileRes = await fetch(RAW_BASE + file.name + '?t=' + Date.now());
+            if (fileRes.ok) {
+                let rawText = await fileRes.text();
+                const gameData = eval("(" + rawText + ")");
                 
-                if (fileRes.ok) {
-                    let rawText = await fileRes.text();
-                    
-                    // Evaluate raw data safely
-                    const gameData = eval("(" + rawText + ")");
-                    
-                    // Logic update: If the file comes from 'exclusive.js', it goes to exclusiveGames
-                    const targetArray = FOLDER === "exclusive.js" ? exclusiveGames : arcade;
-                    
-                    if (Array.isArray(gameData)) {
-                        targetArray.push(...gameData);
-                    } else {
-                        targetArray.push(gameData);
-                    }
+                if (Array.isArray(gameData)) arcade.push(...gameData);
+                else arcade.push(gameData);
 
-                    // Added comma logic: adds a comma if this isn't the last file in the current folder
-                    const separator = (i < jsFiles.length - 1) ? "," : "";
-                    nexoraLog(`Loaded [${FOLDER}]: ${file.name}${separator}`);
-                }
+                const separator = (i < jsFiles.length - 1) ? "," : "";
+                nexoraLog(`Library: ${file.name}${separator}`);
             }
         }
-
-        // --- THE UI SYNC FIX ---
-        setTimeout(() => {
-            nexoraLog("Synchronizing UI Components...");
-            if (typeof renderLibrary === 'function') renderLibrary();
-            if (typeof renderExclusives === 'function') renderExclusives();
-            if (typeof renderTrending === 'function') renderTrending();
-            if (typeof lucide !== 'undefined') lucide.createIcons();
-            nexoraLog("SYSTEM ONLINE.", "info");
-        }, 100);
-
+        if (typeof renderLibrary === 'function') renderLibrary();
     } catch (err) {
-        nexoraLog("BOOT_ERROR: " + err.message, "error");
+        nexoraLog("LIB_ERROR: " + err.message, "error");
     }
 }
 
-// Start only when the page is fully parsed to prevent UI interference
+// --- THE SISTER ENGINE (Exclusive Folder) ---
+async function bootNexoraExclusives() {
+    const USER = "AGPRO619";
+    const REPO = "nexora";
+    // VERIFICATION: I am explicitly looking for this folder name
+    const FOLDER = "exclusive.js"; 
+    
+    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
+    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+    
+    nexoraLog(`VERIFY: Searching folder [${FOLDER}]...`);
+
+    try {
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+            // This is the message you will see if GitHub can't find the folder
+            nexoraLog(`FAIL: Folder "${FOLDER}" not found on GitHub. Check spelling!`, "error");
+            return; 
+        }
+        
+        const files = await response.json();
+        const jsFiles = files.filter(f => f.name.includes('.js'));
+
+        if (jsFiles.length === 0) {
+            nexoraLog(`NOTICE: Folder "${FOLDER}" is empty. No .js files found.`, "warn");
+            return;
+        }
+
+        nexoraLog(`FILES_FOUND: ${jsFiles.length} scripts in exclusives folder.`);
+
+        for (let i = 0; i < jsFiles.length; i++) {
+            const file = jsFiles[i];
+            const fileRes = await fetch(RAW_BASE + file.name + '?t=' + Date.now());
+            
+            if (fileRes.ok) {
+                let rawText = await fileRes.text();
+                const gameData = eval("(" + rawText + ")");
+                
+                if (Array.isArray(gameData)) {
+                    exclusiveGames.push(...gameData);
+                } else {
+                    exclusiveGames.push(gameData);
+                }
+
+                const separator = (i < jsFiles.length - 1) ? "," : "";
+                nexoraLog(`Exclusive: ${file.name}${separator}`);
+            }
+        }
+
+        setTimeout(() => {
+            if (typeof renderExclusives === 'function') renderExclusives();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            nexoraLog("EXCLUSIVES SYNC COMPLETE.", "info");
+        }, 150);
+
+    } catch (err) {
+        nexoraLog("EXCL_BOOT_ERROR: " + err.message, "error");
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     bootNexoraData();
+    bootNexoraExclusives();
 });
 
 
