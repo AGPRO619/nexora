@@ -1369,8 +1369,68 @@ function nexoraLog(msg, type = 'info') {
 // --- THE FOLDER INJECTION ENGINE ---
         const arcade = [];
 const exclusiveGames = [];
- async function bootNexoraData() { const USER = "AGPRO619"; const REPO = "nexora"; const FOLDER = "Library.js"; const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`; const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`; nexoraLog("NEXORA_BOOT: Handshake Initiated..."); try { const response = await fetch(API_URL); if (!response.ok) throw new Error("Connection Failed"); const files = await response.json(); // Filter first so we know the true count of JS files for the comma logic const jsFiles = files.filter(f => f.name.includes('.js')); for (let i = 0; i < jsFiles.length; i++) { const file = jsFiles[i]; const fileRes = await fetch(RAW_BASE + file.name); if (fileRes.ok) { let rawText = await fileRes.text(); // Evaluate raw data safely const gameData = eval("(" + rawText + ")"); const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade; if (Array.isArray(gameData)) { targetArray.push(...gameData); } else { targetArray.push(gameData); } // Added comma logic: adds a comma if this isn't the last file in the list const separator = (i < jsFiles.length - 1) ? "," : ""; nexoraLog(`Loaded: ${file.name}${separator}`); } } // --- THE UI SYNC FIX --- // We wait 100ms to ensure your other scripts have finished setting up the grid setTimeout(() => { nexoraLog("Synchronizing UI Components..."); if (typeof renderLibrary === 'function') renderLibrary(); if (typeof renderExclusives === 'function') renderExclusives(); if (typeof renderTrending === 'function') renderTrending(); if (typeof lucide !== 'undefined') lucide.createIcons(); nexoraLog("SYSTEM ONLINE.", "info"); }, 100); } catch (err) { nexoraLog("BOOT_ERROR: " + err.message, "error"); } } // Start only when the page is fully parsed to prevent UI interference document.addEventListener('DOMContentLoaded', () => { bootNexoraData(); });
+async function bootNexoraData() {
+    const USER = "AGPRO619";
+    const REPO = "nexora";
+    const FOLDER = "Library.js"; 
+    
+    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
+    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+    
+    nexoraLog("NEXORA_BOOT: Handshake Initiated...");
 
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Connection Failed");
+        
+        const files = await response.json();
+        // Filter first so we know the true count of JS files for the comma logic
+        const jsFiles = files.filter(f => f.name.includes('.js'));
+
+        for (let i = 0; i < jsFiles.length; i++) {
+            const file = jsFiles[i];
+            const fileRes = await fetch(RAW_BASE + file.name);
+            
+            if (fileRes.ok) {
+                let rawText = await fileRes.text();
+                
+                // Evaluate raw data safely
+                const gameData = eval("(" + rawText + ")");
+                
+                const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
+                
+                if (Array.isArray(gameData)) {
+                    targetArray.push(...gameData);
+                } else {
+                    targetArray.push(gameData);
+                }
+
+                // Added comma logic: adds a comma if this isn't the last file in the list
+                const separator = (i < jsFiles.length - 1) ? "," : "";
+                nexoraLog(`Loaded: ${file.name}${separator}`);
+            }
+        }
+
+        // --- THE UI SYNC FIX ---
+        // We wait 100ms to ensure your other scripts have finished setting up the grid
+        setTimeout(() => {
+            nexoraLog("Synchronizing UI Components...");
+            if (typeof renderLibrary === 'function') renderLibrary();
+            if (typeof renderExclusives === 'function') renderExclusives();
+            if (typeof renderTrending === 'function') renderTrending();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            nexoraLog("SYSTEM ONLINE.", "info");
+        }, 100);
+
+    } catch (err) {
+        nexoraLog("BOOT_ERROR: " + err.message, "error");
+    }
+}
+
+// Start only when the page is fully parsed to prevent UI interference
+document.addEventListener('DOMContentLoaded', () => {
+    bootNexoraData();
+});
 
         const apps = [
             { id: 501, title: "Google Search", desc: "Access the world's information.", img: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", url: "https://www.google.com/search?igu=1" },
