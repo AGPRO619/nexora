@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1383,6 +1384,7 @@ async function bootNexoraData() {
         if (!response.ok) throw new Error("Connection Failed");
         
         const files = await response.json();
+        // Filter first so we know the true count of JS files for the comma logic
         const jsFiles = files.filter(f => f.name.includes('.js'));
 
         for (let i = 0; i < jsFiles.length; i++) {
@@ -1392,29 +1394,25 @@ async function bootNexoraData() {
             if (fileRes.ok) {
                 let rawText = await fileRes.text();
                 
-                // --- REINFORCEMENT LAYER ---
-                // We wrap the rawText in a try-block to catch formatting errors per-file
-                try {
-                    // This creates a "Safe Sandbox" for the bunch to load even if it has weird spacing
-                    const gameData = eval("(" + rawText.trim() + ")");
-                    
-                    const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
-                    
-                    if (Array.isArray(gameData)) {
-                        // Spread all games from the bunch into the main library
-                        targetArray.push(...gameData);
-                        nexoraLog(`Extracted Bunch: ${file.name} (${gameData.length} games)`);
-                    } else {
-                        targetArray.push(gameData);
-                        nexoraLog(`Loaded Single: ${file.name}`);
-                    }
-                } catch (evalErr) {
-                    nexoraLog(`FILE_PARSE_ERR in ${file.name}: Check your brackets/commas`, "warn");
+                // Evaluate raw data safely
+                const gameData = eval("(" + rawText + ")");
+                
+                const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
+                
+                if (Array.isArray(gameData)) {
+                    targetArray.push(...gameData);
+                } else {
+                    targetArray.push(gameData);
                 }
+
+                // Added comma logic: adds a comma if this isn't the last file in the list
+                const separator = (i < jsFiles.length - 1) ? "," : "";
+                nexoraLog(`Loaded: ${file.name}${separator}`);
             }
         }
 
         // --- THE UI SYNC FIX ---
+        // We wait 100ms to ensure your other scripts have finished setting up the grid
         setTimeout(() => {
             nexoraLog("Synchronizing UI Components...");
             if (typeof renderLibrary === 'function') renderLibrary();
@@ -1422,12 +1420,17 @@ async function bootNexoraData() {
             if (typeof renderTrending === 'function') renderTrending();
             if (typeof lucide !== 'undefined') lucide.createIcons();
             nexoraLog("SYSTEM ONLINE.", "info");
-        }, 150); // Increased slightly to allow for larger "bunch" processing
+        }, 100);
 
     } catch (err) {
         nexoraLog("BOOT_ERROR: " + err.message, "error");
     }
 }
+
+// Start only when the page is fully parsed to prevent UI interference
+document.addEventListener('DOMContentLoaded', () => {
+    bootNexoraData();
+});
 
 
         const apps = [
