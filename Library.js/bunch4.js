@@ -10,7 +10,7 @@
 },
 {
     id: 25,
-    title: "Money Mart",
+    title: "Monkey Mart",
     desc: "Management game that puts you in charge of a supermarket run by a monkey",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7rWHPHVp9J3YCnOm5bappA4F3jBPrh_jyBn2vhV6avhnHa5sD:https://defold.com/images/games/monkeymart-half.png&s",
     url: "INSERT_URL_HERE",
