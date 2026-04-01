@@ -1,3 +1,4 @@
+[
 {
     id: 24,
     title: "Sketchbook",
@@ -47,3 +48,4 @@
     url: "https://www.worldguessr.com/",
     code: "BASE64_CODE_HERE"
 }
+]
