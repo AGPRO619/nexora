@@ -1383,25 +1383,30 @@ async function bootNexoraData() {
         if (!response.ok) throw new Error("Connection Failed");
         
         const files = await response.json();
+        // Filter first so we know the true count of JS files for the comma logic
+        const jsFiles = files.filter(f => f.name.includes('.js'));
 
-        for (const file of files) {
-            if (file.name.includes('.js')) {
-                const fileRes = await fetch(RAW_BASE + file.name);
-                if (fileRes.ok) {
-                    let rawText = await fileRes.text();
-                    
-                    // Evaluate raw data safely
-                    const gameData = eval("(" + rawText + ")");
-                    
-                    const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
-                    
-                    if (Array.isArray(gameData)) {
-                        targetArray.push(...gameData);
-                    } else {
-                        targetArray.push(gameData);
-                    }
-                    nexoraLog(`Loaded: ${file.name}`);
+        for (let i = 0; i < jsFiles.length; i++) {
+            const file = jsFiles[i];
+            const fileRes = await fetch(RAW_BASE + file.name);
+            
+            if (fileRes.ok) {
+                let rawText = await fileRes.text();
+                
+                // Evaluate raw data safely
+                const gameData = eval("(" + rawText + ")");
+                
+                const targetArray = file.name.toLowerCase().includes("exclusive") ? exclusiveGames : arcade;
+                
+                if (Array.isArray(gameData)) {
+                    targetArray.push(...gameData);
+                } else {
+                    targetArray.push(gameData);
                 }
+
+                // Added comma logic: adds a comma if this isn't the last file in the list
+                const separator = (i < jsFiles.length - 1) ? "," : "";
+                nexoraLog(`Loaded: ${file.name}${separator}`);
             }
         }
 
