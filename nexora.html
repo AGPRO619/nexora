@@ -8,6 +8,35 @@
     <link id="tab-icon" rel="icon" href="https://www.google.com/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* //feature// REFRESH_NOTICE_STYLES //feature// */
+.refresh-notice {
+    background: rgba(43, 130, 201, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.refresh-key {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: 800;
+    box-shadow: 0 0 10px rgba(43, 130, 201, 0.4);
+}
+
+.refresh-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
         .search-item:hover {
     background: var(--glass);
     padding-left: 30px !important; /* Slight slide effect on hover */
@@ -280,7 +309,14 @@
 </head>
 <body onmousemove="handleMouseMove(event)" onmouseup="stopDragging()">
     
-    
+   
+
+<style>
+    /* Custom Scrollbar for the Terminal */
+    #terminal-content::-webkit-scrollbar { width: 4px; }
+    #terminal-content::-webkit-scrollbar-thumb { background: #2b82c9; border-radius: 10px; }
+    #terminal-content::-webkit-scrollbar-track { background: transparent; }
+</style>
    
     <div id="home-view" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; flex-direction: column; align-items: center; justify-content: center;">
     
@@ -333,7 +369,7 @@
         <div style="text-align:left; background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; border:1px solid var(--border); margin-bottom:25px; max-height:200px; overflow-y:auto; font-size:0.95rem; line-height:1.6; color:rgba(255,255,255,0.8);">
             <p style="margin-top:0;">By proceeding, you agree to the following rules:</p>
             <ol>
-                <li style="margin-bottom:10px;"><strong>No Sharing:</strong> YOU CANNOT SEND THIS FILE THROUGH EMAIL AT ALL COSTS.</li>
+                <li style="margin-bottom:10px;"><strong>No Sharing:</strong> You are strictly prohibited from sharing access or content via email.</li>
                 <li><strong>Liability:</strong> Nexora and its developers are not responsible for any consequences or trouble you may encounter while using this platform.</li>
             </ol>
         </div>
@@ -422,7 +458,13 @@
             </div>
             <i data-lucide="x" onclick="closeApp('game-app')" style="cursor:pointer; width:32px; height:32px;"></i>
         </div>
-        
+        <!-- Inside <div id="game-app"> -->
+<div class="refresh-notice">
+    <i data-lucide="refresh-cw" style="color: var(--accent); width: 18px;"></i>
+    <p class="refresh-text">
+        Press <span class="refresh-key">\</span> to refresh the library if an update was deployed or if games aren't loading.
+    </p>
+</div>
         <div id="favorites-section" style="display:none;">
             <span class="section-label" data-t="label-favs">My Favorites</span>
             <div id="fav-grid" class="game-grid"></div>
@@ -1356,7 +1398,6 @@ window.addEventListener('keyup', (e) => {
 // //feature// DATABASE //feature//
 // //feature// DATABASE //feature//
 
-
 // --- TERMINAL SYSTEM (Completely Isolated) ---
 function nexoraLog(msg, type = 'info') {
     const term = document.getElementById('terminal-content');
@@ -1366,10 +1407,48 @@ function nexoraLog(msg, type = 'info') {
     const debugTerm = document.getElementById('debug-terminal');
     if(debugTerm) debugTerm.scrollTop = debugTerm.scrollHeight;
 }
+
+// --- THE FOLDER INJECTION ENGINE ---
+
+// Function to reload games when "\" is pressed
+document.addEventListener('keydown', function(event) {
+    if (event.key === '\\') {
+        // Prevent default browser behavior if necessary
+        event.preventDefault();
+        
+        console.log("Nexora: Reloading game libraries...");
+        
+        // Tie into the arcade rendering function
+        if (typeof renderArcade === 'function') {
+            const currentSearch = document.getElementById('game-search-input')?.value || "";
+            renderArcade(currentSearch);
+        }
+
+        // Tie into the exclusive games rendering logic
+        // Assuming exclusiveGames is the data constant and 
+        // there is a corresponding render function or library update
+        if (typeof renderExclusiveGames === 'function') {
+            renderExclusiveGames();
+        } else if (typeof renderArcade === 'function') {
+            // Often in Nexora, renderArcade handles both if no separate function exists
+            renderArcade(document.getElementById('game-search-input')?.value || "");
+        }
+        
+        // Optional: Visual feedback for the user that the reload triggered
+        const progress = document.getElementById('game-load-progress');
+        if (progress) {
+            progress.style.width = '100%';
+            setTimeout(() => { progress.style.width = '0%'; }, 500);
+        }
+    }
+});
+
+
+// --- THE MASTER FOLDER INJECTION ENGINE ---
 const arcade = [];
 const exclusiveGames = [];
 
-// --- THE FOLDER INJECTION ENGINE ---
+// --- THE FOLDER INJECTION ENGINE (Standard Library) ---
 async function bootNexoraData() {
     const USER = "AGPRO619";
     const REPO = "nexora";
@@ -1513,6 +1592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 ];
 
+//dsafsdf///s/df/sd/fsd/f/sedf/sd/fs/df
 
 
         // --- GLOBAL VARIABLES ---
