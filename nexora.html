@@ -1453,109 +1453,85 @@ document.addEventListener('keydown', function(event) {
 const arcade = [];
 const exclusiveGames = [];
 
-// --- THE FOLDER INJECTION ENGINE (Standard Library) ---
+// --- THE UNIFIED REPO GRABBER (Nexora V1 Style) ---
 async function bootNexoraData() {
     const USER = "AGPRO619";
     const REPO = "nexora";
-    const FOLDER = "Library.js"; 
     
-    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
-    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
+    // Grabbing the full repo tree recursively, just like the Nexora V1 bootloader scans
+    const TREE_URL = `https://api.github.com/repos/${USER}/${REPO}/git/trees/main?recursive=1`;
+    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/`;
     
-    nexoraLog("NEXORA_BOOT: Library Handshake...");
+    nexoraLog("NEXORA_BOOT: Scanning repository tree...");
 
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Library Connection Failed");
+        const response = await fetch(TREE_URL);
+        if (!response.ok) throw new Error("GitHub Tree Access Failed");
         
-        const files = await response.json();
-        const jsFiles = files.filter(f => f.name.includes('.js'));
+        const data = await response.json();
+        const allFiles = data.tree;
 
-        for (let i = 0; i < jsFiles.length; i++) {
-            const file = jsFiles[i];
-            const fileRes = await fetch(RAW_BASE + file.name + '?t=' + Date.now());
-            
-            if (fileRes.ok) {
-                let rawText = await fileRes.text();
-                const gameData = eval("(" + rawText + ")");
-                
-                if (Array.isArray(gameData)) arcade.push(...gameData);
-                else arcade.push(gameData);
+        // FILTER 1: Arcade files ending in .js
+        const jsFiles = allFiles.filter(f => f.path.endsWith('.js') && f.type === 'blob');
+        // FILTER 2: Exclusive files ending in .ex
+        const exFiles = allFiles.filter(f => f.path.endsWith('.ex') && f.type === 'blob');
 
-                const separator = (i < jsFiles.length - 1) ? "," : "";
-                nexoraLog(`Library: ${file.name}${separator}`);
-            }
-        }
-        if (typeof renderLibrary === 'function') renderLibrary();
-    } catch (err) {
-        nexoraLog("LIB_ERROR: " + err.message, "error");
-    }
-}
+        nexoraLog(`DEBUG: Found ${jsFiles.length} (.js) files and ${exFiles.length} (.ex) files.`);
 
-// --- THE SISTER ENGINE (Exclusive Folder) ---
-async function bootNexoraExclusives() {
-    const USER = "AGPRO619";
-    const REPO = "nexora";
-    // VERIFICATION: I am explicitly looking for this folder name
-    const FOLDER = "exclusive.js"; 
-    
-    const API_URL = `https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`;
-    const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/${FOLDER}/`;
-    
-    nexoraLog(`VERIFY: Searching folder [${FOLDER}]...`);
-
-    try {
-        const response = await fetch(API_URL);
-        
-        if (!response.ok) {
-            // This is the message you will see if GitHub can't find the folder
-            nexoraLog(`FAIL: Folder "${FOLDER}" not found on GitHub. Check spelling!`, "error");
-            return; 
-        }
-        
-        const files = await response.json();
-        const jsFiles = files.filter(f => f.name.includes('.js'));
-
-        if (jsFiles.length === 0) {
-            nexoraLog(`NOTICE: Folder "${FOLDER}" is empty. No .js files found.`, "warn");
-            return;
-        }
-
-        nexoraLog(`FILES_FOUND: ${jsFiles.length} scripts in exclusives folder.`);
-
-        for (let i = 0; i < jsFiles.length; i++) {
-            const file = jsFiles[i];
-            const fileRes = await fetch(RAW_BASE + file.name + '?t=' + Date.now());
-            
-            if (fileRes.ok) {
-                let rawText = await fileRes.text();
-                const gameData = eval("(" + rawText + ")");
-                
-                if (Array.isArray(gameData)) {
-                    exclusiveGames.push(...gameData);
-                } else {
-                    exclusiveGames.push(gameData);
+        // --- Process Arcade (.js) ---
+        for (let file of jsFiles) {
+            try {
+                const fileRes = await fetch(RAW_BASE + file.path + '?t=' + Date.now());
+                if (fileRes.ok) {
+                    let rawText = await fileRes.text();
+                    const gameData = eval("(" + rawText + ")");
+                    
+                    if (Array.isArray(gameData)) arcade.push(...gameData);
+                    else arcade.push(gameData);
+                    
+                    nexoraLog(`Library: Added ${file.path.split('/').pop()}`);
                 }
-
-                const separator = (i < jsFiles.length - 1) ? "," : "";
-                nexoraLog(`Exclusive: ${file.name}${separator}`);
-            }
+            } catch (e) { nexoraLog(`ERR: Failed arcade fetch ${file.path}`, "error"); }
         }
 
+        // --- Process Exclusives (.ex) ---
+        for (let file of exFiles) {
+            try {
+                const fileRes = await fetch(RAW_BASE + file.path + '?t=' + Date.now());
+                if (fileRes.ok) {
+                    let rawText = await fileRes.text();
+                    const gameData = eval("(" + rawText + ")");
+                    
+                    if (Array.isArray(gameData)) exclusiveGames.push(...gameData);
+                    else exclusiveGames.push(gameData);
+                    
+                    nexoraLog(`Exclusive: Added ${file.path.split('/').pop()}`);
+                }
+            } catch (e) { nexoraLog(`ERR: Failed exclusive fetch ${file.path}`, "error"); }
+        }
+
+        // Final UI updates
+        if (typeof renderLibrary === 'function') renderLibrary();
+        
         setTimeout(() => {
             if (typeof renderExclusives === 'function') renderExclusives();
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            nexoraLog("EXCLUSIVES SYNC COMPLETE.", "info");
+            nexoraLog("NEXORA_SYNC: All repository files processed.", "info");
         }, 150);
 
     } catch (err) {
-        nexoraLog("EXCL_BOOT_ERROR: " + err.message, "error");
+        nexoraLog("BOOT_ERROR: " + err.message, "error");
     }
+}
+
+// Keeping your original function name for the sister engine but pointing it to the main boot
+async function bootNexoraExclusives() {
+    // This is now handled by the unified bootNexoraData to prevent double-fetching the tree
+    nexoraLog("DEBUG: Exclusives are being handled by the main tree-scan.");
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     bootNexoraData();
-    bootNexoraExclusives();
 });
 
 
