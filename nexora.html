@@ -1462,74 +1462,93 @@ document.addEventListener('keydown', function(event) {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
 // --- THE MASTER FOLDER INJECTION ENGINE ---
 const arcade = [];
 const exclusiveGames = [];
 
-// --- THE UNIFIED REPO GRABBER (Nexora V1 Style) ---
+// --- THE RECOGNIZED NEXORA V1 BOOTLOADER ---
 async function bootNexoraData() {
+    // The exact files from your repository root
+    const gameFiles = [
+        "Brawl Stars.js", "Duck.js", "Pool.js", "Supermonkey.js", 
+        "bigbunch2.js", "bigbunch3.js", "bigbunch4.js", "buck.js", 
+        "bunch1.ex", "bunch3.js", "bunch4.js", "gamebunch1.js", 
+        "ngon.js", "people.js"
+    ];
+
     const USER = "AGPRO619";
     const REPO = "nexora";
-    
-    // Grabbing the full repo tree recursively, just like the Nexora V1 bootloader scans
-    const TREE_URL = `https://api.github.com/repos/${USER}/${REPO}/git/trees/main?recursive=1`;
     const RAW_BASE = `https://raw.githubusercontent.com/${USER}/${REPO}/main/`;
     
-    nexoraLog("NEXORA_BOOT: Scanning repository tree...");
+    nexoraLog("NEXORA_BOOT: Fetching repository assets...");
 
     try {
-        const response = await fetch(TREE_URL);
-        if (!response.ok) throw new Error("GitHub Tree Access Failed");
-        
-        const data = await response.json();
-        const allFiles = data.tree;
-
-        // FILTER 1: Arcade files ending in .js
-        const jsFiles = allFiles.filter(f => f.path.endsWith('.js') && f.type === 'blob');
-        // FILTER 2: Exclusive files ending in .ex
-        const exFiles = allFiles.filter(f => f.path.endsWith('.ex') && f.type === 'blob');
-
-        nexoraLog(`DEBUG: Found ${jsFiles.length} (.js) files and ${exFiles.length} (.ex) files.`);
-
-        // --- Process Arcade (.js) ---
-        for (let file of jsFiles) {
+        // --- Process All Files ---
+        for (let fileName of gameFiles) {
             try {
-                const fileRes = await fetch(RAW_BASE + file.path + '?t=' + Date.now());
+                // Fetching from the Raw GitHub path to prevent "Failed to fetch"
+                const fileRes = await fetch(RAW_BASE + fileName + '?t=' + Date.now());
+                
                 if (fileRes.ok) {
                     let rawText = await fileRes.text();
+                    
+                    // NEXORA V1 core logic: Execute the string to get the object/array
                     const gameData = eval("(" + rawText + ")");
                     
-                    if (Array.isArray(gameData)) arcade.push(...gameData);
-                    else arcade.push(gameData);
-                    
-                    nexoraLog(`Library: Added ${file.path.split('/').pop()}`);
+                    // SORTING LOGIC: Based on file extension just like Nexora V1
+                    if (fileName.endsWith('.ex')) {
+                        if (Array.isArray(gameData)) exclusiveGames.push(...gameData);
+                        else exclusiveGames.push(gameData);
+                        nexoraLog(`Exclusive: Added ${fileName}`);
+                    } else if (fileName.endsWith('.js')) {
+                        if (Array.isArray(gameData)) arcade.push(...gameData);
+                        else arcade.push(gameData);
+                        nexoraLog(`Library: Added ${fileName}`);
+                    }
+                } else {
+                    nexoraLog(`ERR: Resource missing -> ${fileName}`, "error");
                 }
-            } catch (e) { nexoraLog(`ERR: Failed arcade fetch ${file.path}`, "error"); }
+            } catch (e) { 
+                nexoraLog(`ERR: Parse failure on ${fileName}`, "error"); 
+            }
         }
 
-        // --- Process Exclusives (.ex) ---
-        for (let file of exFiles) {
-            try {
-                const fileRes = await fetch(RAW_BASE + file.path + '?t=' + Date.now());
-                if (fileRes.ok) {
-                    let rawText = await fileRes.text();
-                    const gameData = eval("(" + rawText + ")");
-                    
-                    if (Array.isArray(gameData)) exclusiveGames.push(...gameData);
-                    else exclusiveGames.push(gameData);
-                    
-                    nexoraLog(`Exclusive: Added ${file.path.split('/').pop()}`);
-                }
-            } catch (e) { nexoraLog(`ERR: Failed exclusive fetch ${file.path}`, "error"); }
-        }
-
-        // Final UI updates
+        // Final UI updates and stabilization
         if (typeof renderLibrary === 'function') renderLibrary();
         
         setTimeout(() => {
             if (typeof renderExclusives === 'function') renderExclusives();
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            nexoraLog("NEXORA_SYNC: All repository files processed.", "info");
+            nexoraLog("NEXORA_SYNC: System stabilized. Assets loaded.", "info");
         }, 150);
 
     } catch (err) {
@@ -1537,17 +1556,58 @@ async function bootNexoraData() {
     }
 }
 
-// Keeping your original function name for the sister engine but pointing it to the main boot
-async function bootNexoraExclusives() {
-    // This is now handled by the unified bootNexoraData to prevent double-fetching the tree
-    nexoraLog("DEBUG: Exclusives are being handled by the main tree-scan.");
-}
-
+// Ensure the engine starts on load
 document.addEventListener('DOMContentLoaded', () => {
     bootNexoraData();
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         const apps = [
             { id: 501, title: "Google Search", desc: "Access the world's information.", img: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", url: "https://www.google.com/search?igu=1" },
             { id: 502, title: "Calculator", desc: "Powerful web-based calculations.", img: "https://www.google.com/logos/2010/pacman10-i.png", url: "https://www.desmos.com/scientific" },
