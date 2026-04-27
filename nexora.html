@@ -25,7 +25,7 @@
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ZORA PALETTES */
+/* THEMES */
 body.theme-default { --primary: #00f2fe; --bg: #030616; }
 body.theme-light { --primary: #3b82f6; --bg: #f8fafc; --text: #0f172a; --glass: rgba(0,0,0,0.05); --border: rgba(0,0,0,0.1); --text-muted: #64748b; }
 body.theme-ocean { --primary: #0077b6; --bg: #001219; }
@@ -34,20 +34,14 @@ body.theme-midnight { --primary: #5a189a; --bg: #000000; }
 body.theme-forest { --primary: #52b788; --bg: #081c15; }
 body.theme-sunset { --primary: #ff9e00; --bg: #240046; }
 body.theme-crimson { --primary: #9b2226; --bg: #0b090a; }
-body.theme-monochrome { --primary: #ffffff; --bg: #121212; }
-body.theme-macchiato { --primary: #f5bde6; --bg: #24273a; }
 body.theme-mocha { --primary: #f5c2e7; --bg: #1e1e2e; }
-body.theme-latte { --primary: #ea76cb; --bg: #eff1f5; --text: #4c4f69; }
 body.theme-blood { --primary: #ff0000; --bg: #050000; }
 body.theme-blossom { --primary: #ffb7c5; --bg: #1a0f0f; }
 body.theme-matrix { --primary: #00ff41; --bg: #000000; }
-body.theme-gold { --primary: #ffd700; --bg: #0a0a0a; }
-body.theme-emerald { --primary: #2ecc71; --bg: #0b1a11; }
 body.theme-cyber { --primary: #ff00ff; --bg: #0a0112; }
-body.theme-nord { --primary: #88c0d0; --bg: #2e3440; }
 body.theme-space { --primary: #ff79c6; --bg: #11121d; }
 
-/* GLOBAL STYLES */
+/* GLOBAL */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; transition: background 0.5s ease; }
 body.no-animations * { animation: none !important; transition: none !important; }
@@ -56,12 +50,11 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 #bg-overlay { position: fixed; inset: 0; z-index: -2; background-size: cover; background-position: center; opacity: 0; transition: 1s; pointer-events: none; }
 #bg-overlay.visible { opacity: 0.35; }
 
-/* BARS */
 #game-load-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--primary); width: 0%; transition: width 0.2s; z-index: 20000; box-shadow: 0 0 10px var(--primary); }
 #panic-bar-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 99999; display: none; }
 #panic-bar { height: 100%; width: 0%; background: #ff4444; transition: none; }
 
-/* NAVIGATION */
+/* NAV */
 .navbar { position: sticky; top: 0; z-index: 1000; background: rgba(var(--bg), 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); height: 70px; display: flex; align-items: center; }
 .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
 .logo-nav { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; cursor: pointer; text-transform: uppercase; }
@@ -73,12 +66,11 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .nav-acc-btn:hover { border-color: var(--primary); transform: scale(1.05); }
 .nav-acc-btn img { width: 100%; height: 100%; object-fit: cover; }
 
-/* PAGE SECTIONS */
+/* SECTIONS */
 .view-section { display: none; padding-top: 2rem; min-height: calc(100vh - 70px); }
 .view-section.active { display: block; animation: fadeIn 0.4s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* HERO & SEARCH */
 .hero { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
 .old-title { font-size: clamp(4rem, 12vw, 10rem); font-weight: 800; background: linear-gradient(90deg, #ff00cc, #3333ff, #00d4ff, #ff00cc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px rgba(0,0,0,0.5)); margin-bottom: 2rem; }
 
@@ -93,12 +85,11 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .q-icon-wrap { width: 55px; height: 55px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--primary); backdrop-filter: blur(10px); }
 .q-app span { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; opacity: 0.6; }
 
-/* GRIDS & CARDS */
+/* GRIDS */
 .content-section { max-width: 1400px; margin: 0 auto; padding: 2rem; }
 .section-header { margin-bottom: 2rem; display: flex; align-items: center; gap: 20px; }
 .section-header h2 { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
 .section-line { height: 2px; flex-grow: 1; background: var(--glass-border); }
-
 .content-grid { display: grid; grid-template-columns: repeat(var(--grid-columns), 1fr); gap: 1.5rem; }
 
 .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; position: relative; transition: var(--transition); backdrop-filter: blur(10px); cursor: pointer; display: flex; flex-direction: column; height: 100%; }
@@ -106,8 +97,6 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
 .card-image-wrap { width: 100%; height: 160px; background: #000; overflow: hidden; }
 .card-image { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.6s ease; }
-.card:hover .card-image { opacity: 1; transform: scale(1.05); }
-
 .card-meta { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
 .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
 .card-desc { font-size: 0.85rem; color: var(--text-muted); opacity: 0.8; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 2.5rem; }
@@ -122,13 +111,12 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .lock-overlay { position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; }
 .lock-icon { font-size: 3rem; color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
 
-/* PROXY QUEST CARDS */
-.quest-container { display: flex; justify-content: center; align-items: stretch; gap: 2rem; padding: 2rem; flex-wrap: wrap; }
+/* QUEST CARDS */
+.quest-container { display: flex; justify-content: center; align-items: stretch; gap: 2rem; padding: 4rem 2rem; flex-wrap: wrap; }
 .quest-card { width: 320px; background: var(--bg-light); border: 2px solid var(--glass-border); border-radius: 30px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; }
 .quest-card:hover { border-color: var(--primary); transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
 .quest-card i { font-size: 4rem; color: var(--primary); margin-bottom: 1.5rem; display: block; }
 .quest-card h3 { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; }
-.quest-card p { font-size: 0.85rem; opacity: 0.6; margin-bottom: 1.5rem; font-style: italic; }
 .quest-list { text-align: left; list-style: none; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); }
 .quest-list li { font-size: 0.8rem; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; font-weight: 600; color: var(--text-muted); }
 .quest-list li::before { content: "•"; color: var(--primary); font-weight: 900; }
@@ -139,7 +127,7 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .modal.hidden { display: none; }
 .modal-content { background: var(--bg-light); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 950px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
 
-/* UNIFIED SETTINGS */
+/* SETTINGS UI */
 .s-container { display: flex; height: 75vh; }
 .s-sidebar { width: 250px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--border); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .s-tab { padding: 1rem; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 700; opacity: 0.5; transition: 0.3s; color: var(--text); display: flex; align-items: center; gap: 12px; }
@@ -151,11 +139,8 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
 .theme-box { background: var(--glass); border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-.theme-box:hover { border-color: var(--primary); transform: translateY(-2px); }
 .theme-box i { font-size: 1.5rem; margin-bottom: 5px; display: block; color: var(--primary); }
-.theme-box label { font-size: 0.7rem; font-weight: 800; cursor: pointer; }
 
-.s-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--glass-border); }
 .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; inset: 0; background-color: #333; transition: .4s; border-radius: 34px; }
@@ -170,9 +155,9 @@ input:checked + .slider:before { transform: translateX(22px); }
 .p-side.min * { opacity: 0; pointer-events: none; }
 
 .side-trigger { position: absolute; top: 50%; right: -30px; width: 30px; height: 80px; background: var(--bg-light); color: var(--primary); display: flex; align-items: center; justify-content: center; border-radius: 0 12px 12px 0; border: 1px solid var(--border); border-left: none; cursor: pointer; transform: translateY(-50%); box-shadow: 10px 0 20px rgba(0,0,0,0.5); z-index: 10005; opacity: 1 !important; pointer-events: auto !important; }
+
 .side-item { padding: 1.2rem; border-bottom: 1px solid var(--glass-border); cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 0.85rem; color: var(--text); opacity: 0.7; transition: 0.3s; white-space: nowrap; }
 .side-item:hover { opacity: 1; background: var(--glass); color: var(--primary); }
-.side-item.ac-active { background: var(--primary); color: black; opacity: 1; }
 
 #gameContainer { flex-grow: 1; border: none; background: #000; width: 100%; }
 
@@ -183,7 +168,6 @@ input:checked + .slider:before { transform: translateX(22px); }
 .card-btn { width: 100%; padding: 1rem; border-radius: 12px; border: none; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 0.9rem; }
 .btn-play { background: var(--primary); color: var(--bg); margin-bottom: 10px; }
 .btn-info { background: var(--glass-border); color: var(--text); }
-.local-prompt { margin-top: 3rem; padding: 2rem; background: var(--glass); border: 2px dashed var(--glass-border); border-radius: 24px; text-align: center; }
 
 /* SPECIAL LOADER STYLES */
 .loader-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
@@ -193,7 +177,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .loader-card div { text-align: left; }
 .loader-card strong { display: block; font-size: 0.9rem; }
 .loader-card span { font-size: 0.7rem; opacity: 0.6; }
-</style>
+  </style>
 </head>
 <body class="theme-default">
 
@@ -224,29 +208,24 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
   </nav>
 
-  <!-- HOME -->
+  <!-- HOME PAGE -->
   <div id="view-home" class="view-section active">
     <header class="hero">
         <h1 class="old-title">Nexora</h1>
         <div class="search-wrapper">
-            <input type="text" id="homeSearch" class="page-search" data-t="placeholder-search" placeholder="Search across all categories...">
+            <input type="text" id="homeSearch" class="page-search" data-t="placeholder-search" placeholder="Search for everything...">
         </div>
-        <div class="quick-apps">
-            <div class="q-app" onclick="showPage('proxy')"><div class="q-icon-wrap"><i class="fab fa-spotify"></i></div><span>Spotify</span></div>
-            <div class="q-app" onclick="showPage('proxy')"><div class="q-icon-wrap"><i class="fab fa-tiktok"></i></div><span>TikTok</span></div>
-            <div class="q-app" onclick="showPage('proxy')"><div class="q-icon-wrap"><i class="fab fa-instagram"></i></div><span>Instagram</span></div>
-            <div class="q-app" onclick="showPage('proxy')"><div class="q-icon-wrap"><i class="fab fa-discord"></i></div><span>Discord</span></div>
-            <div class="q-app" onclick="showPage('proxy')"><div class="q-icon-wrap"><i class="fab fa-youtube"></i></div><span>YouTube</span></div>
+        <div class="quick-apps" id="home-quick-apps">
+            <!-- Rendered by JS -->
         </div>
     </header>
   </div>
 
-  <!-- GAMES -->
+  <!-- GAMES PAGE -->
   <div id="view-games" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="gameSearch" class="page-search sub-search" placeholder="Filter games..."></div>
+      <div class="search-wrapper"><input type="text" id="gameSearch" class="page-search sub-search" data-cat="games" data-t="placeholder-search" placeholder="Filter games..."></div>
 
-      <!-- NEW LOADER OPTIONS -->
       <div class="loader-grid">
           <div class="loader-card" id="requestLocalBtn">
               <i class="fas fa-folder-open"></i>
@@ -255,11 +234,11 @@ input:checked + .slider:before { transform: translateX(22px); }
                   <span>Open saved Carp.io .html games</span>
               </div>
           </div>
-          <div class="loader-card" onclick="launchInStage('https://docs.google.com/document/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/edit?usp=sharing')">
+          <div class="loader-card" onclick="openMasterList()">
               <i class="fas fa-scroll"></i>
               <div>
                   <strong>The Master List</strong>
-                  <span>1000+ unlisted & uncategorized titles</span>
+                  <span>1000+ unlisted internal titles</span>
               </div>
           </div>
       </div>
@@ -275,35 +254,41 @@ input:checked + .slider:before { transform: translateX(22px); }
 
       <div class="section-header"><h2 data-t="label-allgames">🎮 Arcade</h2><div class="section-line"></div></div>
       <div id="gameLibrary" class="content-grid"></div>
-
+      
       <div class="section-header" style="margin-top:4rem;"><h2>🔐 Exclusives</h2><div class="section-line"></div></div>
       <div id="exclusiveLibrary" class="content-grid"></div>
     </section>
   </div>
 
-  <!-- MOVIES -->
+  <!-- MOVIES PAGE -->
   <div id="view-movies" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" placeholder="Filter movies..."></div>
+      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" data-cat="movies" data-t="placeholder-search" placeholder="Filter movies..."></div>
       <div class="section-header"><h2 data-t="nav-cinema">🎬 Cinema</h2><div class="section-line"></div></div>
       <div id="movieLibrary" class="content-grid"></div>
     </section>
   </div>
 
-  <!-- APPS -->
+  <!-- APPS PAGE -->
   <div id="view-apps" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" placeholder="Filter apps..."></div>
+      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" data-cat="apps" data-t="placeholder-search" placeholder="Filter apps..."></div>
+      
       <div id="app-fav-wrapper" style="display:none; margin-bottom: 4rem;">
-        <div class="section-header"><h2>⭐ Favorite Apps</h2><div class="section-line"></div><button class="settings-btn" id="editAppsBtn" onclick="toggleEditMode('apps')">Rearrange</button></div>
+        <div class="section-header">
+            <h2>⭐ Favorite Apps</h2>
+            <div class="section-line"></div>
+            <button class="settings-btn" id="editAppsBtn" onclick="toggleEditMode('apps')">Rearrange</button>
+        </div>
         <div id="appFavLibrary" class="content-grid"></div>
       </div>
+
       <div class="section-header"><h2 data-t="nav-apps">📱 Utilities</h2><div class="section-line"></div></div>
       <div id="appLibrary" class="content-grid"></div>
     </section>
   </div>
 
-  <!-- PROXY -->
+  <!-- PROXY PAGE -->
   <div id="view-proxy" class="view-section">
     <div class="quest-container">
         <div class="quest-card" onclick="handleQuestSelection('default')">
@@ -316,7 +301,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <i class="fas fa-bolt"></i>
             <h3>Best Tech</h3>
             <p>"Unblocks everything and lets you log in but requires a hotspot"</p>
-            <ul class="quest-list"><li>Unlimited website access</li><li>Full login support</li><li>No trace to history</li></ul>
+            <ul class="quest-list"><li>Unlimited website access (Spotify, etc)</li><li>Full login support</li><li>No trace to history</li></ul>
         </div>
     </div>
     <div id="proxy-frame-container" class="hidden" style="width:100%; height:calc(100vh - 70px); position: relative;">
@@ -325,13 +310,13 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
   </div>
 
-  <!-- CHAT -->
+  <!-- CHAT PAGE -->
   <div id="view-chat" class="view-section">
     <div id="chat-gate" class="content-section" style="max-width: 700px; margin: 0 auto;">
         <div class="local-prompt" style="background: rgba(255,0,0,0.05); border-color: #ff4444;">
             <h2 style="color: #ff4444; margin-bottom: 1rem;">⚠️ Warning</h2>
             <p style="margin-bottom: 2rem;">Public chat. Content is unmoderated. Type <b>PROCEED</b> to enter.</p>
-            <input type="text" id="chatProceedInput" class="page-search" style="text-align: center; max-width: 300px; margin-bottom: 1.5rem;" placeholder="PROCEED">
+            <input type="text" id="chatProceedInput" class="proceed-input" placeholder="PROCEED">
             <button onclick="unlockChat()" class="settings-btn" style="margin: 0 auto; background: #ff4444; color: white;">Enter</button>
         </div>
     </div>
@@ -356,9 +341,8 @@ input:checked + .slider:before { transform: translateX(22px); }
                <button class="settings-btn" style="width:100%; justify-content:center; background:var(--primary); color:var(--bg);" onclick="closeSettings()">Done</button>
            </div>
            <div class="s-content">
-               <!-- THEMES (0) -->
                <div class="s-panel">
-                   <h3>Style Configuration</h3>
+                   <h3>Themes</h3>
                    <div class="theme-grid">
                        <div class="theme-box" onclick="setTheme('default')"><i class="fas fa-home"></i><label>Default</label></div>
                        <div class="theme-box" onclick="setTheme('light')"><i class="fas fa-sun"></i><label>Light</label></div>
@@ -376,28 +360,24 @@ input:checked + .slider:before { transform: translateX(22px); }
                        <div class="theme-box" onclick="setTheme('space')"><i class="fas fa-user-astronaut"></i><label>Space</label></div>
                    </div>
                    <div class="s-row" style="margin-top:20px;"><span>Accent Color</span><input id="accentColor" type="color" oninput="updateAccent(this.value)"></div>
-                   <div class="s-row"><span>System Language</span><select id="lang-select" onchange="updateLanguage(this.value)" style="padding: 8px; background: black; color: white; border: 1px solid var(--border); border-radius: 8px;"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
+                   <div class="s-row"><span>Language</span><select id="lang-select" onchange="updateLanguage(this.value)" style="padding: 8px; background: black; color: white; border: 1px solid var(--border); border-radius: 8px;"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
                </div>
-               <!-- VISUALS (1) -->
                <div class="s-panel">
-                   <h3>Environmental FX</h3>
+                   <h3>System Visuals</h3>
                    <div class="s-row"><span>Falling Petals</span><label class="switch"><input type="checkbox" id="petalsToggle"><span class="slider"></span></label></div>
-                   <div class="s-row"><span>Animated Starfield</span><label class="switch"><input type="checkbox" id="starsToggle"><span class="slider"></span></label></div>
-                   <div class="s-row"><span>Particle Mesh</span><label class="switch"><input type="checkbox" id="particlesToggle"><span class="slider"></span></label></div>
+                   <div class="s-row"><span>Animated Stars</span><label class="switch"><input type="checkbox" id="starsToggle"><span class="slider"></span></label></div>
+                   <div class="s-row"><span>Particles</span><label class="switch"><input type="checkbox" id="particlesToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Grid Columns</span><div style="display:flex; align-items:center; gap:10px;"><input id="gridColumns" type="range" min="2" max="6"><span id="gridValue">4</span></div></div>
                    <div class="s-row"><span>Compact Mode</span><label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label></div>
                </div>
-               <!-- CLOAKING (2) -->
                <div class="s-panel">
                    <h3>Tab Disguise</h3>
-                   <p>Change how Nexora appears in your tab bar.</p>
                    <select id="cloakSelect" class="page-search" onchange="updateCloak(this.value)" style="width:100%; border-radius: 12px; margin-top: 1rem; background: var(--bg);">
                         <option value="google">Google Search</option><option value="ixl">IXL Learning</option><option value="classroom">Google Classroom</option><option value="default">Nexora Default</option>
                    </select>
                </div>
-               <!-- ACCOUNT (3) -->
                <div class="s-panel">
-                   <h3>Nexora Passport</h3>
+                   <h3 data-t="nav-profile">Profile</h3>
                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 2rem;">
                        <div id="pfp-main-view" onclick="document.getElementById('pfp-upload').click()" style="width:70px; height:70px; border-radius:50%; background: var(--glass); border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow:hidden;">?</div>
                        <input type="file" id="pfp-upload" style="display:none;" accept="image/*" onchange="handlePFP(this)">
@@ -416,21 +396,18 @@ input:checked + .slider:before { transform: translateX(22px); }
                    </div>
                    <button onclick="signOut()" class="data-btn danger" style="width:100%; margin-top: 10px;">Sign Out & Reset</button>
                </div>
-               <!-- DEV PORTAL (4) -->
                <div class="s-panel">
-                   <h3>Developer Tools</h3>
-                   <textarea id="converter-input" class="dev-field" style="height: 60px;" placeholder="HTML code..."></textarea>
-                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1rem;">Copy Base64</button>
-                   <input type="text" id="gen-title" class="dev-field" placeholder="Game Title">
+                   <h3>Dev Tools</h3>
+                   <textarea id="converter-input" class="dev-field" style="height: 60px;" placeholder="Paste raw HTML..."></textarea>
+                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1.5rem;">Copy Base64</button>
+                   <input type="text" id="gen-title" class="dev-field" placeholder="Title">
                    <button onclick="generateGameObject()" class="data-btn" style="width:100%;">Gen Object</button>
                    <textarea id="gen-output" class="dev-field" style="height: 60px; font-size: 9px; margin-top: 10px; color: #00ff88;" readonly></textarea>
                </div>
-               <!-- REQUESTS (5) -->
                <div class="s-panel">
                    <h3>Pending Requests</h3>
                    <iframe src="https://docs.google.com/spreadsheets/d/1mhqJ1W8glLOXCJG0iwU5ygYyuZmynKr-Rho1fSaTSf8/preview?resourcekey=&gid=91469956" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe>
                </div>
-               <!-- SUGGEST (6) -->
                <div class="s-panel">
                    <h3>Suggest Content</h3>
                    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1ups0C6EnnrHg1JvyNlFBJn-cD0q07oPy-Czlmhuta-6wiA/viewform?embedded=true" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe>
@@ -455,7 +432,6 @@ input:checked + .slider:before { transform: translateX(22px); }
     <iframe id="gameContainer" src="about:blank"></iframe>
   </div>
 
-  <!-- PLAY NOTICE -->
   <div id="gameNotice" class="modal hidden">
     <div class="modal-content" style="max-width: 400px; text-align: center; padding:2rem;">
       <h2 style="color:var(--primary); margin-bottom: 1rem;">Ready to Play</h2>
@@ -470,6 +446,11 @@ input:checked + .slider:before { transform: translateX(22px); }
    STATE
    -------------------------- */
 const SETTINGS_KEY = 'nexora_v6_ultimate_config';
+const i18n = {
+    en: { "placeholder-search": "Search...", "nav-games": "Games", "nav-cinema": "Movies", "nav-apps": "Apps", "nav-profile": "Profile", "stat-teleports": "Teleports", "stat-uptime": "Uptime", "nav-settings": "Settings", "set-lang": "Language", "set-theme": "Theme", "label-favs": "My Favorites", "label-allgames": "All Systems" },
+    es: { "placeholder-search": "Buscar...", "nav-games": "Juegos", "nav-cinema": "Cine", "nav-apps": "Apps", "nav-profile": "Perfil", "stat-teleports": "Teletransportes", "stat-uptime": "Tiempo", "nav-settings": "Ajustes", "set-lang": "Idioma", "set-theme": "Color", "label-favs": "Favoritos", "label-allgames": "Librería Global" }
+};
+
 const defaultSettings = { theme: 'theme-default', accent: '#00f2fe', grid: 4, animations: true, compact: false, cloak: 'google', background: 'none', stars: true, petals: false, particles: true, lang: 'en' };
 let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {...defaultSettings};
 let favorites = JSON.parse(localStorage.getItem('nexora_favs')) || [];
@@ -479,7 +460,7 @@ let uptimeSeconds = 0;
 let acInterval = null;
 
 const movieDatabase = [
-    { id: 'm1', title: 'Movie Database (Sheet)', url: 'https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit?authuser=0&gid=0&pli=1#gid=0', desc: 'Comprehensive movie collection.', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800' },
+    { id: 'm1', title: 'Movie Database (Sheet)', url: 'https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit?authuser=0&gid=0&pli=1#gid=0', desc: 'Google Sheets collection.', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800' },
     { id: 'm2', title: 'SZVY Central', url: 'https://szvy-central-v2.mystrikingly.com/', desc: 'Streaming Hub.', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800' }
 ];
 
@@ -487,6 +468,14 @@ const apps = [
     { id: 'a1', title: "Discord", desc: "Global chat node.", image: "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcHA%253D" },
     { id: 'a2', title: "TikTok", desc: "Short video node.", image: "https://www.google.com/favicon.ico", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly93d3cudGlrdG9rLmNvbQ%253D%253D" },
     { id: 'a3', title: "Spotify", desc: "Music node.", image: "https://www.google.com/favicon.ico", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly9sb3NzbGVzcy53dGY%253D" }
+];
+
+const quickApps = [
+    { name: "Spotify", icon: "fab fa-spotify", id: "a3" },
+    { name: "TikTok", icon: "fab fa-tiktok", id: "a2" },
+    { name: "Instagram", icon: "fab fa-instagram", id: "a1" },
+    { name: "Discord", icon: "fab fa-discord", id: "a1" },
+    { name: "YouTube", icon: "fab fa-youtube", id: "a1" }
 ];
 
 /* --------------------------
@@ -551,8 +540,12 @@ function handleDrop(e) {
 function createCard(item, isLocked = false) {
   const div = document.createElement('div');
   div.className = `card ${isLocked ? 'locked' : ''}`;
-  div.onclick = () => { if((isEditMode.games || isEditMode.apps) && favorites.includes(item.id)) return; isLocked ? promptUnlock() : handleLaunchTrigger(item); };
-  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${favorites.includes(item.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400'}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${item.desc || 'Optimized Link.'}</span></div>`;
+  div.onclick = () => { 
+    if(isLocked) { promptUnlock(); return; }
+    if((isEditMode.games || isEditMode.apps) && favorites.includes(item.id)) return;
+    handleLaunchTrigger(item); 
+  };
+  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${favorites.includes(item.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400'}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${item.desc || 'Nexora Optimized.'}</span></div>`;
   return div;
 }
 
@@ -582,9 +575,27 @@ function handlePFP(input) { const file = input.files[0]; if (file) { const reade
 
 function handleQuestSelection(type) {
     const frame = document.getElementById('proxyFrame'), container = document.getElementById('proxy-frame-container'), cards = document.querySelector('.quest-container');
-    const link = "https://stellarhistory.imageinsightvault.com/";
-    if (type === 'default') { frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); }
-    else if (prompt("Enter passcode:") === "password") { isExclusivesUnlocked = true; frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); renderAll(); }
+    const link = (type === 'tech') ? "https://drive.google.com/file/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview" : "https://stellarhistory.imageinsightvault.com/";
+    
+    if (type === 'default') { 
+        frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); 
+    } else {
+        if (!isExclusivesUnlocked) {
+            const pass = prompt("Nexora Access: Enter passcode:");
+            if (pass === "password") {
+                isExclusivesUnlocked = true;
+                frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden');
+                renderAll();
+            }
+        } else {
+            frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden');
+        }
+    }
+}
+
+function openMasterList() {
+    pendingItem = { title: "Master Library", url: "https://docs.google.com/document/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview" };
+    launchGame(pendingItem, false);
 }
 
 function exitProxy() { document.getElementById('proxyFrame').src = "about:blank"; document.getElementById('proxy-frame-container').classList.add('hidden'); document.querySelector('.quest-container').classList.remove('hidden'); }
@@ -603,6 +614,19 @@ async function bootData() {
     } catch(e) {}
   }
   renderAll();
+  renderQuickApps();
+}
+
+function renderQuickApps() {
+    const container = document.getElementById('home-quick-apps');
+    container.innerHTML = '';
+    quickApps.forEach(app => {
+        const div = document.createElement('div');
+        div.className = 'q-app';
+        div.onclick = () => showPage('proxy');
+        div.innerHTML = `<div class="q-icon-wrap"><i class="${app.icon}"></i></div><span>${app.name}</span>`;
+        container.appendChild(div);
+    });
 }
 
 function applySettings() {
@@ -618,14 +642,45 @@ function applySettings() {
     document.getElementById('petalsToggle').checked = settings.petals;
     document.getElementById('particlesToggle').checked = settings.particles;
     updateCloak(settings.cloak);
+    updateLanguage(settings.lang);
     updateProfileDisplay();
 }
 
 function setTheme(t) { settings.theme = 'theme-' + t; applySettings(); save(); }
 function setBackground(url) { settings.background = url; applySettings(); save(); }
+function updateLanguage(code) {
+    settings.lang = code;
+    document.querySelectorAll('[data-t]').forEach(el => {
+        const key = el.getAttribute('data-t');
+        if (i18n[code] && i18n[code][key]) {
+            if (el.tagName === 'INPUT') el.placeholder = i18n[code][key];
+            else el.innerText = i18n[code][key];
+        }
+    });
+}
 function updateCloak(type) {
-    const map = { google: { t: "Google", i: "https://www.google.com/favicon.ico" }, default: { t: "Nexora", i: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" } };
+    const map = { google: { t: "Google", i: "https://www.google.com/favicon.ico" }, ixl: { t: "IXL Learning", i: "https://www.ixl.com/favicon.ico" }, classroom: { t: "Google Classroom", i: "https://www.gstatic.com/classroom/favicon.png" }, default: { t: "Nexora", i: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" } };
     const c = map[type] || map.google; document.getElementById('tabTitle').innerText = c.t; document.getElementById('tabIcon').href = c.i;
+}
+
+function toggleEditMode(cat) { 
+    if (cat === 'games') isEditMode.games = !isEditMode.games; 
+    else isEditMode.apps = !isEditMode.apps;
+    renderAll(); 
+}
+
+function convertHTML() { navigator.clipboard.writeText(btoa(unescape(encodeURIComponent(document.getElementById('converter-input').value)))); alert("Copied."); }
+function generateGameObject() { document.getElementById('gen-output').value = `{ id: ${Date.now()}, title: "${document.getElementById('gen-title').value}", url: "URL_HERE" },`; }
+function uploadToCloud() { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('nx_') || k === 'nexora_favs') data[k] = localStorage.getItem(k); } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' })); a.download = `Nexora_Save.json`; a.click(); }
+function downloadFromCloud() { document.getElementById('cloud-sync-file').click(); }
+function processCloudRestore(input) { const reader = new FileReader(); reader.onload = (e) => { const d = JSON.parse(e.target.result); for (let k in d) localStorage.setItem(k, d[k]); location.reload(); }; reader.readAsText(input.files[0]); }
+function signOut() { if(confirm("Sign out?")) { localStorage.clear(); location.reload(); } }
+
+function toggleFav(id) { 
+    if (favorites.includes(id)) { favorites = favorites.filter(f => f !== id); } 
+    else { favorites.push(id); }
+    localStorage.setItem('nexora_favs', JSON.stringify(favorites)); 
+    renderAll(); 
 }
 
 function handleLaunchTrigger(item) { teleports++; localStorage.setItem('nx_teleports', teleports); pendingItem = item; document.getElementById('gameNotice').classList.remove('hidden'); }
@@ -638,11 +693,12 @@ function launchGame(item, ext) {
 }
 function closeGame() { document.getElementById('gameStage').style.display = 'none'; document.getElementById('gameContainer').src = 'about:blank'; document.body.style.overflow = 'auto'; }
 function save() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+function stab(i) { document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.s-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.s-tab')[i].classList.add('active'); document.querySelectorAll('.s-panel')[i].classList.add('active'); }
 function smartToggle(id, tabIndex) { document.getElementById(id).classList.toggle('hidden'); if(tabIndex !== undefined) stab(tabIndex); }
 function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); save(); }
 function closeNotices() { document.getElementById('gameNotice').classList.add('hidden'); }
 
-document.getElementById('requestLocalBtn').onclick = async () => { try { const dir = await window.showDirectoryPicker(); for await (const entry of dir.values()) { if (entry.kind === 'file' && entry.name.endsWith('.html')) { arcade.push({ id: 'loc-'+Math.random(), title: entry.name, url: URL.createObjectURL(await entry.getFile()) }); } } renderAll(); } catch(e) {} };
+document.getElementById('requestLocalBtn').onclick = async () => { try { const dir = await window.showDirectoryPicker(); for await (const entry of dir.values()) { if (entry.kind === 'file' && entry.name.endsWith('.html')) { const file = await entry.getFile(); arcade.push({ id: 'loc-'+Math.random(), title: entry.name, url: URL.createObjectURL(file) }); } } renderAll(); } catch(e) {} };
 
 /* --------------------------
    FX
