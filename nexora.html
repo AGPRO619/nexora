@@ -25,7 +25,7 @@
   --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* THEMES */
+/* ZORA PALETTES */
 body.theme-default { --primary: #00f2fe; --bg: #030616; }
 body.theme-light { --primary: #3b82f6; --bg: #f8fafc; --text: #0f172a; --glass: rgba(0,0,0,0.05); --border: rgba(0,0,0,0.1); --text-muted: #64748b; }
 body.theme-ocean { --primary: #0077b6; --bg: #001219; }
@@ -41,6 +41,13 @@ body.theme-matrix { --primary: #00ff41; --bg: #000000; }
 body.theme-cyber { --primary: #ff00ff; --bg: #0a0112; }
 body.theme-space { --primary: #ff79c6; --bg: #11121d; }
 
+/* LOADING SCREEN */
+#boot-screen { position: fixed; inset: 0; background: #030616; z-index: 200000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s ease; }
+.boot-logo { font-size: 3rem; font-weight: 900; color: #fff; margin-bottom: 2rem; letter-spacing: -2px; }
+.boot-progress-wrap { width: 300px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
+#boot-bar { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #00f2fe; transition: 0.3s; box-shadow: 0 0 15px #00f2fe; }
+.boot-text { margin-top: 1rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; }
+
 /* GLOBAL */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; transition: background 0.5s ease; }
@@ -54,7 +61,7 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 #panic-bar-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 99999; display: none; }
 #panic-bar { height: 100%; width: 0%; background: #ff4444; transition: none; }
 
-/* NAV */
+/* NAVIGATION */
 .navbar { position: sticky; top: 0; z-index: 1000; background: rgba(var(--bg), 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); height: 70px; display: flex; align-items: center; }
 .nav-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
 .logo-nav { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; cursor: pointer; text-transform: uppercase; }
@@ -92,6 +99,20 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .section-line { height: 2px; flex-grow: 1; background: var(--glass-border); }
 .content-grid { display: grid; grid-template-columns: repeat(var(--grid-columns), 1fr); gap: 1.5rem; }
 
+/* NOTICE */
+.refresh-notice {
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid orange;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(10px);
+}
+.refresh-text { font-size: 0.9rem; color: #ffcc00; margin: 0; font-weight: 600; }
+
 .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; position: relative; transition: var(--transition); backdrop-filter: blur(10px); cursor: pointer; display: flex; flex-direction: column; height: 100%; }
 .card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
 
@@ -127,7 +148,7 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .modal.hidden { display: none; }
 .modal-content { background: var(--bg-light); border: 1px solid var(--glass-border); border-radius: 24px; width: 100%; max-width: 950px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
 
-/* SETTINGS UI */
+/* UNIFIED SETTINGS */
 .s-container { display: flex; height: 75vh; }
 .s-sidebar { width: 250px; background: rgba(0,0,0,0.2); border-right: 1px solid var(--border); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
 .s-tab { padding: 1rem; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 700; opacity: 0.5; transition: 0.3s; color: var(--text); display: flex; align-items: center; gap: 12px; }
@@ -136,10 +157,6 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .s-panel { display: none; height: 100%; }
 .s-panel.active { display: block; }
 .s-panel h3 { margin-bottom: 1.5rem; font-size: 1.5rem; color: var(--primary); border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; }
-
-.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-.theme-box { background: var(--glass); border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-.theme-box i { font-size: 1.5rem; margin-bottom: 5px; display: block; color: var(--primary); }
 
 .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -169,17 +186,22 @@ input:checked + .slider:before { transform: translateX(22px); }
 .btn-play { background: var(--primary); color: var(--bg); margin-bottom: 10px; }
 .btn-info { background: var(--glass-border); color: var(--text); }
 
-/* SPECIAL LOADER STYLES */
 .loader-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
 .loader-card { padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 20px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; gap: 15px; }
 .loader-card:hover { background: var(--glass); border-color: var(--primary); transform: translateY(-3px); }
 .loader-card i { font-size: 1.5rem; color: var(--primary); }
-.loader-card div { text-align: left; }
-.loader-card strong { display: block; font-size: 0.9rem; }
-.loader-card span { font-size: 0.7rem; opacity: 0.6; }
   </style>
 </head>
 <body class="theme-default">
+
+  <!-- BOOT LOADING SCREEN -->
+  <div id="boot-screen">
+      <div class="boot-logo">⚡ NEXORA</div>
+      <div class="boot-progress-wrap">
+          <div id="boot-bar"></div>
+      </div>
+      <div class="boot-text" id="boot-status">Waking up system...</div>
+  </div>
 
   <!-- SYSTEM BARS -->
   <div id="game-load-progress"></div>
@@ -215,31 +237,28 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="search-wrapper">
             <input type="text" id="homeSearch" class="page-search" data-t="placeholder-search" placeholder="Search for everything...">
         </div>
-        <div class="quick-apps" id="home-quick-apps">
-            <!-- Rendered by JS -->
-        </div>
+        <div class="quick-apps" id="home-quick-apps"></div>
     </header>
   </div>
 
   <!-- GAMES PAGE -->
   <div id="view-games" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="gameSearch" class="page-search sub-search" data-cat="games" data-t="placeholder-search" placeholder="Filter games..."></div>
+      <div class="search-wrapper"><input type="text" id="gameSearch" class="page-search sub-search" placeholder="Filter games..."></div>
+
+      <div class="refresh-notice">
+          <i class="fas fa-exclamation-triangle" style="color: orange;"></i>
+          <p class="refresh-text">Notice: Some games may be unstable. We are currently patching the library.</p>
+      </div>
 
       <div class="loader-grid">
           <div class="loader-card" id="requestLocalBtn">
               <i class="fas fa-folder-open"></i>
-              <div>
-                  <strong>Load Local Files</strong>
-                  <span>Open saved Carp.io .html games</span>
-              </div>
+              <div><strong>Load Local Files</strong><span>Open saved Carp.io .html games</span></div>
           </div>
           <div class="loader-card" onclick="openMasterList()">
               <i class="fas fa-scroll"></i>
-              <div>
-                  <strong>The Master List</strong>
-                  <span>1000+ unlisted internal titles</span>
-              </div>
+              <div><strong>The Master List</strong><span>1000+ unlisted internal titles</span></div>
           </div>
       </div>
 
@@ -263,7 +282,7 @@ input:checked + .slider:before { transform: translateX(22px); }
   <!-- MOVIES PAGE -->
   <div id="view-movies" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" data-cat="movies" data-t="placeholder-search" placeholder="Filter movies..."></div>
+      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" placeholder="Filter movies..."></div>
       <div class="section-header"><h2 data-t="nav-cinema">🎬 Cinema</h2><div class="section-line"></div></div>
       <div id="movieLibrary" class="content-grid"></div>
     </section>
@@ -272,14 +291,10 @@ input:checked + .slider:before { transform: translateX(22px); }
   <!-- APPS PAGE -->
   <div id="view-apps" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" data-cat="apps" data-t="placeholder-search" placeholder="Filter apps..."></div>
+      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" placeholder="Filter apps..."></div>
       
       <div id="app-fav-wrapper" style="display:none; margin-bottom: 4rem;">
-        <div class="section-header">
-            <h2>⭐ Favorite Apps</h2>
-            <div class="section-line"></div>
-            <button class="settings-btn" id="editAppsBtn" onclick="toggleEditMode('apps')">Rearrange</button>
-        </div>
+        <div class="section-header"><h2>⭐ Favorite Apps</h2><div class="section-line"></div><button class="settings-btn" id="editAppsBtn" onclick="toggleEditMode('apps')">Rearrange</button></div>
         <div id="appFavLibrary" class="content-grid"></div>
       </div>
 
@@ -301,7 +316,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <i class="fas fa-bolt"></i>
             <h3>Best Tech</h3>
             <p>"Unblocks everything and lets you log in but requires a hotspot"</p>
-            <ul class="quest-list"><li>Unlimited website access (Spotify, etc)</li><li>Full login support</li><li>No trace to history</li></ul>
+            <ul class="quest-list"><li>Unlimited website access</li><li>Full login support</li><li>No trace to history</li></ul>
         </div>
     </div>
     <div id="proxy-frame-container" class="hidden" style="width:100%; height:calc(100vh - 70px); position: relative;">
@@ -316,7 +331,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="local-prompt" style="background: rgba(255,0,0,0.05); border-color: #ff4444;">
             <h2 style="color: #ff4444; margin-bottom: 1rem;">⚠️ Warning</h2>
             <p style="margin-bottom: 2rem;">Public chat. Content is unmoderated. Type <b>PROCEED</b> to enter.</p>
-            <input type="text" id="chatProceedInput" class="proceed-input" placeholder="PROCEED">
+            <input type="text" id="chatProceedInput" class="page-search" style="text-align: center; max-width: 300px; margin-bottom: 1.5rem;" placeholder="PROCEED">
             <button onclick="unlockChat()" class="settings-btn" style="margin: 0 auto; background: #ff4444; color: white;">Enter</button>
         </div>
     </div>
@@ -363,12 +378,13 @@ input:checked + .slider:before { transform: translateX(22px); }
                    <div class="s-row"><span>Language</span><select id="lang-select" onchange="updateLanguage(this.value)" style="padding: 8px; background: black; color: white; border: 1px solid var(--border); border-radius: 8px;"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
                </div>
                <div class="s-panel">
-                   <h3>System Visuals</h3>
+                   <h3>Visual Effects</h3>
                    <div class="s-row"><span>Falling Petals</span><label class="switch"><input type="checkbox" id="petalsToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Animated Stars</span><label class="switch"><input type="checkbox" id="starsToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Particles</span><label class="switch"><input type="checkbox" id="particlesToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Grid Columns</span><div style="display:flex; align-items:center; gap:10px;"><input id="gridColumns" type="range" min="2" max="6"><span id="gridValue">4</span></div></div>
                    <div class="s-row"><span>Compact Mode</span><label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label></div>
+                   <div class="s-row"><span>UI Animations</span><label class="switch"><input type="checkbox" id="animationsToggle" checked><span class="slider"></span></label></div>
                </div>
                <div class="s-panel">
                    <h3>Tab Disguise</h3>
@@ -397,10 +413,10 @@ input:checked + .slider:before { transform: translateX(22px); }
                    <button onclick="signOut()" class="data-btn danger" style="width:100%; margin-top: 10px;">Sign Out & Reset</button>
                </div>
                <div class="s-panel">
-                   <h3>Dev Tools</h3>
-                   <textarea id="converter-input" class="dev-field" style="height: 60px;" placeholder="Paste raw HTML..."></textarea>
-                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1.5rem;">Copy Base64</button>
-                   <input type="text" id="gen-title" class="dev-field" placeholder="Title">
+                   <h3>Developer Tools</h3>
+                   <textarea id="converter-input" class="dev-field" style="height: 60px;" placeholder="HTML code..."></textarea>
+                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1rem;">Copy Base64</button>
+                   <input type="text" id="gen-title" class="dev-field" placeholder="Game Title">
                    <button onclick="generateGameObject()" class="data-btn" style="width:100%;">Gen Object</button>
                    <textarea id="gen-output" class="dev-field" style="height: 60px; font-size: 9px; margin-top: 10px; color: #00ff88;" readonly></textarea>
                </div>
@@ -443,7 +459,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
   <script>
 /* --------------------------
-   STATE
+   CORE CONFIG
    -------------------------- */
 const SETTINGS_KEY = 'nexora_v6_ultimate_config';
 const i18n = {
@@ -462,20 +478,6 @@ let acInterval = null;
 const movieDatabase = [
     { id: 'm1', title: 'Movie Database (Sheet)', url: 'https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit?authuser=0&gid=0&pli=1#gid=0', desc: 'Google Sheets collection.', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800' },
     { id: 'm2', title: 'SZVY Central', url: 'https://szvy-central-v2.mystrikingly.com/', desc: 'Streaming Hub.', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800' }
-];
-
-const apps = [
-    { id: 'a1', title: "Discord", desc: "Global chat node.", image: "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcHA%253D" },
-    { id: 'a2', title: "TikTok", desc: "Short video node.", image: "https://www.google.com/favicon.ico", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly93d3cudGlrdG9rLmNvbQ%253D%253D" },
-    { id: 'a3', title: "Spotify", desc: "Music node.", image: "https://www.google.com/favicon.ico", url: "https://s3.amazonaws.com/fernisbest/index.html?route=%2Fsearch%3Fquery%3DaHR0cHM6Ly9sb3NzbGVzcy53dGY%253D" }
-];
-
-const quickApps = [
-    { name: "Spotify", icon: "fab fa-spotify", id: "a3" },
-    { name: "TikTok", icon: "fab fa-tiktok", id: "a2" },
-    { name: "Instagram", icon: "fab fa-instagram", id: "a1" },
-    { name: "Discord", icon: "fab fa-discord", id: "a1" },
-    { name: "YouTube", icon: "fab fa-youtube", id: "a1" }
 ];
 
 /* --------------------------
@@ -512,15 +514,20 @@ document.querySelectorAll('.page-search').forEach(input => {
 });
 
 function renderAll(searchTerm = "") {
-  const gLib = document.getElementById('gameLibrary'), mLib = document.getElementById('movieLibrary'), aLib = document.getElementById('appLibrary'), eLib = document.getElementById('exclusiveLibrary'), fLib = document.getElementById('favoriteLibrary'), afLib = document.getElementById('appFavLibrary');
+  const gLib = document.getElementById('gameLibrary'), mLib = document.getElementById('movieLibrary'), aLib = document.getElementById('appLibrary'), eLib = document.getElementById('exclusiveLibrary'), fLib = document.getElementById('favoriteLibrary');
   const search = searchTerm.toLowerCase();
-  gLib.innerHTML = mLib.innerHTML = aLib.innerHTML = eLib.innerHTML = fLib.innerHTML = afLib.innerHTML = '';
+  gLib.innerHTML = mLib.innerHTML = aLib.innerHTML = eLib.innerHTML = fLib.innerHTML = '';
 
-  arcade.forEach(item => { if (!item.title.toLowerCase().includes(search)) return; if (item.title.toLowerCase().includes('app')) aLib.appendChild(createCard(item)); else gLib.appendChild(createCard(item)); });
+  arcade.forEach(item => {
+    if (!item.title.toLowerCase().includes(search)) return;
+    if (item.title.toLowerCase().includes('app')) aLib.appendChild(createCard(item));
+    else gLib.appendChild(createCard(item));
+  });
+
   movieDatabase.forEach(item => { if (item.title.toLowerCase().includes(search)) mLib.appendChild(createCard(item)); });
   exclusiveGames.forEach(item => { if (item.title.toLowerCase().includes(search)) eLib.appendChild(createCard(item, !isExclusivesUnlocked)); });
 
-  const favItems = [...arcade, ...exclusiveGames].filter(i => favorites.includes(i.id));
+  const favItems = [...arcade, ...movieDatabase, ...exclusiveGames].filter(i => favorites.includes(i.id));
   if(favItems.length > 0 && !search) {
       document.getElementById('fav-wrapper').style.display = 'block';
       favItems.forEach((item, index) => {
@@ -545,7 +552,8 @@ function createCard(item, isLocked = false) {
     if((isEditMode.games || isEditMode.apps) && favorites.includes(item.id)) return;
     handleLaunchTrigger(item); 
   };
-  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${favorites.includes(item.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400'}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${item.desc || 'Nexora Optimized.'}</span></div>`;
+  const isFav = favorites.includes(item.id);
+  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400'}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${item.desc || 'Optimized Link.'}</span></div>`;
   return div;
 }
 
@@ -576,21 +584,8 @@ function handlePFP(input) { const file = input.files[0]; if (file) { const reade
 function handleQuestSelection(type) {
     const frame = document.getElementById('proxyFrame'), container = document.getElementById('proxy-frame-container'), cards = document.querySelector('.quest-container');
     const link = (type === 'tech') ? "https://drive.google.com/file/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview" : "https://stellarhistory.imageinsightvault.com/";
-    
-    if (type === 'default') { 
-        frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); 
-    } else {
-        if (!isExclusivesUnlocked) {
-            const pass = prompt("Nexora Access: Enter passcode:");
-            if (pass === "password") {
-                isExclusivesUnlocked = true;
-                frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden');
-                renderAll();
-            }
-        } else {
-            frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden');
-        }
-    }
+    if (type === 'default') { frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); }
+    else if (prompt("Enter passcode:") === "password") { isExclusivesUnlocked = true; frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); renderAll(); }
 }
 
 function openMasterList() {
@@ -604,23 +599,37 @@ function unlockChat() { if (document.getElementById('chatProceedInput').value ==
 async function bootData() {
   const GAME_FILES = ["AAAaaaasavelaod.js", "ok.js", "Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch1.ex","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
   const RAW_BASE = `https://raw.githubusercontent.com/AGPRO619/nexora/main/`;
-  for (let file of GAME_FILES) {
+  const bootBar = document.getElementById('boot-bar');
+  const bootStatus = document.getElementById('boot-status');
+
+  for (let i = 0; i < GAME_FILES.length; i++) {
+    const file = GAME_FILES[i];
     try {
+      bootStatus.innerText = `Injecting: ${file}...`;
       const res = await fetch(RAW_BASE + encodeURIComponent(file) + '?t=' + Date.now());
       if (res.ok) {
         const raw = await res.text(), data = eval("(" + raw + ")");
         if (file.endsWith('.ex')) exclusiveGames.push(...(Array.isArray(data) ? data : [data])); else arcade.push(...(Array.isArray(data) ? data : [data]));
       }
     } catch(e) {}
+    bootBar.style.width = ((i + 1) / GAME_FILES.length * 100) + '%';
   }
-  renderAll();
-  renderQuickApps();
+
+  setTimeout(() => {
+      document.getElementById('boot-screen').style.opacity = '0';
+      setTimeout(() => document.getElementById('boot-screen').style.display = 'none', 500);
+      renderAll();
+      renderQuickApps();
+  }, 500);
 }
 
 function renderQuickApps() {
     const container = document.getElementById('home-quick-apps');
     container.innerHTML = '';
-    quickApps.forEach(app => {
+    const apps = [
+        { name: "Spotify", icon: "fab fa-spotify" }, { name: "TikTok", icon: "fab fa-tiktok" }, { name: "Instagram", icon: "fab fa-instagram" }, { name: "Discord", icon: "fab fa-discord" }, { name: "YouTube", icon: "fab fa-youtube" }
+    ];
+    apps.forEach(app => {
         const div = document.createElement('div');
         div.className = 'q-app';
         div.onclick = () => showPage('proxy');
@@ -641,6 +650,8 @@ function applySettings() {
     document.getElementById('starsToggle').checked = settings.stars;
     document.getElementById('petalsToggle').checked = settings.petals;
     document.getElementById('particlesToggle').checked = settings.particles;
+    document.getElementById('compactToggle').checked = settings.compact;
+    document.getElementById('animationsToggle').checked = settings.animations;
     updateCloak(settings.cloak);
     updateLanguage(settings.lang);
     updateProfileDisplay();
@@ -665,13 +676,12 @@ function updateCloak(type) {
 
 function toggleEditMode(cat) { 
     if (cat === 'games') isEditMode.games = !isEditMode.games; 
-    else isEditMode.apps = !isEditMode.apps;
     renderAll(); 
 }
 
 function convertHTML() { navigator.clipboard.writeText(btoa(unescape(encodeURIComponent(document.getElementById('converter-input').value)))); alert("Copied."); }
 function generateGameObject() { document.getElementById('gen-output').value = `{ id: ${Date.now()}, title: "${document.getElementById('gen-title').value}", url: "URL_HERE" },`; }
-function uploadToCloud() { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('nx_') || k === 'nexora_favs') data[k] = localStorage.getItem(k); } const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' })); a.download = `Nexora_Save.json`; a.click(); }
+function uploadToCloud() { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('nx_') || k === 'nexora_favs') data[k] = localStorage.getItem(k); } const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Nexora_Save.json`; a.click(); }
 function downloadFromCloud() { document.getElementById('cloud-sync-file').click(); }
 function processCloudRestore(input) { const reader = new FileReader(); reader.onload = (e) => { const d = JSON.parse(e.target.result); for (let k in d) localStorage.setItem(k, d[k]); location.reload(); }; reader.readAsText(input.files[0]); }
 function signOut() { if(confirm("Sign out?")) { localStorage.clear(); location.reload(); } }
@@ -686,23 +696,42 @@ function toggleFav(id) {
 function handleLaunchTrigger(item) { teleports++; localStorage.setItem('nx_teleports', teleports); pendingItem = item; document.getElementById('gameNotice').classList.remove('hidden'); }
 document.getElementById('btnRunInternal').onclick = () => { closeNotices(); launchGame(pendingItem, false); };
 document.getElementById('btnRunExternal').onclick = () => { closeNotices(); launchGame(pendingItem, true); };
+
 function launchGame(item, ext) {
-  if (ext) { window.open(item.url || '', '_blank'); return; }
+  if (ext) {
+    const newWin = window.open('about:blank', '_blank');
+    if (item.code) {
+        newWin.document.open();
+        newWin.document.write(atob(item.code));
+        newWin.document.close();
+    } else {
+        newWin.location.href = item.url;
+    }
+    return;
+  }
   document.getElementById('stageTitle').textContent = item.title; document.getElementById('gameStage').style.display = 'flex';
-  document.getElementById('gameContainer').src = item.url || ''; document.body.style.overflow = 'hidden';
+  
+  const frame = document.getElementById('gameContainer');
+  if (item.code) {
+      const blob = new Blob([atob(item.code)], { type: 'text/html' });
+      frame.src = URL.createObjectURL(blob);
+  } else {
+      frame.src = item.url || '';
+  }
+  document.body.style.overflow = 'hidden';
 }
+
 function closeGame() { document.getElementById('gameStage').style.display = 'none'; document.getElementById('gameContainer').src = 'about:blank'; document.body.style.overflow = 'auto'; }
 function save() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
-function stab(i) { document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.s-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.s-tab')[i].classList.add('active'); document.querySelectorAll('.s-panel')[i].classList.add('active'); }
 function smartToggle(id, tabIndex) { document.getElementById(id).classList.toggle('hidden'); if(tabIndex !== undefined) stab(tabIndex); }
 function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); save(); }
 function closeNotices() { document.getElementById('gameNotice').classList.add('hidden'); }
 
 document.getElementById('requestLocalBtn').onclick = async () => { try { const dir = await window.showDirectoryPicker(); for await (const entry of dir.values()) { if (entry.kind === 'file' && entry.name.endsWith('.html')) { const file = await entry.getFile(); arcade.push({ id: 'loc-'+Math.random(), title: entry.name, url: URL.createObjectURL(file) }); } } renderAll(); } catch(e) {} };
 
-/* --------------------------
-   FX
-   -------------------------- */
+function promptUnlock() { if (prompt("Passcode:") === "password") { isExclusivesUnlocked = true; renderAll(); } }
+
+/* FX ENGINES */
 const pCanvas = document.getElementById('particleCanvas'), pCtx = pCanvas.getContext('2d'), sCanvas = document.getElementById('starfield'), sCtx = sCanvas.getContext('2d'), bCanvas = document.getElementById('blossom-canvas'), bCtx = bCanvas.getContext('2d');
 let particles = [], stars = [], petals = [];
 function initFX() {
@@ -723,6 +752,16 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
+const BLACKLIST_HASHES = ['YW5kcmV3LmdhcnphQHN0dWRlbnQucHNqYWlzZC51cw=='];
+function checkSecurity() {
+    const userEmail = localStorage.getItem('nx_email') || "";
+    if (BLACKLIST_HASHES.includes(btoa(userEmail.toLowerCase().trim()))) {
+        document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20vh;'>ACCESS REVOKED</h1>";
+        throw new Error("Banned.");
+    }
+}
+
+checkSecurity();
 window.onresize = initFX;
 setInterval(() => { uptimeSeconds++; if(uptimeSeconds % 60 === 0) updateProfileDisplay(); }, 1000);
 initFX(); animate(); applySettings(); bootData();
