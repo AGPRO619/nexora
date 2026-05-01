@@ -41,14 +41,7 @@ body.theme-matrix { --primary: #00ff41; --bg: #000000; }
 body.theme-cyber { --primary: #ff00ff; --bg: #0a0112; }
 body.theme-space { --primary: #ff79c6; --bg: #11121d; }
 
-/* LOADING SCREEN */
-#boot-screen { position: fixed; inset: 0; background: #030616; z-index: 200000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s ease; }
-.boot-logo { font-size: 3rem; font-weight: 900; color: #fff; margin-bottom: 2rem; letter-spacing: -2px; }
-.boot-progress-wrap { width: 300px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative; }
-#boot-bar { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: #00f2fe; transition: 0.3s; box-shadow: 0 0 15px #00f2fe; }
-.boot-text { margin-top: 1rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; }
-
-/* GLOBAL */
+/* GLOBAL STYLES */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
 body { background-color: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.6; transition: background 0.5s ease; }
 body.no-animations * { animation: none !important; transition: none !important; }
@@ -60,6 +53,13 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 #game-load-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--primary); width: 0%; transition: width 0.2s; z-index: 20000; box-shadow: 0 0 10px var(--primary); }
 #panic-bar-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 99999; display: none; }
 #panic-bar { height: 100%; width: 0%; background: #ff4444; transition: none; }
+
+/* LOADING SCREEN */
+#boot-screen { position: fixed; inset: 0; background: #030616; z-index: 200000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s ease; }
+.boot-logo { font-size: 3.5rem; font-weight: 900; color: #fff; margin-bottom: 2rem; letter-spacing: -2px; }
+.boot-progress-wrap { width: 350px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--glass-border); }
+#boot-bar { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--primary); transition: 0.4s; box-shadow: 0 0 20px var(--primary); }
+.boot-text { margin-top: 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: var(--primary); opacity: 0.8; font-weight: 800; }
 
 /* NAVIGATION */
 .navbar { position: sticky; top: 0; z-index: 1000; background: rgba(var(--bg), 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); height: 70px; display: flex; align-items: center; }
@@ -73,7 +73,7 @@ canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .nav-acc-btn:hover { border-color: var(--primary); transform: scale(1.05); }
 .nav-acc-btn img { width: 100%; height: 100%; object-fit: cover; }
 
-/* SECTIONS */
+/* PAGE SECTIONS */
 .view-section { display: none; padding-top: 2rem; min-height: calc(100vh - 70px); }
 .view-section.active { display: block; animation: fadeIn 0.4s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -175,6 +175,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 .side-item { padding: 1.2rem; border-bottom: 1px solid var(--glass-border); cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 0.85rem; color: var(--text); opacity: 0.7; transition: 0.3s; white-space: nowrap; }
 .side-item:hover { opacity: 1; background: var(--glass); color: var(--primary); }
+.side-item.ac-active { background: var(--primary); color: black; opacity: 1; }
 
 #gameContainer { flex-grow: 1; border: none; background: #000; width: 100%; }
 
@@ -190,7 +191,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .loader-card { padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 20px; transition: 0.3s; cursor: pointer; display: flex; align-items: center; gap: 15px; }
 .loader-card:hover { background: var(--glass); border-color: var(--primary); transform: translateY(-3px); }
 .loader-card i { font-size: 1.5rem; color: var(--primary); }
-  </style>
+</style>
 </head>
 <body class="theme-default">
 
@@ -237,7 +238,9 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="search-wrapper">
             <input type="text" id="homeSearch" class="page-search" data-t="placeholder-search" placeholder="Search for everything...">
         </div>
-        <div class="quick-apps" id="home-quick-apps"></div>
+        <div class="quick-apps" id="home-quick-apps">
+            <!-- Rendered by JS -->
+        </div>
     </header>
   </div>
 
@@ -247,18 +250,20 @@ input:checked + .slider:before { transform: translateX(22px); }
       <div class="search-wrapper"><input type="text" id="gameSearch" class="page-search sub-search" placeholder="Filter games..."></div>
 
       <div class="refresh-notice">
-          <i class="fas fa-exclamation-triangle" style="color: orange;"></i>
-          <p class="refresh-text">Notice: Some games may be unstable. We are currently patching the library.</p>
+          <i class="fas fa-info-circle" style="color: #ffcc00;"></i>
+          <p class="refresh-text">
+              Bad News: A widespread block is affecting games globally. We are currently applying fixes.
+          </p>
       </div>
 
       <div class="loader-grid">
           <div class="loader-card" id="requestLocalBtn">
               <i class="fas fa-folder-open"></i>
-              <div><strong>Load Local Files</strong><span>Open saved Carp.io .html games</span></div>
+              <div style="margin-left: 15px; text-align: left;"><strong>Load Local Files</strong><span style="font-size: 0.7rem; opacity: 0.6; display: block;">Open saved Carp.io games</span></div>
           </div>
           <div class="loader-card" onclick="openMasterList()">
               <i class="fas fa-scroll"></i>
-              <div><strong>The Master List</strong><span>1000+ unlisted internal titles</span></div>
+              <div style="margin-left: 15px; text-align: left;"><strong>The Master List</strong><span style="font-size: 0.7rem; opacity: 0.6; display: block;">1000+ unlisted titles</span></div>
           </div>
       </div>
 
@@ -271,6 +276,10 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div id="favoriteLibrary" class="content-grid"></div>
       </div>
 
+      <!-- NEW SECTION: GOOD GAMES -->
+      <div class="section-header"><h2>💎 GOOD GAMES</h2><div class="section-line"></div></div>
+      <div id="originalLibrary" class="content-grid" style="margin-bottom: 4rem;"></div>
+
       <div class="section-header"><h2 data-t="label-allgames">🎮 Arcade</h2><div class="section-line"></div></div>
       <div id="gameLibrary" class="content-grid"></div>
       
@@ -282,7 +291,7 @@ input:checked + .slider:before { transform: translateX(22px); }
   <!-- MOVIES PAGE -->
   <div id="view-movies" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" placeholder="Filter movies..."></div>
+      <div class="search-wrapper"><input type="text" id="movieSearch" class="page-search sub-search" data-cat="movies" placeholder="Filter movies..."></div>
       <div class="section-header"><h2 data-t="nav-cinema">🎬 Cinema</h2><div class="section-line"></div></div>
       <div id="movieLibrary" class="content-grid"></div>
     </section>
@@ -291,13 +300,11 @@ input:checked + .slider:before { transform: translateX(22px); }
   <!-- APPS PAGE -->
   <div id="view-apps" class="view-section">
     <section class="content-section">
-      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" placeholder="Filter apps..."></div>
-      
+      <div class="search-wrapper"><input type="text" id="appSearch" class="page-search sub-search" data-cat="apps" placeholder="Filter apps..."></div>
       <div id="app-fav-wrapper" style="display:none; margin-bottom: 4rem;">
         <div class="section-header"><h2>⭐ Favorite Apps</h2><div class="section-line"></div><button class="settings-btn" id="editAppsBtn" onclick="toggleEditMode('apps')">Rearrange</button></div>
         <div id="appFavLibrary" class="content-grid"></div>
       </div>
-
       <div class="section-header"><h2 data-t="nav-apps">📱 Utilities</h2><div class="section-line"></div></div>
       <div id="appLibrary" class="content-grid"></div>
     </section>
@@ -310,7 +317,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <i class="fas fa-globe"></i>
             <h3>Default Proxy</h3>
             <p>"It sometimes works i guess"</p>
-            <ul class="quest-list"><li>Wide range website access</li><li>No logins supported</li></ul>
+            <ul class="quest-list"><li>Limited access</li><li>No logins supported</li></ul>
         </div>
         <div class="quest-card locked" onclick="handleQuestSelection('tech')">
             <i class="fas fa-bolt"></i>
@@ -331,7 +338,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="local-prompt" style="background: rgba(255,0,0,0.05); border-color: #ff4444;">
             <h2 style="color: #ff4444; margin-bottom: 1rem;">⚠️ Warning</h2>
             <p style="margin-bottom: 2rem;">Public chat. Content is unmoderated. Type <b>PROCEED</b> to enter.</p>
-            <input type="text" id="chatProceedInput" class="page-search" style="text-align: center; max-width: 300px; margin-bottom: 1.5rem;" placeholder="PROCEED">
+            <input type="text" id="chatProceedInput" class="proceed-input" placeholder="PROCEED">
             <button onclick="unlockChat()" class="settings-btn" style="margin: 0 auto; background: #ff4444; color: white;">Enter</button>
         </div>
     </div>
@@ -375,10 +382,9 @@ input:checked + .slider:before { transform: translateX(22px); }
                        <div class="theme-box" onclick="setTheme('space')"><i class="fas fa-user-astronaut"></i><label>Space</label></div>
                    </div>
                    <div class="s-row" style="margin-top:20px;"><span>Accent Color</span><input id="accentColor" type="color" oninput="updateAccent(this.value)"></div>
-                   <div class="s-row"><span>Language</span><select id="lang-select" onchange="updateLanguage(this.value)" style="padding: 8px; background: black; color: white; border: 1px solid var(--border); border-radius: 8px;"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="ar">العربية</option></select></div>
                </div>
                <div class="s-panel">
-                   <h3>Visual Effects</h3>
+                   <h3>System Visuals</h3>
                    <div class="s-row"><span>Falling Petals</span><label class="switch"><input type="checkbox" id="petalsToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Animated Stars</span><label class="switch"><input type="checkbox" id="starsToggle"><span class="slider"></span></label></div>
                    <div class="s-row"><span>Particles</span><label class="switch"><input type="checkbox" id="particlesToggle"><span class="slider"></span></label></div>
@@ -397,37 +403,23 @@ input:checked + .slider:before { transform: translateX(22px); }
                    <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 2rem;">
                        <div id="pfp-main-view" onclick="document.getElementById('pfp-upload').click()" style="width:70px; height:70px; border-radius:50%; background: var(--glass); border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow:hidden;">?</div>
                        <input type="file" id="pfp-upload" style="display:none;" accept="image/*" onchange="handlePFP(this)">
-                       <div style="flex:1">
-                           <input type="text" id="p-name" oninput="updateProfileDisplay()" style="width:100%; background:none; border:none; border-bottom: 1px solid var(--border); color:white; font-size: 1.2rem; font-weight: 800; outline:none;" placeholder="Explorer">
-                       </div>
+                       <div style="flex:1"><input type="text" id="p-name" oninput="updateProfileDisplay()" style="width:100%; background:none; border:none; border-bottom: 1px solid var(--border); color:white; font-size: 1.2rem; font-weight: 800; outline:none;" placeholder="Explorer"></div>
                    </div>
                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 2rem;">
                        <div style="background:var(--glass); padding:15px; border-radius:12px; text-align: center;"><small>Teleports</small><div id="w-stat" style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">0</div></div>
                        <div style="background:var(--glass); padding:15px; border-radius:12px; text-align: center;"><small>Uptime</small><div id="u-stat" style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">0m</div></div>
                    </div>
-                   <div style="display: flex; gap: 10px;">
-                       <button onclick="uploadToCloud()" class="data-btn" style="flex:1">Export Save</button>
-                       <button onclick="downloadFromCloud()" class="data-btn" style="flex:1">Import Save</button>
-                       <input type="file" id="cloud-sync-file" accept=".json" style="display:none;" onchange="processCloudRestore(this)">
-                   </div>
-                   <button onclick="signOut()" class="data-btn danger" style="width:100%; margin-top: 10px;">Sign Out & Reset</button>
+                   <div style="display: flex; gap: 10px;"><button onclick="uploadToCloud()" class="data-btn" style="flex:1">Export Backup</button><button onclick="downloadFromCloud()" class="data-btn" style="flex:1">Import Backup</button></div>
                </div>
                <div class="s-panel">
                    <h3>Developer Tools</h3>
                    <textarea id="converter-input" class="dev-field" style="height: 60px;" placeholder="HTML code..."></textarea>
-                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1rem;">Copy Base64</button>
-                   <input type="text" id="gen-title" class="dev-field" placeholder="Game Title">
-                   <button onclick="generateGameObject()" class="data-btn" style="width:100%;">Gen Object</button>
+                   <button onclick="convertHTML()" class="data-btn" style="width:100%; margin-bottom: 1.5rem;">Copy Base64</button>
+                   <input type="text" id="gen-title" class="dev-field" placeholder="Game Title"><button onclick="generateGameObject()" class="data-btn" style="width:100%;">Gen Object</button>
                    <textarea id="gen-output" class="dev-field" style="height: 60px; font-size: 9px; margin-top: 10px; color: #00ff88;" readonly></textarea>
                </div>
-               <div class="s-panel">
-                   <h3>Pending Requests</h3>
-                   <iframe src="https://docs.google.com/spreadsheets/d/1mhqJ1W8glLOXCJG0iwU5ygYyuZmynKr-Rho1fSaTSf8/preview?resourcekey=&gid=91469956" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe>
-               </div>
-               <div class="s-panel">
-                   <h3>Suggest Content</h3>
-                   <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1ups0C6EnnrHg1JvyNlFBJn-cD0q07oPy-Czlmhuta-6wiA/viewform?embedded=true" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe>
-               </div>
+               <div class="s-panel"><iframe src="https://docs.google.com/spreadsheets/d/1mhqJ1W8glLOXCJG0iwU5ygYyuZmynKr-Rho1fSaTSf8/preview?resourcekey=&gid=91469956" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe></div>
+               <div class="s-panel"><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf1ups0C6EnnrHg1JvyNlFBJn-cD0q07oPy-Czlmhuta-6wiA/viewform?embedded=true" style="width:100%; height:90%; border:none; border-radius: 12px; background: white;"></iframe></div>
            </div>
       </div>
     </div>
@@ -437,7 +429,7 @@ input:checked + .slider:before { transform: translateX(22px); }
   <div id="gameStage">
     <div class="p-side min" id="gameSidebar">
         <div class="side-trigger" onclick="toggleSidebar()"><i class="fas fa-chevron-right" id="sideArrow"></i></div>
-        <div style="padding: 1.5rem; text-align: center; border-bottom: 1px solid var(--border);"><h2 id="stageTitle" style="font-size: 0.9rem; color: var(--primary);">GAME</h2></div>
+        <div style="padding: 1.5rem; text-align: center; border-bottom: 1px solid var(--border);"><h2 id="stageTitle" style="font-size: 0.8rem; color: var(--primary);">GAME</h2></div>
         <div class="side-item" onclick="refreshGame()"><i class="fas fa-sync"></i> Refresh</div>
         <div class="side-item" id="ac-item" onclick="toggleAC()"><i class="fas fa-mouse-pointer"></i> Auto-Clicker</div>
         <div class="side-item" onclick="saveGameData()"><i class="fas fa-save"></i> Save (Beta)</div>
@@ -448,6 +440,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     <iframe id="gameContainer" src="about:blank"></iframe>
   </div>
 
+  <!-- PLAY NOTICE -->
   <div id="gameNotice" class="modal hidden">
     <div class="modal-content" style="max-width: 400px; text-align: center; padding:2rem;">
       <h2 style="color:var(--primary); margin-bottom: 1rem;">Ready to Play</h2>
@@ -459,7 +452,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 
   <script>
 /* --------------------------
-   CORE CONFIG
+   STATE
    -------------------------- */
 const SETTINGS_KEY = 'nexora_v6_ultimate_config';
 const i18n = {
@@ -467,36 +460,77 @@ const i18n = {
     es: { "placeholder-search": "Buscar...", "nav-games": "Juegos", "nav-cinema": "Cine", "nav-apps": "Apps", "nav-profile": "Perfil", "stat-teleports": "Teletransportes", "stat-uptime": "Tiempo", "nav-settings": "Ajustes", "set-lang": "Idioma", "set-theme": "Color", "label-favs": "Favoritos", "label-allgames": "Librería Global" }
 };
 
-const defaultSettings = { theme: 'theme-default', accent: '#00f2fe', grid: 4, animations: true, compact: false, cloak: 'google', background: 'none', stars: true, petals: false, particles: true, lang: 'en' };
-let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {...defaultSettings};
+let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || { theme: 'theme-default', accent: '#00f2fe', grid: 4, animations: true, compact: false, cloak: 'google', background: 'none', stars: true, petals: false, particles: true, lang: 'en' };
 let favorites = JSON.parse(localStorage.getItem('nexora_favs')) || [];
-let arcade = [], exclusiveGames = [], isExclusivesUnlocked = false, isEditMode = {games: false, apps: false}, pendingItem = null, draggedIndex = null;
+let arcade = [], exclusiveGames = [], originalGames = [], isExclusivesUnlocked = false, isEditMode = {games: false, apps: false}, pendingItem = null, draggedIndex = null;
 let teleports = parseInt(localStorage.getItem('nx_teleports')) || 0;
-let uptimeSeconds = 0;
-let acInterval = null;
+let uptimeSeconds = 0, acInterval = null;
 
 const movieDatabase = [
-    { id: 'm1', title: 'Movie Database (Sheet)', url: 'https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit?authuser=0&gid=0&pli=1#gid=0', desc: 'Google Sheets collection.', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800' },
+    { id: 'm1', title: 'Movie Database (Sheet)', url: 'https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit?authuser=0&gid=0&pli=1#gid=0', desc: 'Comprehensive movie collection.', image: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800' },
     { id: 'm2', title: 'SZVY Central', url: 'https://szvy-central-v2.mystrikingly.com/', desc: 'Streaming Hub.', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800' }
 ];
 
 /* --------------------------
-   PANIC SYSTEM
+   COMPATIBILITY ENGINE (GN-MATH)
    -------------------------- */
-let panicTimeout;
-let isPanicHolding = false;
-window.addEventListener('keydown', (e) => {
-    if (e.key === '`' && !isPanicHolding && !e.shiftKey) {
-        isPanicHolding = true; document.getElementById('panic-bar-container').style.display = 'block';
-        const bar = document.getElementById('panic-bar'); bar.style.transition = 'width 0.5s linear'; bar.style.width = '100%';
-        panicTimeout = setTimeout(() => { window.location.href = 'https://www.ixl.com'; }, 500);
-    }
-    if (e.key === '`' && e.shiftKey) { document.getElementById('gameStage').style.display = 'none'; showPage('home'); }
-});
-window.addEventListener('keyup', (e) => { if (e.key === '`') { isPanicHolding = false; clearTimeout(panicTimeout); document.getElementById('panic-bar').style.transition = 'none'; document.getElementById('panic-bar').style.width = '0%'; document.getElementById('panic-bar-container').style.display = 'none'; } });
+function replacePlaceholders(url) {
+    if(!url) return "";
+    return url.replace(/{COVER_URL}/g, "https://cdn.jsdelivr.net/gh/gn-math/covers@main")
+              .replace(/{HTML_URL}/g, "https://cdn.jsdelivr.net/gh/gn-math/html@main");
+}
 
 /* --------------------------
-   ROUTING & SEARCH
+   BOOT SYSTEM
+   -------------------------- */
+async function bootData() {
+  const GAME_FILES = ["AAAaaaasavelaod.js", "ok.js", "Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch1.ex","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
+  const RAW_BASE = `https://raw.githubusercontent.com/AGPRO619/nexora/main/`;
+  const bootBar = document.getElementById('boot-bar'), bootStatus = document.getElementById('boot-status');
+  
+  const totalLoad = GAME_FILES.length + 1;
+  let currentProgress = 0;
+
+  for (let file of GAME_FILES) {
+    try {
+      bootStatus.innerText = `Loading: ${file}...`;
+      const res = await fetch(RAW_BASE + encodeURIComponent(file) + '?t=' + Date.now());
+      if (res.ok) {
+        const raw = await res.text(), data = eval("(" + raw + ")");
+        if (Array.isArray(data)) {
+            data.forEach(d => d.desc = "og nexora games");
+            if (file.endsWith('.ex')) exclusiveGames.push(...data); else arcade.push(...data);
+        } else {
+            data.desc = "og nexora games";
+            if (file.endsWith('.ex')) exclusiveGames.push(data); else arcade.push(data);
+        }
+      }
+    } catch(e) {}
+    currentProgress++;
+    bootBar.style.width = (currentProgress / totalLoad * 100) + '%';
+  }
+
+  const gnFallbacks = ["https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json", "https://raw.githubusercontent.com/gn-math/assets/main/zones.json"];
+  for (let url of gnFallbacks) {
+      try {
+          bootStatus.innerText = `Syncing Originals Hub...`;
+          const gnRes = await fetch(url + "?t=" + Date.now());
+          if (gnRes.ok) {
+              const gnData = await gnRes.json();
+              gnData.forEach(g => {
+                  originalGames.push({ id: 'gn-' + g.id, title: g.name, image: replacePlaceholders(g.cover), url: replacePlaceholders(g.url), desc: "Nexora Originals" });
+              });
+              break;
+          }
+      } catch(e) {}
+  }
+
+  bootBar.style.width = '100%';
+  setTimeout(() => { document.getElementById('boot-screen').style.opacity = '0'; setTimeout(() => document.getElementById('boot-screen').style.display = 'none', 500); renderAll(); renderQuickApps(); applySettings(); }, 500);
+}
+
+/* --------------------------
+   CORE FUNCTIONS
    -------------------------- */
 function showPage(pageId) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -514,20 +548,16 @@ document.querySelectorAll('.page-search').forEach(input => {
 });
 
 function renderAll(searchTerm = "") {
-  const gLib = document.getElementById('gameLibrary'), mLib = document.getElementById('movieLibrary'), aLib = document.getElementById('appLibrary'), eLib = document.getElementById('exclusiveLibrary'), fLib = document.getElementById('favoriteLibrary');
+  const gLib = document.getElementById('gameLibrary'), mLib = document.getElementById('movieLibrary'), aLib = document.getElementById('appLibrary'), eLib = document.getElementById('exclusiveLibrary'), fLib = document.getElementById('favoriteLibrary'), oLib = document.getElementById('originalLibrary');
   const search = searchTerm.toLowerCase();
-  gLib.innerHTML = mLib.innerHTML = aLib.innerHTML = eLib.innerHTML = fLib.innerHTML = '';
+  gLib.innerHTML = mLib.innerHTML = aLib.innerHTML = eLib.innerHTML = fLib.innerHTML = oLib.innerHTML = '';
 
-  arcade.forEach(item => {
-    if (!item.title.toLowerCase().includes(search)) return;
-    if (item.title.toLowerCase().includes('app')) aLib.appendChild(createCard(item));
-    else gLib.appendChild(createCard(item));
-  });
-
+  arcade.forEach(item => { if (!item.title.toLowerCase().includes(search)) return; if (item.title.toLowerCase().includes('app')) aLib.appendChild(createCard(item)); else gLib.appendChild(createCard(item)); });
   movieDatabase.forEach(item => { if (item.title.toLowerCase().includes(search)) mLib.appendChild(createCard(item)); });
   exclusiveGames.forEach(item => { if (item.title.toLowerCase().includes(search)) eLib.appendChild(createCard(item, !isExclusivesUnlocked)); });
+  originalGames.forEach(item => { if (item.title.toLowerCase().includes(search)) oLib.appendChild(createCard(item, false, true)); });
 
-  const favItems = [...arcade, ...movieDatabase, ...exclusiveGames].filter(i => favorites.includes(i.id));
+  const favItems = [...arcade, ...movieDatabase, ...exclusiveGames, ...originalGames].filter(i => favorites.includes(i.id));
   if(favItems.length > 0 && !search) {
       document.getElementById('fav-wrapper').style.display = 'block';
       favItems.forEach((item, index) => {
@@ -544,97 +574,63 @@ function handleDrop(e) {
     localStorage.setItem('nexora_favs', JSON.stringify(favorites)); renderAll();
 }
 
-function createCard(item, isLocked = false) {
+function createCard(item, isLocked = false, isOriginal = false) {
   const div = document.createElement('div');
   div.className = `card ${isLocked ? 'locked' : ''}`;
-  div.onclick = () => { 
-    if(isLocked) { promptUnlock(); return; }
-    if((isEditMode.games || isEditMode.apps) && favorites.includes(item.id)) return;
-    handleLaunchTrigger(item); 
-  };
-  const isFav = favorites.includes(item.id);
-  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400'}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${item.desc || 'Optimized Link.'}</span></div>`;
+  div.onclick = () => { if(isLocked) { promptUnlock(); return; } if(isEditMode.games && favorites.includes(item.id)) return; handleLaunchTrigger(item); };
+  div.innerHTML = `${isLocked ? '<div class="lock-overlay"><i class="fas fa-lock lock-icon"></i></div>' : ''}<div class="fav-trigger ${favorites.includes(item.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav('${item.id}')"><i class="fas fa-star"></i></div><div class="card-image-wrap"><img class="card-image" src="${item.image || ''}"></div><div class="card-meta"><strong class="card-title">${item.title}</strong><span class="card-desc">${isOriginal ? "Nexora Originals" : (item.desc || 'Nexora Item.')}</span></div>`;
   return div;
 }
 
-/* --------------------------
-   SYSTEM
-   -------------------------- */
+function launchGame(item, ext) {
+  if (ext) {
+    const newWin = window.open('about:blank', '_blank');
+    if (item.code) { newWin.document.write(atob(item.code)); newWin.document.close(); } 
+    else { newWin.location.href = item.url; }
+    return;
+  }
+  document.getElementById('stageTitle').textContent = item.title; document.getElementById('gameStage').style.display = 'flex';
+  document.getElementById('gameContainer').src = item.url || ''; document.body.style.overflow = 'hidden';
+}
+
 function toggleSidebar() { const bar = document.getElementById('gameSidebar'), arrow = document.getElementById('sideArrow'); bar.classList.toggle('min'); arrow.className = bar.classList.contains('min') ? "fas fa-chevron-right" : "fas fa-chevron-left"; }
 function refreshGame() { document.getElementById('gameContainer').src += ''; }
 function toggleAC() { if (acInterval) { clearInterval(acInterval); acInterval = null; document.getElementById('ac-item').classList.remove('ac-active'); } else { document.getElementById('ac-item').classList.add('ac-active'); acInterval = setInterval(() => { document.getElementById('gameContainer').contentWindow.postMessage({ type: 'click' }, '*'); }, 100); } }
 function saveGameData() { try { localStorage.setItem(`save_${pendingItem.id}`, JSON.stringify(document.getElementById('gameContainer').contentWindow.localStorage)); alert("Saved."); } catch(e) { alert("Blocked."); } }
 function loadGameData() { const d = localStorage.getItem(`save_${pendingItem.id}`); if(!d) return; try { const p = JSON.parse(d); Object.keys(p).forEach(k => document.getElementById('gameContainer').contentWindow.localStorage.setItem(k, p[k])); refreshGame(); } catch(e) { alert("Blocked."); } }
-
-function stab(i) {
-    document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.s-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.s-tab')[i].classList.add('active');
-    document.querySelectorAll('.s-panel')[i].classList.add('active');
-}
-
-function updateProfileDisplay() {
-    const pfp = document.getElementById('pfp-main-view'), name = document.getElementById('p-name').value || localStorage.getItem('nx_name') || "Explorer", navPfp = document.getElementById('nav-pfp'), savedPfp = localStorage.getItem('nx_pfp');
-    document.getElementById('w-stat').innerText = teleports; document.getElementById('u-stat').innerText = Math.floor(uptimeSeconds/60) + 'm';
-    if (savedPfp) { pfp.innerHTML = navPfp.innerHTML = `<img src="${savedPfp}">`; } else { pfp.innerText = navPfp.innerText = name.charAt(0).toUpperCase(); }
-}
-
+function stab(i) { document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.s-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.s-tab')[i].classList.add('active'); document.querySelectorAll('.s-panel')[i].classList.add('active'); }
+function updateProfileDisplay() { const pfp = document.getElementById('pfp-main-view'), name = document.getElementById('p-name').value || localStorage.getItem('nx_name') || "Explorer", navPfp = document.getElementById('nav-pfp'), savedPfp = localStorage.getItem('nx_pfp'); document.getElementById('w-stat').innerText = teleports; document.getElementById('u-stat').innerText = Math.floor(uptimeSeconds/60) + 'm'; if (savedPfp) { pfp.innerHTML = navPfp.innerHTML = `<img src="${savedPfp}">`; } else { pfp.innerText = navPfp.innerText = name.charAt(0).toUpperCase(); } }
 function handlePFP(input) { const file = input.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { localStorage.setItem('nx_pfp', e.target.result); updateProfileDisplay(); }; reader.readAsDataURL(file); } }
-
-function handleQuestSelection(type) {
-    const frame = document.getElementById('proxyFrame'), container = document.getElementById('proxy-frame-container'), cards = document.querySelector('.quest-container');
-    const link = (type === 'tech') ? "https://drive.google.com/file/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview" : "https://stellarhistory.imageinsightvault.com/";
-    if (type === 'default') { frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); }
-    else if (prompt("Enter passcode:") === "password") { isExclusivesUnlocked = true; frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); renderAll(); }
-}
-
-function openMasterList() {
-    pendingItem = { title: "Master Library", url: "https://docs.google.com/document/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview" };
-    launchGame(pendingItem, false);
-}
-
+function handleQuestSelection(type) { const frame = document.getElementById('proxyFrame'), container = document.getElementById('proxy-frame-container'), cards = document.querySelector('.quest-container'), link = "https://stellarhistory.imageinsightvault.com/"; if (type === 'default') { frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); } else if (prompt("Enter passcode:") === "password") { isExclusivesUnlocked = true; frame.src = link; container.classList.remove('hidden'); cards.classList.add('hidden'); renderAll(); } }
 function exitProxy() { document.getElementById('proxyFrame').src = "about:blank"; document.getElementById('proxy-frame-container').classList.add('hidden'); document.querySelector('.quest-container').classList.remove('hidden'); }
 function unlockChat() { if (document.getElementById('chatProceedInput').value === "PROCEED") { document.getElementById('chat-gate').classList.add('hidden'); document.getElementById('chat-frame-container').classList.remove('hidden'); } }
-
-async function bootData() {
-  const GAME_FILES = ["AAAaaaasavelaod.js", "ok.js", "Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch1.ex","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
-  const RAW_BASE = `https://raw.githubusercontent.com/AGPRO619/nexora/main/`;
-  const bootBar = document.getElementById('boot-bar');
-  const bootStatus = document.getElementById('boot-status');
-
-  for (let i = 0; i < GAME_FILES.length; i++) {
-    const file = GAME_FILES[i];
-    try {
-      bootStatus.innerText = `Injecting: ${file}...`;
-      const res = await fetch(RAW_BASE + encodeURIComponent(file) + '?t=' + Date.now());
-      if (res.ok) {
-        const raw = await res.text(), data = eval("(" + raw + ")");
-        if (file.endsWith('.ex')) exclusiveGames.push(...(Array.isArray(data) ? data : [data])); else arcade.push(...(Array.isArray(data) ? data : [data]));
-      }
-    } catch(e) {}
-    bootBar.style.width = ((i + 1) / GAME_FILES.length * 100) + '%';
-  }
-
-  setTimeout(() => {
-      document.getElementById('boot-screen').style.opacity = '0';
-      setTimeout(() => document.getElementById('boot-screen').style.display = 'none', 500);
-      renderAll();
-      renderQuickApps();
-  }, 500);
-}
+function toggleEditMode(cat) { if (cat === 'games') isEditMode.games = !isEditMode.games; renderAll(); }
+function convertHTML() { navigator.clipboard.writeText(btoa(unescape(encodeURIComponent(document.getElementById('converter-input').value)))); alert("Copied."); }
+function generateGameObject() { document.getElementById('gen-output').value = `{ id: ${Date.now()}, title: "${document.getElementById('gen-title').value}", url: "URL_HERE" },`; }
+function uploadToCloud() { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('nx_') || k === 'nexora_favs') data[k] = localStorage.getItem(k); } a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' })); a.download = `Nexora_Save.json`; a.click(); }
+function downloadFromCloud() { document.getElementById('cloud-sync-file').click(); }
+function processCloudRestore(input) { const reader = new FileReader(); reader.onload = (e) => { const d = JSON.parse(e.target.result); for (let k in d) localStorage.setItem(k, d[k]); location.reload(); }; reader.readAsText(input.files[0]); }
+function signOut() { if(confirm("Sign out?")) { localStorage.clear(); location.reload(); } }
+function toggleFav(id) { if (favorites.includes(id)) { favorites = favorites.filter(f => f !== id); } else { favorites.push(id); } localStorage.setItem('nexora_favs', JSON.stringify(favorites)); renderAll(); }
+function handleLaunchTrigger(item) { teleports++; localStorage.setItem('nx_teleports', teleports); pendingItem = item; document.getElementById('gameNotice').classList.remove('hidden'); }
+document.getElementById('btnRunInternal').onclick = () => { closeNotices(); launchGame(pendingItem, false); };
+document.getElementById('btnRunExternal').onclick = () => { closeNotices(); launchGame(pendingItem, true); };
+function closeGame() { document.getElementById('gameStage').style.display = 'none'; document.getElementById('gameContainer').src = 'about:blank'; document.body.style.overflow = 'auto'; }
+function save() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+function smartToggle(id, tabIndex) { document.getElementById(id).classList.toggle('hidden'); if(tabIndex !== undefined) stab(tabIndex); }
+function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); save(); }
+function closeNotices() { document.getElementById('gameNotice').classList.add('hidden'); }
+function launchInStage(url) { pendingItem = { title: "Portal", url: url }; launchGame(pendingItem, false); }
+function openMasterList() { launchInStage("https://docs.google.com/document/d/1OIEcp8NiV8gCY2daSIzEl0J_zQfG6BnRQ6fJPG3Bogk/preview"); }
+document.getElementById('requestLocalBtn').onclick = async () => { try { const dir = await window.showDirectoryPicker(); for await (const entry of dir.values()) { if (entry.kind === 'file' && entry.name.endsWith('.html')) { const file = await entry.getFile(); arcade.push({ id: 'loc-'+Math.random(), title: entry.name, url: URL.createObjectURL(file) }); } } renderAll(); } catch(e) {} };
+function promptUnlock() { if (prompt("Passcode:") === "password") { isExclusivesUnlocked = true; renderAll(); } }
 
 function renderQuickApps() {
-    const container = document.getElementById('home-quick-apps');
-    container.innerHTML = '';
-    const apps = [
-        { name: "Spotify", icon: "fab fa-spotify" }, { name: "TikTok", icon: "fab fa-tiktok" }, { name: "Instagram", icon: "fab fa-instagram" }, { name: "Discord", icon: "fab fa-discord" }, { name: "YouTube", icon: "fab fa-youtube" }
-    ];
+    const container = document.getElementById('home-quick-apps'); container.innerHTML = '';
+    const apps = [ { name: "Spotify", icon: "fab fa-spotify" }, { name: "TikTok", icon: "fab fa-tiktok" }, { name: "Instagram", icon: "fab fa-instagram" }, { name: "Discord", icon: "fab fa-discord" }, { name: "YouTube", icon: "fab fa-youtube" } ];
     apps.forEach(app => {
-        const div = document.createElement('div');
-        div.className = 'q-app';
-        div.onclick = () => showPage('proxy');
-        div.innerHTML = `<div class="q-icon-wrap"><i class="${app.icon}"></i></div><span>${app.name}</span>`;
-        container.appendChild(div);
+        const div = document.createElement('div'); div.className = 'q-app'; div.onclick = () => showPage('proxy');
+        div.innerHTML = `<div class="q-icon-wrap"><i class="${app.icon}"></i></div><span>${app.name}</span>`; container.appendChild(div);
     });
 }
 
@@ -652,7 +648,6 @@ function applySettings() {
     document.getElementById('particlesToggle').checked = settings.particles;
     document.getElementById('compactToggle').checked = settings.compact;
     document.getElementById('animationsToggle').checked = settings.animations;
-    updateCloak(settings.cloak);
     updateLanguage(settings.lang);
     updateProfileDisplay();
 }
@@ -669,86 +664,37 @@ function updateLanguage(code) {
         }
     });
 }
-function updateCloak(type) {
-    const map = { google: { t: "Google", i: "https://www.google.com/favicon.ico" }, ixl: { t: "IXL Learning", i: "https://www.ixl.com/favicon.ico" }, classroom: { t: "Google Classroom", i: "https://www.gstatic.com/classroom/favicon.png" }, default: { t: "Nexora", i: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" } };
-    const c = map[type] || map.google; document.getElementById('tabTitle').innerText = c.t; document.getElementById('tabIcon').href = c.i;
+function updateCloak(v) {
+    const d = { classroom: { t: "Google Classroom", i: "https://www.gstatic.com/classroom/favicon.png" }, ixl: { t: "IXL Learning", i: "https://www.ixl.com/favicon.ico" }, default: { t: "Nexora", i: "https://www.google.com/favicon.ico" } };
+    const c = d[v] || d.default; document.getElementById('tabTitle').innerText = c.t; document.getElementById('tabIcon').href = c.i;
 }
 
-function toggleEditMode(cat) { 
-    if (cat === 'games') isEditMode.games = !isEditMode.games; 
-    renderAll(); 
-}
+/* PANIC ENGINE */
+let panicT; let isPH = false;
+window.addEventListener('keydown', (e) => {
+    if (e.key === '`' && !isPH && !e.shiftKey) { isPH = true; document.getElementById('panic-bar-container').style.display = 'block'; const bar = document.getElementById('panic-bar'); bar.style.transition = 'width 0.5s linear'; bar.style.width = '100%'; panicT = setTimeout(() => { window.location.href = 'https://www.ixl.com'; }, 500); }
+    if (e.key === '`' && e.shiftKey) { document.getElementById('gameStage').style.display = 'none'; showPage('home'); }
+});
+window.addEventListener('keyup', (e) => { if (e.key === '`') { isPH = false; clearTimeout(panicT); document.getElementById('panic-bar').style.transition = 'none'; document.getElementById('panic-bar').style.width = '0%'; document.getElementById('panic-bar-container').style.display = 'none'; } });
 
-function convertHTML() { navigator.clipboard.writeText(btoa(unescape(encodeURIComponent(document.getElementById('converter-input').value)))); alert("Copied."); }
-function generateGameObject() { document.getElementById('gen-output').value = `{ id: ${Date.now()}, title: "${document.getElementById('gen-title').value}", url: "URL_HERE" },`; }
-function uploadToCloud() { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('nx_') || k === 'nexora_favs') data[k] = localStorage.getItem(k); } const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Nexora_Save.json`; a.click(); }
-function downloadFromCloud() { document.getElementById('cloud-sync-file').click(); }
-function processCloudRestore(input) { const reader = new FileReader(); reader.onload = (e) => { const d = JSON.parse(e.target.result); for (let k in d) localStorage.setItem(k, d[k]); location.reload(); }; reader.readAsText(input.files[0]); }
-function signOut() { if(confirm("Sign out?")) { localStorage.clear(); location.reload(); } }
-
-function toggleFav(id) { 
-    if (favorites.includes(id)) { favorites = favorites.filter(f => f !== id); } 
-    else { favorites.push(id); }
-    localStorage.setItem('nexora_favs', JSON.stringify(favorites)); 
-    renderAll(); 
-}
-
-function handleLaunchTrigger(item) { teleports++; localStorage.setItem('nx_teleports', teleports); pendingItem = item; document.getElementById('gameNotice').classList.remove('hidden'); }
-document.getElementById('btnRunInternal').onclick = () => { closeNotices(); launchGame(pendingItem, false); };
-document.getElementById('btnRunExternal').onclick = () => { closeNotices(); launchGame(pendingItem, true); };
-
-function launchGame(item, ext) {
-  if (ext) {
-    const newWin = window.open('about:blank', '_blank');
-    if (item.code) {
-        newWin.document.open();
-        newWin.document.write(atob(item.code));
-        newWin.document.close();
-    } else {
-        newWin.location.href = item.url;
-    }
-    return;
-  }
-  document.getElementById('stageTitle').textContent = item.title; document.getElementById('gameStage').style.display = 'flex';
-  
-  const frame = document.getElementById('gameContainer');
-  if (item.code) {
-      const blob = new Blob([atob(item.code)], { type: 'text/html' });
-      frame.src = URL.createObjectURL(blob);
-  } else {
-      frame.src = item.url || '';
-  }
-  document.body.style.overflow = 'hidden';
-}
-
-function closeGame() { document.getElementById('gameStage').style.display = 'none'; document.getElementById('gameContainer').src = 'about:blank'; document.body.style.overflow = 'auto'; }
-function save() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
-function smartToggle(id, tabIndex) { document.getElementById(id).classList.toggle('hidden'); if(tabIndex !== undefined) stab(tabIndex); }
-function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); save(); }
-function closeNotices() { document.getElementById('gameNotice').classList.add('hidden'); }
-
-document.getElementById('requestLocalBtn').onclick = async () => { try { const dir = await window.showDirectoryPicker(); for await (const entry of dir.values()) { if (entry.kind === 'file' && entry.name.endsWith('.html')) { const file = await entry.getFile(); arcade.push({ id: 'loc-'+Math.random(), title: entry.name, url: URL.createObjectURL(file) }); } } renderAll(); } catch(e) {} };
-
-function promptUnlock() { if (prompt("Passcode:") === "password") { isExclusivesUnlocked = true; renderAll(); } }
-
-/* FX ENGINES */
+/* FX ENGINE */
 const pCanvas = document.getElementById('particleCanvas'), pCtx = pCanvas.getContext('2d'), sCanvas = document.getElementById('starfield'), sCtx = sCanvas.getContext('2d'), bCanvas = document.getElementById('blossom-canvas'), bCtx = bCanvas.getContext('2d');
-let particles = [], stars = [], petals = [];
+let p_arr = [], s_arr = [], b_arr = [];
 function initFX() {
     pCanvas.width = sCanvas.width = bCanvas.width = window.innerWidth; pCanvas.height = sCanvas.height = bCanvas.height = window.innerHeight;
-    particles = []; stars = []; petals = [];
-    for (let i = 0; i < 60; i++) particles.push({ x: Math.random() * pCanvas.width, y: Math.random() * pCanvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, size: 2 });
-    for (let i = 0; i < 150; i++) stars.push({ x: Math.random() * sCanvas.width, y: Math.random() * sCanvas.height, s: Math.random() * 2, v: Math.random() * 0.5 });
-    for (let i = 0; i < 25; i++) petals.push({ x: Math.random() * bCanvas.width, y: -20, s: 4, vx: Math.random() * 2 - 1, vy: Math.random() * 2 + 1, r: Math.random() * Math.PI });
+    p_arr = []; s_arr = []; b_arr = [];
+    for (let i = 0; i < 60; i++) p_arr.push({ x: Math.random() * pCanvas.width, y: Math.random() * pCanvas.height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, size: 2 });
+    for (let i = 0; i < 150; i++) s_arr.push({ x: Math.random() * sCanvas.width, y: Math.random() * sCanvas.height, s: Math.random() * 2, v: Math.random() * 0.5 });
+    for (let i = 0; i < 25; i++) b_arr.push({ x: Math.random() * bCanvas.width, y: -20, s: 4, vx: Math.random() * 2 - 1, vy: Math.random() * 2 + 1, r: Math.random() * Math.PI });
 }
 function animate() {
     const primary = getComputedStyle(document.body).getPropertyValue('--primary').trim();
     pCtx.clearRect(0,0,pCanvas.width, pCanvas.height);
-    if(settings.particles) { pCtx.fillStyle = primary; pCtx.globalAlpha = 0.2; particles.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > pCanvas.width) p.vx *= -1; if (p.y < 0 || p.y > pCanvas.height) p.vy *= -1; pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); pCtx.fill(); }); }
+    if(settings.particles) { pCtx.fillStyle = primary; pCtx.globalAlpha = 0.2; p_arr.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > pCanvas.width) p.vx *= -1; if (p.y < 0 || p.y > pCanvas.height) p.vy *= -1; pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); pCtx.fill(); }); }
     sCtx.clearRect(0,0,sCanvas.width, sCanvas.height);
-    if(settings.stars) { sCtx.fillStyle = 'rgba(255,255,255,0.4)'; stars.forEach(s => { sCtx.beginPath(); sCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); sCtx.fill(); s.y -= s.v; if(s.y < 0) s.y = sCanvas.height; }); }
+    if(settings.stars) { sCtx.fillStyle = 'rgba(255,255,255,0.4)'; s_arr.forEach(s => { sCtx.beginPath(); sCtx.arc(s.x, s.y, s.s, 0, Math.PI*2); sCtx.fill(); s.y -= s.v; if(s.y < 0) s.y = sCanvas.height; }); }
     bCtx.clearRect(0,0,bCanvas.width, bCanvas.height);
-    if(settings.petals) { bCtx.fillStyle = '#ffb7c5'; petals.forEach(p => { bCtx.save(); bCtx.translate(p.x, p.y); bCtx.rotate(p.r); bCtx.beginPath(); bCtx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2); bCtx.fill(); bCtx.restore(); p.y += p.vy; p.x += p.vx; p.r += 0.02; if(p.y > bCanvas.height) { p.y = -20; p.x = Math.random()*bCanvas.width; } }); }
+    if(settings.petals) { bCtx.fillStyle = '#ffb7c5'; b_arr.forEach(p => { bCtx.save(); bCtx.translate(p.x, p.y); bCtx.rotate(p.r); bCtx.beginPath(); bCtx.ellipse(0, 0, p.s, p.s/2, 0, 0, Math.PI*2); bCtx.fill(); bCtx.restore(); p.y += p.vy; p.x += p.vx; p.r += 0.02; if(p.y > bCanvas.height) { p.y = -20; p.x = Math.random()*bCanvas.width; } }); }
     requestAnimationFrame(animate);
 }
 
@@ -764,7 +710,7 @@ function checkSecurity() {
 checkSecurity();
 window.onresize = initFX;
 setInterval(() => { uptimeSeconds++; if(uptimeSeconds % 60 === 0) updateProfileDisplay(); }, 1000);
-initFX(); animate(); applySettings(); bootData();
+initFX(); animate(); bootData();
   </script>
 </body>
 </html>
