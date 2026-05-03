@@ -48,7 +48,7 @@
     border-right:1px solid var(--border);
     display:flex;flex-direction:column;padding:20px 14px;gap:4px;
     position:sticky;top:0;height:100vh;backdrop-filter:blur(14px);z-index:30;
-    transition:width .25s ease;overflow-y:auto;
+    transition:width .25s ease;
   }
   aside.side .logo{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
   aside.side .logo-mark{width:32px;height:32px;display:grid;place-items:center;border:1px solid color-mix(in oklab, var(--accent) 60%, transparent);border-radius:8px;background:var(--surface);color:var(--accent)}
@@ -117,7 +117,7 @@
   .block-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:36px 0 18px;flex-wrap:wrap}
   .block-head .mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent)}
   .block-head h2{font-size:24px;margin-top:6px}
-  .view-all{color:var(--accent);font-size:13px;cursor:pointer}
+  .view-all{color:var(--accent);font-size:13px}
 
   /* ---------- GRID & CARDS ---------- */
   .grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
@@ -136,8 +136,6 @@
   .card h3{font-family:'Orbitron';font-size:13px;font-weight:600}
   .card .badge{position:absolute;top:8px;right:8px;background:color-mix(in oklab, var(--bg) 70%, transparent);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:3px 8px;border-radius:99px;backdrop-filter:blur(6px);opacity:0;transition:.2s}
   .card:hover .badge{opacity:1}
-  .card.tool{cursor:pointer}
-  .card.tool .img{display:grid;place-items:center;color:var(--accent);font-size:44px;background:color-mix(in oklab, var(--accent) 10%, var(--surface-2))}
   .fav-btn{
     position:absolute;top:8px;left:8px;width:30px;height:30px;display:grid;place-items:center;
     border-radius:50%;background:color-mix(in oklab, var(--bg) 60%, transparent);
@@ -154,24 +152,15 @@
   .page-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-end;margin-bottom:24px}
   .page-head h1{font-size:32px}
   .page-head .sub{color:var(--muted);margin-top:4px;font-size:14px}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .chip{padding:6px 14px;border-radius:999px;font-size:12px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:.15s}
+  .chip:hover{color:var(--text)}
+  .chip.active{background:color-mix(in oklab, var(--accent) 14%, transparent);border-color:color-mix(in oklab, var(--accent) 50%, transparent);color:var(--accent)}
 
   /* ---------- ABOUT ---------- */
   .about{max-width:720px;margin:0 auto}
   .about h1{font-size:42px;margin-top:8px}
   .about p{margin-top:18px;color:var(--muted);font-size:17px}
-
-  /* ---------- PROXY QUEST CARDS ---------- */
-  .quest-row{display:grid;gap:18px;grid-template-columns:1fr;margin-top:18px}
-  @media(min-width:780px){.quest-row{grid-template-columns:1fr 1fr}}
-  .quest{padding:28px;border-radius:16px;border:1px solid var(--border);background:var(--surface);position:relative;transition:.2s;cursor:pointer}
-  .quest:hover{border-color:color-mix(in oklab, var(--accent) 60%, transparent);transform:translateY(-3px);box-shadow:0 0 0 1px var(--accent-glow)}
-  .quest .qi{font-size:32px;color:var(--accent);margin-bottom:12px}
-  .quest h3{font-size:18px;margin-bottom:6px}
-  .quest p.sub{color:var(--muted);font-size:13px;font-style:italic;margin-bottom:14px}
-  .quest ul{list-style:none;padding-top:14px;border-top:1px solid var(--border)}
-  .quest ul li{font-size:13px;color:var(--muted);padding:4px 0;display:flex;gap:10px}
-  .quest ul li::before{content:"✓";color:var(--accent);font-weight:700}
-  .quest.locked::after{content:"LOCKED";position:absolute;top:14px;right:-30px;background:#ff5a89;color:#fff;padding:4px 35px;transform:rotate(45deg);font-size:10px;font-weight:800;letter-spacing:.15em}
 
   /* ---------- PLAYER ---------- */
   .player{display:none;flex-direction:row;min-height:100vh;background:var(--bg);position:fixed;inset:0;z-index:80}
@@ -191,14 +180,19 @@
   .side-item:hover{color:var(--accent);background:color-mix(in oklab, var(--surface-2) 70%, transparent)}
   .side-item.danger{color:#ff6b8a}
   .side-item.danger:hover{color:#ff6b8a;background:rgba(255,107,138,.1)}
-  .player .frame{flex:1;background:#000;min-width:0;position:relative}
+  .player .frame{flex:1;background:#000;min-width:0}
   .player iframe{width:100%;height:100%;border:0;display:block}
-  .player .frame .blocked-msg{
-    position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
-    color:var(--muted);text-align:center;padding:24px;background:var(--bg);
-  }
-  .player .frame .blocked-msg.show{display:flex}
-  .player .frame .blocked-msg i{font-size:48px;color:var(--accent);margin-bottom:14px}
+  .player .frame{position:relative}
+  .ck-block{position:absolute;inset:0;background:radial-gradient(circle at 30% 20%, color-mix(in oklab, var(--accent) 14%, #0a0d18), #05070d 70%);
+    display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;z-index:5;color:var(--text)}
+  .ck-block.show{display:flex}
+  .ck-block .ck-icon{font-size:54px;color:#ff6b8a;margin-bottom:18px;filter:drop-shadow(0 0 18px rgba(255,107,138,.45))}
+  .ck-block h2{font-family:'Orbitron';font-size:24px;margin-bottom:10px}
+  .ck-block p{color:var(--muted);max-width:520px;line-height:1.55;margin-bottom:8px;font-size:14px}
+  .ck-block .ck-actions{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .ck-block button{padding:11px 20px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+  .ck-block button.primary{background:linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, #fff));color:#0a0d18;border-color:transparent}
+  .ck-block button:hover{transform:translateY(-1px);filter:brightness(1.1)}
 
   /* ---------- MODAL / SETTINGS ---------- */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:90;display:none;align-items:center;justify-content:center;padding:24px}
@@ -228,6 +222,7 @@
   .theme-swatch{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.1)}
   .theme-tile span{font-size:12px;color:var(--muted)}
   .theme-tile.active span{color:var(--accent)}
+  /* toggle */
   .switch{position:relative;width:42px;height:24px;flex:none}
   .switch input{opacity:0;width:0;height:0}
   .slider{position:absolute;inset:0;background:var(--surface-2);border:1px solid var(--border);border-radius:99px;transition:.2s;cursor:pointer}
@@ -240,15 +235,6 @@
   .danger-btn:hover{background:rgba(255,107,138,.12)}
   .ghost-btn{background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
   .ghost-btn:hover{border-color:color-mix(in oklab, var(--accent) 50%, transparent);color:var(--accent)}
-
-  /* ---------- DIALOG (carp loader) ---------- */
-  .dlg-card{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px}
-  .dlg-card h2{font-size:20px;margin-bottom:8px}
-  .dlg-card p{color:var(--muted);font-size:14px;margin-bottom:14px}
-  .file-list{max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);padding:6px}
-  .file-list .fi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px}
-  .file-list .fi:hover{background:color-mix(in oklab, var(--accent) 14%, transparent);color:var(--accent)}
-  .file-list .fi i{color:var(--accent)}
 
   /* ---------- FOOTER ---------- */
   footer.site{border-top:1px solid var(--border);padding:18px;text-align:center;color:var(--muted);font-size:12px}
@@ -283,6 +269,18 @@
   .cloak-opt.active{color:var(--accent);background:color-mix(in oklab, var(--accent) 12%, transparent)}
   .cloak-opt img{width:16px;height:16px;border-radius:3px;flex:none;background:#fff}
   .cloak-opt .check{margin-left:auto;color:var(--accent);font-size:11px;opacity:0}
+
+  /* ---------- TOAST ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:var(--surface);border:1px solid color-mix(in oklab, var(--accent) 50%, var(--border));
+    color:var(--text);padding:12px 18px;border-radius:12px;font-size:13px;
+    box-shadow:0 20px 50px -10px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:200;
+    max-width:90vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast b{color:var(--accent)}
   .cloak-opt.active .check{opacity:1}
 
   /* ---------- RESPONSIVE ---------- */
@@ -318,7 +316,6 @@
     <div class="nav-item" data-route="games"><i class="fas fa-gamepad"></i><span>Games</span></div>
     <div class="nav-item" data-route="movies"><i class="fas fa-film"></i><span>Movies</span></div>
     <div class="nav-item" data-route="apps"><i class="fas fa-grip"></i><span>Apps</span></div>
-    <div class="nav-item" data-route="proxy"><i class="fas fa-globe"></i><span>Proxy</span></div>
 
     <div class="side-section">Library</div>
     <div class="nav-item" data-route="favorites"><i class="fas fa-heart"></i><span>Favorites</span></div>
@@ -358,7 +355,7 @@
         <div class="hero">
           <p class="mono float">// Welcome to the grid</p>
           <h1>NEX<span class="o">O</span>RA</h1>
-          <p class="lead">A game website made for you, credits to GN-MATH this woulden't be possible without them <3</p>
+          <p class="lead">A free sci-fi arcade. Hundreds of browser games, movies and apps. No sign-up. Just press play.</p>
           <div class="cta">
             <button class="btn primary" data-go="games">Browse Games</button>
             <button class="btn ghost" data-go="about">How it works</button>
@@ -372,8 +369,8 @@
           <div class="notice">
             <i class="fas fa-circle-info"></i>
             <div>
-              <div class="nt">// Read this now</div>
-              <div class="nb">We at nexora are very sorry that alot of the games dont work but its not a problem that we can fix at the moment but lowkey i think its fixable so like hang in there</div>
+              <div class="nt">// Heads up</div>
+              <div class="nb">Sorry that a lot of the games aren't working right now, and that we keep changing how the site looks — we're just trying to make it better. Thanks for hanging in there.</div>
             </div>
           </div>
         </div>
@@ -392,15 +389,6 @@
         <div class="page-head">
           <div><p class="mono" style="color:var(--accent)">// Library</p><h1>All Games</h1><p class="sub" id="games-count">Connecting to the grid…</p></div>
         </div>
-
-        <div class="block-head">
-          <div><p class="mono">// Tools</p><h2>Game Tools</h2></div>
-        </div>
-        <div class="grid" id="tools-grid"></div>
-
-        <div class="block-head">
-          <div><p class="mono">// Catalog</p><h2>Browse</h2></div>
-        </div>
         <div id="games-grid" class="grid"></div>
         <div id="games-empty" class="empty" style="display:none"></div>
       </div>
@@ -410,9 +398,23 @@
     <section id="view-movies" class="view">
       <div class="container">
         <div class="page-head">
-          <div><p class="mono" style="color:var(--accent)">// Watch</p><h1>Movies & Streaming</h1><p class="sub">Curated streaming hubs — open them right here.</p></div>
+          <div><p class="mono" style="color:var(--accent)">// Watch</p><h1>Movies & Streaming</h1><p class="sub">Curated streaming hubs.</p></div>
         </div>
+
+        <p class="mono" style="color:var(--accent);font-size:11px;letter-spacing:.3em">// Stashes</p>
+        <h2 style="font-size:20px;margin:6px 0 14px">Movie Stashes</h2>
         <div id="movies-grid" class="grid"></div>
+
+        <div class="notice" style="margin:28px 0 18px;max-width:none">
+          <i class="fas fa-circle-info"></i>
+          <div>
+            <div class="nt">// Catalog</div>
+            <div class="nb">Below is a peek at what's floating around in the stashes above. These cards are <b>display only</b> — clicking one won't play anything, it'll just pop open the stash (SZVY Central or the Movie Sheet) where that title lives. You still have to hunt it down yourself.</div>
+          </div>
+        </div>
+        <p class="mono" style="color:var(--accent);font-size:11px;letter-spacing:.3em">// Library</p>
+        <h2 style="font-size:20px;margin:6px 0 14px">Catalog (display only)</h2>
+        <div id="movies-catalog" class="grid"></div>
       </div>
     </section>
 
@@ -420,39 +422,9 @@
     <section id="view-apps" class="view">
       <div class="container">
         <div class="page-head">
-          <div><p class="mono" style="color:var(--accent)">// Tools</p><h1>Apps</h1><p class="sub">Two placeholder apps — use these as templates for new ones.</p></div>
+          <div><p class="mono" style="color:var(--accent)">// Tools</p><h1>Apps</h1><p class="sub">Quick links to handy web apps.</p></div>
         </div>
         <div id="apps-grid" class="grid"></div>
-      </div>
-    </section>
-
-    <!-- PROXY -->
-    <section id="view-proxy" class="view">
-      <div class="container">
-        <div class="page-head">
-          <div><p class="mono" style="color:var(--accent)">// Unblock</p><h1>Proxy</h1><p class="sub">Pick a proxy. Sites open inside Nexora.</p></div>
-        </div>
-        <div class="quest-row">
-          <div class="quest" data-proxy="default">
-            <div class="qi"><i class="fas fa-globe"></i></div>
-            <h3>Default Proxy</h3>
-            <p class="sub">"It sometimes works i guess"</p>
-            <ul>
-              <li>Wide range of website access</li>
-              <li>No logins supported</li>
-            </ul>
-          </div>
-          <div class="quest locked" data-proxy="tech">
-            <div class="qi"><i class="fas fa-bolt"></i></div>
-            <h3>Best Tech</h3>
-            <p class="sub">"Unblocks everything and lets you log in but requires a hotspot"</p>
-            <ul>
-              <li>Unlimited website access</li>
-              <li>Full login support</li>
-              <li>No trace to history</li>
-            </ul>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -497,11 +469,16 @@
   </aside>
   <div class="frame">
     <iframe id="player-frame" allow="fullscreen; autoplay; gamepad; clipboard-write" allowfullscreen></iframe>
-    <div class="blocked-msg" id="blockedMsg">
-      <i class="fas fa-shield-halved"></i>
-      <h3 style="font-family:'Orbitron';font-size:16px;margin-bottom:8px">Site refused to embed</h3>
-      <p style="max-width:380px;font-size:13px">Some sites block being shown inside other pages. Try opening it in a new tab instead.</p>
-      <button class="btn primary" id="blockedNewTab" style="margin-top:18px"><i class="fas fa-up-right-from-square"></i> Open in new tab</button>
+    <div class="ck-block" id="ckBlock">
+      <div class="ck-icon"><i class="fas fa-shield-halved"></i></div>
+      <h2>Blocked by your district</h2>
+      <p id="ckBlockMsg">Looks like <b>ContentKeeper</b> (or a similar district filter) intercepted this page. We're working on a replacement — in the meantime, you can try loading it again in case it was a false alarm.</p>
+      <p style="font-size:12px;opacity:.7">If you proceed past this once for the same link, we'll trust it for the rest of the session and won't bug you again.</p>
+      <div class="ck-actions">
+        <button class="primary" id="ckRetry"><i class="fas fa-rotate"></i> Try Again</button>
+        <button id="ckProceed"><i class="fas fa-arrow-right"></i> Proceed Anyway</button>
+        <button id="ckExit"><i class="fas fa-xmark"></i> Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -570,40 +547,10 @@
   </div>
 </div>
 
-<!-- ============ CARP LOADER MODAL ============ -->
-<div id="carpModal" class="modal">
-  <div class="dlg-card">
-    <h2><i class="fas fa-folder-open" style="color:var(--accent)"></i> Carp.io Loader</h2>
-    <p>If you downloaded old games from <b>carp.io</b> or <b>xenic</b>, you can load them here to play. Pick the folder (or a single .html file) and choose a game.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-      <button class="btn primary" id="carpPickFolder"><i class="fas fa-folder"></i> Pick Folder</button>
-      <button class="btn ghost" id="carpPickFile"><i class="fas fa-file"></i> Pick File</button>
-      <button class="btn ghost" id="carpClose" style="margin-left:auto">Close</button>
-    </div>
-    <input type="file" id="carpFolderInput" webkitdirectory directory multiple style="display:none">
-    <input type="file" id="carpFileInput" accept=".html,.htm" style="display:none">
-    <div class="file-list" id="carpFileList">
-      <div style="padding:14px;color:var(--muted);font-size:13px;text-align:center">No files loaded yet.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ STASH MODAL ============ -->
-<div id="stashModal" class="modal">
-  <div class="dlg-card">
-    <h2><i class="fas fa-treasure-chest" style="color:var(--accent)"></i> Ultimate Game Stash</h2>
-    <p>A massive curated stash of browser games, all in one place. Opens inside Nexora.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn primary" id="stashOpen"><i class="fas fa-play"></i> Open Stash</button>
-      <button class="btn ghost" id="stashClose" style="margin-left:auto">Cancel</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ============ STATE ============ */
-const SETTINGS_KEY = "nexora_v9_settings";
-const FAVS_KEY = "nexora_v9_favs";
+const SETTINGS_KEY = "nexora_v8_settings";
+const FAVS_KEY = "nexora_v8_favs";
 const defaultSettings = { theme:"default", compact:false, anim:true, collapsed:false, cloak:"google" };
 let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")) };
 let favorites = JSON.parse(localStorage.getItem(FAVS_KEY) || "[]");
@@ -620,45 +567,136 @@ const THEMES = [
 ];
 
 const CLOAKS = {
-  google:    { label:"Google",           title:"Google", icon:"https://www.google.com/favicon.ico" },
-  nexora:    { label:"Nexora (real)",    title:"Nexora — Play free browser games", icon:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235ce1ff' d='M4 20V4l16 16V4'/%3E%3C/svg%3E" },
-  classroom: { label:"Google Classroom", title:"Classes", icon:"https://ssl.gstatic.com/classroom/favicon.png" },
-  docs:      { label:"Google Docs",      title:"Untitled document - Google Docs", icon:"https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" },
-  ixl:       { label:"IXL Learning",     title:"IXL | Math, Language Arts, Science, Social Studies", icon:"https://www.ixl.com/favicon.ico" },
-  khan:      { label:"Khan Academy",     title:"Khan Academy | Free Online Courses", icon:"https://cdn.kastatic.org/images/favicon.ico?logo" },
+  google:     { label:"Google",          title:"Google", icon:"https://www.google.com/favicon.ico" },
+  nexora:     { label:"Nexora (real)",   title:"Nexora — Play free browser games", icon:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235ce1ff' d='M4 20V4l16 16V4'/%3E%3C/svg%3E" },
+  classroom:  { label:"Google Classroom",title:"Classes", icon:"https://ssl.gstatic.com/classroom/favicon.png" },
+  docs:       { label:"Google Docs",     title:"Untitled document - Google Docs", icon:"https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" },
+  ixl:        { label:"IXL Learning",    title:"IXL | Math, Language Arts, Science, Social Studies", icon:"https://www.ixl.com/favicon.ico" },
+  khan:       { label:"Khan Academy",    title:"Khan Academy | Free Online Courses", icon:"https://cdn.kastatic.org/images/favicon.ico?logo" },
 };
 
-/* Trending pin config */
-const PINNED_TRENDING = [ /* "Tomodachi Life (OLDER 3DS EDITION)" */ ];
-const TRENDING_COUNT =3;
+/* ============ TRENDING CONFIG ============
+ * Add game titles here (case-insensitive, partial match) to PIN them as trending.
+ * Empty array  -> 3 random.
+ * 1 pinned     -> that one + 2 random.
+ * 2 pinned     -> those two + 1 random.
+ * 3+ pinned    -> first 3 (no random).
+ * Example:  const PINNED_TRENDING = ["Tomodachi Life"];
+ */
+const PINNED_TRENDING = [
+  // "Tomodachi Life",
+];
+const TRENDING_COUNT = 3;
 
-/* Movies — opened embedded */
+/* Curated movies & apps (same vibe as the original sidebar) */
 const MOVIES = [
   { id:"m1", title:"SZVY Central", desc:"Streaming hub", url:"https://szvy-central-v2.mystrikingly.com/", image:"https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800" },
   { id:"m2", title:"Movie Sheet",  desc:"Big movie database", url:"https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit", image:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800" },
 ];
 
-/* Apps — only 2 placeholder slots, use as templates */
-const APPS = [
-  { id:"app-test1", title:"Test 1", desc:"Placeholder app slot", url:"about:blank", image:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" },
-  { id:"app-test2", title:"Test 2", desc:"Placeholder app slot", url:"about:blank", image:"https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800" },
+/* Movie catalog — DISPLAY ONLY. Clicking shows a warning, then opens the
+   stash where that title actually lives so the user can hunt it down. */
+const SZVY_URL  = "https://szvy-central-v2.mystrikingly.com/";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit";
+
+/* Titles that live on SZVY Central */
+const MOVIE_CATALOG_SZVY = [
+  "Lilo & Stitch","KPop Demon Hunters","Superman","Dragon Ball Super: Super Hero",
+  "Apocalipsis Z","Plankton: The Movie","Mufasa: The Lion King","Dog Man",
+  "Captain America: Brave New World","Homestead","Smile 2","Popeye's Revenge",
+  "Gladiator II","Nosferatu","Kingdom of the Planet of the Apes","Aftermath",
+  "Minecraft","Cars","Cars 2","Cars 3",
+  "Hotel Transylvania","Hotel Transylvania 2","Hotel Transylvania 3","Hotel Transylvania 4",
+  "Ron's Gone Wrong","Monsters Inc","Pirates of the Caribbean","Pacific Rim",
+  "Paw Patrol","Spider-Man: Far From Home","The Suicide Squad","The Suicide Squad 2",
+  "The LEGO Ninjago Movie","Piece by Piece","The LEGO Batman Movie","The LEGO Movie",
+  "The LEGO Movie 2: The Second Part","Power Rangers","Migration","Clifford the Big Red Dog",
+  "Ice Age","Ice Age: The Meltdown","Ice Age: Dawn of the Dinosaurs","Ice Age: Continental Drift",
+  "Kung Fu Panda","Kung Fu Panda 2","Kung Fu Panda 3","Kung Fu Panda 4",
+  "Texas Chainsaw Massacre","Evil Dead Rise","Werewolves","The Gorge",
+  "Gladiator","Dune: Part Two","Dragon Ball Z: Broly - The Legendary Super Saiyan",
+  "Finding Nemo","Frozen","Frozen II","Wreck-It Ralph","Ralph Breaks the Internet",
+  "The Little Mermaid","Barbie","The Purge: Election Year","Real Steel",
+  "Iron Man","Iron Man 2","Iron Man 3","Diary of a Wimpy Kid: Rodrick Rules",
+  "Spirited Away","Beavis and Butt-Head Do America","Grown Ups 2","Need for Speed",
+  "The Other Guys","Happy Gilmore","Scary Movie","Scary Movie 2","Scary Movie 3","Scary Movie 4",
+  "Final Destination","Final Destination 2","Ouija: Origin of Evil","The Notebook",
+  "Black Phone","Black Phone 2","Bird Box","One Punch Man","The Simpsons","Dragon Ball Z",
+  "Assassination Classroom","Attack on Titan","Yu-Gi-Oh!","Ben-To","Berserk",
+  "Akame ga Kill","Death Note","Samurai Champloo","Scott Pilgrim","Frieren",
+  "Regular Show","Invincible","Smiling Friends","South Park","One Piece",
+  "Gravity Falls","Peacemaker","Bluey","The Boys (Season 1-3)","The Boys (Season 4)",
+  "The Spectacular Spider-Men","The Walking Dead","Sonic","Fullmetal Alchemist",
+  "Blue Lock","Rick and Morty","Adventure Time","The Amazing World of Gumball",
+  "Shameless","The Last of Us","Sonic Prime","Kamina","Jujutsu Kaisen",
+  "Squid Game","Midori Days","Spy x Family","Ratatouille","Pixels",
+  "Puss in Boots","Puss in Boots: The Last Wish","The Garfield Movie","Wish",
+  "Megamind","Sonic the Hedgehog","Sonic the Hedgehog 2","Sonic the Hedgehog 3",
+  "Inside Out","Inside Out 2","John Wick","John Wick 2","John Wick 3","John Wick 4",
+  "Paul Tyson","Free Guy",
+  "Fast & Furious","2 Fast 2 Furious","Fast & Furious 6","Furious 7",
+  "The Fate of the Furious","F9: The Fast Saga","Fast X","Scream",
+  "How to Train Your Dragon","How to Train Your Dragon 2",
 ];
 
-/* Proxy targets — opened embedded */
-const PROXIES = {
-  default: "https://stellarhistory.imageinsightvault.com/",
-  tech:    "https://stellarhistory.imageinsightvault.com/",
-};
+/* Titles that live on the Movie Sheet */
+const MOVIE_CATALOG_SHEET = [
+  "NARUTO MANGA","Invincible","MINECRAFT MOVIE","Spider-Man Into The Spider Verse",
+  "DOG MAN MOVIE","Jaws","Ant-Man and The Wasp","We Are Still Here",
+  "Attack on Titan","Despicable Me 1","Good Fellas","Hacksaw Ridge",
+  "Black Panther","The Fast and The Furious","Diary of A Wimpy Kid","Despicable Me 2",
+  "Daddy Daycare","Bad Boys","Ant-Man","Ride Along","Everybody hates Chris",
+  "Kung Fu Panda","Percy Jackson: Sea of Monsters","Bad Boys 2","Scream 4",
+  "The Dukes of Hazzard","Ghostbusters","Kung Fu Panda 2","The Matrix",
+  "Infinity Train","Halloween 2","Red Dragon","Breaking Bad","Toy Story",
+  "Alvin and The Chipmunks: The Squeakquel","Donnie Darko","The O.C. S1",
+  "Jarhead","Titanic","Toy Story 2","Alvin and The Chipmunks: Chip Wrecked",
+  "Seven","The O.C. S2","Zathura","Karate Kid","Toy Story 3",
+  "Percy Jackson: The Lightning Thief","Pulp Fiction","The O.C. S3",
+  "Sharkboy & Lavagirl","Garfield The Movie","Toy Story 4","The Mechanic",
+  "The Shining","The O.C. S4","Diary of A Wimpy Kid: Dog Days","IPPO",
+  "Spider-Man: Homecoming","Dumb and Dumber","Deadpool","Brooklyn 99 ALL SZNS",
+  "Matilda","Pirates of the Caribbean Dead Man's Chest","Avengers: Infinity War",
+  "Batman v Superman: Dawn of Justice","The Super Mario Bros Movie",
+  "The Summer I Turned Pretty S1","Ramona and Beezus",
+  "Pirates of the Caribbean Stranger Tides","Avengers: End Game","Die Hard 2",
+  "Guardians of The Galaxy Part 2","Looking For Alaska","Judy Moody Movie",
+  "Sonic 3","Tomb Raider","Girl Interrupted","Boiler Room",
+  "Star vs. The Forces of Evil","Scream","Home Alone",
+  "Terminator 3: Rise of The Machines","Thirteen","How High","Dan Vs.",
+  "Requiem For A Dream","Ratatouille","High School Musical 2","Mid 90s",
+  "Prometheus","It's Always Sunny in Philadelphia S2","Squid Game S1 E1",
+  "Iron Man","The Polar Express","Bodies Bodies Bodies","Alien vs. Predator",
+  "MST3K: Deadly Bees","Star Wars: The Last Jedi","Wednesday","Barber Shop",
+  "American Psycho","The Crazies","Wall-E","Star Wars: The Force Awakens",
+  "The Dark Knight","Astroboy","Black Adam","Scarface","Inside Out 2",
+  "The Grand Budapest Hotel","The Blair Witch Project",
+  "Fantastic Beasts The Crimes of Grindelwald","Minions: The Rise of Gru",
+  "Final Destination","Puss In Boots: The Last Wish","The Simpsons Movie",
+  "Blade","Mega Mind","REC 4 Apocalypse","The Boondocks",
+  "BACK TO THE Future 1","Captain Underpants Movie","Wreck-it Ralph",
+  "Hotel Translyvania","Inside Out","Garfield Movie Animated",
+  "Thor: The Dark World","Venom","Moana","The Lorax","Avengers",
+  "Venom: Let there be Carnage","Sonic The Hedgehog: 2","Zootopia","Thor",
+  "Avengers: Age of Ultron","Venom: The Last Dance","Transformers One",
+  "the Incredibles","coraline","the last of us","SQUID GAME S1","SQUID GAME S2",
+];
 
-/* Special game tools shown at top of Games page */
-const STASH_URL = "https://ultimate-game-stash-six.vercel.app/";
-const TOOLS = [
-  { id:"tool-stash", title:"Ultimate Game Stash", desc:"Huge curated stash, embedded.", icon:"fa-treasure-chest", action:"stash" },
-  { id:"tool-carp",  title:"Carp.io Loader",      desc:"Load old carp/xenic downloads.", icon:"fa-folder-open",   action:"carp"  },
+const MOVIE_CATALOG = [
+  ...MOVIE_CATALOG_SZVY.map((t,i)=>({ id:"mcz"+i, title:t, src:"szvy",  srcUrl:SZVY_URL,  srcName:"SZVY Central" })),
+  ...MOVIE_CATALOG_SHEET.map((t,i)=>({ id:"mcs"+i, title:t, src:"sheet", srcUrl:SHEET_URL, srcName:"Movie Sheet" })),
+];
+const APPS = [
+  { id:"a1", title:"YouTube",    desc:"Videos",     url:"https://youtube.com",    image:"https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800" },
+  { id:"a2", title:"Spotify",    desc:"Music",      url:"https://open.spotify.com", image:"https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800" },
+  { id:"a3", title:"Discord",    desc:"Chat",       url:"https://discord.com/app", image:"https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=800" },
+  { id:"a4", title:"TikTok",     desc:"Short video",url:"https://www.tiktok.com", image:"https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800" },
+  { id:"a5", title:"Google",     desc:"Search",     url:"https://www.google.com", image:"https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800" },
+  { id:"a6", title:"ChatGPT",    desc:"AI chat",    url:"https://chat.openai.com",image:"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800" },
 ];
 
 /* ============ GAME LOADER (GitHub manifests) ============ */
-const GAME_FILES = ["AAAaaaasavelaod.js","ok.js","AAAAAAAAAAAAAAAAAAA","Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
+const GAME_FILES = ["AAAaaaasavelaod.js","ok.js","Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
 const RAW_BASE = "https://raw.githubusercontent.com/AGPRO619/nexora/main/";
 function parseManifest(raw){ try{ return JSON.parse(raw); } catch{ return new Function('"use strict"; return ('+raw+');')(); } }
 
@@ -675,6 +713,7 @@ async function loadGames(){
       for (const it of items) {
         if (!it || !it.title) continue;
         const hasUrl = typeof it.url === "string" && it.url && it.url !== "INSERT_URL_HERE";
+        // Skip GN Math / Google Sites Gadget games
         if (!hasUrl && it.code) {
           try { if (atob(it.code).slice(0,60).trimStart().startsWith("<Module")) continue; }
           catch { continue; }
@@ -691,8 +730,8 @@ async function loadGames(){
   GAMES = out;
   return out;
 }
+
 function buildSrc(item){
-  if (item._localUrl) return item._localUrl;
   if (item.url) return item.url;
   if (item.code) { try { return URL.createObjectURL(new Blob([atob(item.code)], {type:"text/html"})); } catch {} }
   return "about:blank";
@@ -701,35 +740,33 @@ function buildSrc(item){
 /* ============ HELPERS ============ */
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function cardHTML(item, opts={}){
+  const isGame = item.kind === "game" || (!item.kind && (item.code || (item.url && /raw\.githubusercontent/.test(JSON.stringify(item)))));
   const fav = favorites.includes(String(item.id));
   const img = item.image
     ? `<img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy" onerror="this.style.display='none'"/>`
     : `<div style="display:grid;place-items:center;height:100%;font-family:Orbitron;color:color-mix(in oklab, var(--accent) 40%, transparent)">NEXORA</div>`;
   return `<div class="card" data-id="${escapeHTML(item.id)}" data-kind="${opts.kind || 'game'}">
     <div class="img">${img}</div>
-    <span class="badge">${opts.kind==='movie'?'Watch ▸':opts.kind==='app'?'Open ▸':'Play ▸'}</span>
+    <span class="badge">Play ▸</span>
     <button class="fav-btn ${fav?'on':''}" data-fav="${escapeHTML(item.id)}" title="Favorite"><i class="fas fa-heart"></i></button>
     <div class="meta"><h3>${escapeHTML(item.title)}</h3></div>
-  </div>`;
-}
-function toolCardHTML(t){
-  return `<div class="card tool" data-id="${t.id}" data-kind="tool" data-action="${t.action}">
-    <div class="img"><i class="fas ${t.icon}"></i></div>
-    <span class="badge">Open ▸</span>
-    <div class="meta"><h3>${escapeHTML(t.title)}</h3></div>
   </div>`;
 }
 function skeletons(n){ return Array.from({length:n}).map(()=>'<div class="skel"></div>').join(""); }
 
 /* ============ RENDER ============ */
 function pickTrending(games){
-  const used = new Set(); const picks = [];
+  const used = new Set();
+  const picks = [];
+  // 1) Resolve pinned titles (case-insensitive partial match)
   for (const name of PINNED_TRENDING) {
     if (picks.length >= TRENDING_COUNT) break;
-    const needle = String(name).trim().toLowerCase(); if (!needle) continue;
+    const needle = String(name).trim().toLowerCase();
+    if (!needle) continue;
     const match = games.find(g => !used.has(g.id) && g.title.toLowerCase().includes(needle));
     if (match) { picks.push(match); used.add(match.id); }
   }
+  // 2) Fill remaining slots with random games
   const pool = games.filter(g => !used.has(g.id));
   while (picks.length < TRENDING_COUNT && pool.length) {
     const i = Math.floor(Math.random() * pool.length);
@@ -749,7 +786,6 @@ async function renderHome(){
     : `<div class="empty" style="grid-column:1/-1">No games available right now.</div>`;
 }
 async function renderGames(query=""){
-  document.getElementById("tools-grid").innerHTML = TOOLS.map(toolCardHTML).join("");
   const grid = document.getElementById("games-grid");
   const empty = document.getElementById("games-empty");
   grid.innerHTML = skeletons(15);
@@ -765,6 +801,13 @@ function renderMovies(query=""){
   const q = query.trim().toLowerCase();
   const list = q ? MOVIES.filter(m=>m.title.toLowerCase().includes(q)) : MOVIES;
   document.getElementById("movies-grid").innerHTML = list.map(m=>cardHTML(m,{kind:"movie"})).join("");
+  const cat = q ? MOVIE_CATALOG.filter(m=>m.title.toLowerCase().includes(q)) : MOVIE_CATALOG;
+  const catEl = document.getElementById("movies-catalog");
+  if (catEl) {
+    catEl.innerHTML = cat.length
+      ? cat.map(m=>cardHTML(m,{kind:"movie-catalog"})).join("")
+      : `<div class="empty" style="grid-column:1/-1">Nothing in the catalog matches "${escapeHTML(query)}".</div>`;
+  }
 }
 function renderApps(query=""){
   const q = query.trim().toLowerCase();
@@ -806,14 +849,16 @@ async function go(route){
 document.querySelectorAll(".nav-item").forEach(n => n.addEventListener("click", () => go(n.dataset.route)));
 document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
 
-/* ============ SEARCH ============ */
+/* ============ SEARCH (cross-section) ============ */
 const search = document.getElementById("globalSearch");
 search.addEventListener("input", () => {
   const active = document.querySelector(".nav-item.active")?.dataset.route || "home";
-  if (active === "home" && search.value.trim()) { go("games"); return; }
-  if (active === "games") renderGames(search.value);
-  if (active === "movies") renderMovies(search.value);
-  if (active === "apps") renderApps(search.value);
+  if (active === "games" || active === "home" || active === "movies" || active === "apps") {
+    if (active === "home" && search.value.trim()) { go("games"); return; }
+    if (active === "games") renderGames(search.value);
+    if (active === "movies") renderMovies(search.value);
+    if (active === "apps") renderApps(search.value);
+  }
 });
 
 /* ============ CARD CLICKS (delegated) ============ */
@@ -831,91 +876,137 @@ document.addEventListener("click", async (e) => {
     return;
   }
   const card = e.target.closest(".card[data-id]");
-  if (!card) return;
-  const id = card.dataset.id, kind = card.dataset.kind;
-  if (kind === "tool") {
-    const action = card.dataset.action;
-    if (action === "stash") openStashDialog();
-    if (action === "carp")  openCarpDialog();
-    return;
-  }
-  if (kind === "game") {
-    const games = await loadGames();
-    const g = games.find(x => String(x.id) === id);
-    if (g) openPlayer(g);
-    return;
-  }
-  if (kind === "movie" || kind === "app") {
-    const list = kind === "movie" ? MOVIES : APPS;
-    const it = list.find(x => x.id === id);
-    if (it) openPlayer({ ...it, kind });
+  if (card) {
+    const id = card.dataset.id, kind = card.dataset.kind;
+    if (kind === "game") {
+      const games = await loadGames();
+      const g = games.find(x => String(x.id) === id);
+      if (g) openPlayer(g);
+    } else if (kind === "movie-catalog") {
+      const it = MOVIE_CATALOG.find(x => x.id === id);
+      flashCatalogHint(card, it);
+      if (it?.srcUrl) {
+        openPlayer({ id:it.id, title:`${it.title} — ${it.srcName}`, url:it.srcUrl, kind:"movie" });
+      }
+      return;
+    } else {
+      const list = kind === "movie" ? MOVIES : APPS;
+      const it = list.find(x => x.id === id);
+      if (it?.url) openPlayer({ id:it.id, title:it.title, url:it.url, kind });
+    }
   }
 });
 
-/* Proxy quest cards */
-document.querySelectorAll(".quest").forEach(q => q.addEventListener("click", () => {
-  const id = q.dataset.proxy;
-  if (q.classList.contains("locked")) {
-    const code = prompt("Enter passcode:");
-    if (code !== "password") return;
-    q.classList.remove("locked");
-  }
-  const url = PROXIES[id]; if (!url) return;
-  openPlayer({ id:"proxy-"+id, title: id==="default"?"Default Proxy":"Best Tech", url, kind:"proxy" });
-}));
-
 /* ============ PLAYER ============ */
 let activeBlobUrl = null;
-let currentItem = null;
-let blockedTimer = null;
-function openPlayer(item){
-  currentItem = item;
+let currentGame = null;
+/* ContentKeeper / district-block detection
+ * If the iframe's location ends up on a known blocking domain (or we can't tell
+ * but the page never finishes loading anything useful), surface a warning with
+ * Try Again / Proceed. URLs the user has proceeded past are remembered for the
+ * session so we don't keep nagging them. */
+const CK_TRUSTED = new Set();
+const CK_BLOCK_PATTERNS = [
+  /(^|\.)contentkeeper\./i,
+  /(^|\.)ck\./i,
+  /contentkeeper/i,
+  /lightspeedsystems\./i,
+  /goguardian\./i,
+  /securly\./i,
+  /gocopia\./i,
+  /blocksi\./i,
+  /\bblocked\b/i,
+  /\bfiltered\b/i,
+];
+function looksBlocked(url){
+  if (!url) return false;
+  try {
+    const u = new URL(url, location.href);
+    return CK_BLOCK_PATTERNS.some(rx => rx.test(u.hostname) || rx.test(u.pathname));
+  } catch { return false; }
+}
+let ckCheckTimer = null;
+let ckExpectedSrc = "";
+function showCkBlock(msg){
+  const el = document.getElementById("ckBlock");
+  if (msg) document.getElementById("ckBlockMsg").innerHTML = msg;
+  el.classList.add("show");
+}
+function hideCkBlock(){ document.getElementById("ckBlock").classList.remove("show"); }
+function startCkWatch(src){
+  clearTimeout(ckCheckTimer);
+  ckExpectedSrc = src;
+  if (CK_TRUSTED.has(src)) { hideCkBlock(); return; }
+  const frame = document.getElementById("player-frame");
+  // Quick check: try to read frame URL after a moment. If cross-origin we can't,
+  // which is normal — only flag if we CAN read it AND it matches a block pattern,
+  // OR if the navigated src itself matches a pattern.
+  if (looksBlocked(src)) { showCkBlock(); return; }
+  ckCheckTimer = setTimeout(() => {
+    try {
+      const here = frame.contentWindow?.location?.href;
+      if (here && here !== "about:blank" && looksBlocked(here)) showCkBlock();
+    } catch { /* cross-origin = working fine */ }
+  }, 1800);
+}
+function openPlayer(g){
+  currentGame = g;
   const player = document.getElementById("player");
   const frame = document.getElementById("player-frame");
-  const blocked = document.getElementById("blockedMsg");
-  document.getElementById("player-title").textContent = item.title;
+  document.getElementById("player-title").textContent = g.title;
   if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
-  blocked.classList.remove("show");
-  if (blockedTimer) clearTimeout(blockedTimer);
-  const src = buildSrc(item);
+  const src = buildSrc(g);
   if (src.startsWith("blob:")) activeBlobUrl = src;
-  let loaded = false;
-  frame.onload = () => { loaded = true; };
+  hideCkBlock();
   frame.src = src;
-  // Heuristic: if not loaded after 3.5s on a remote URL, show fallback
-  if (/^https?:/.test(src)) {
-    blockedTimer = setTimeout(() => { if (!loaded) blocked.classList.add("show"); }, 3500);
-  }
+  startCkWatch(src);
   player.classList.add("active");
   document.body.style.overflow = "hidden";
-  document.getElementById("ps-fav").classList.toggle("on", favorites.includes(String(item.id)));
+  // sync fav button state
+  document.getElementById("ps-fav").classList.toggle("on", favorites.includes(String(g.id)));
 }
 function closePlayer(){
   const player = document.getElementById("player");
   const frame = document.getElementById("player-frame");
   player.classList.remove("active");
   frame.src = "about:blank";
-  document.getElementById("blockedMsg").classList.remove("show");
-  if (blockedTimer) clearTimeout(blockedTimer);
+  hideCkBlock();
+  clearTimeout(ckCheckTimer);
   if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
   document.body.style.overflow = "";
-  currentItem = null;
+  currentGame = null;
 }
 document.getElementById("ps-exit").addEventListener("click", closePlayer);
 document.getElementById("ps-refresh").addEventListener("click", () => {
-  if (currentItem) { const f = document.getElementById("player-frame"); f.src = f.src; }
+  if (currentGame) {
+    const f = document.getElementById("player-frame");
+    const src = f.src;
+    hideCkBlock();
+    f.src = src;
+    startCkWatch(src);
+  }
 });
+document.getElementById("ckRetry").addEventListener("click", () => {
+  const f = document.getElementById("player-frame");
+  const src = ckExpectedSrc || f.src;
+  hideCkBlock();
+  f.src = "about:blank";
+  setTimeout(() => { f.src = src; startCkWatch(src); }, 50);
+});
+document.getElementById("ckProceed").addEventListener("click", () => {
+  if (ckExpectedSrc) CK_TRUSTED.add(ckExpectedSrc);
+  clearTimeout(ckCheckTimer);
+  hideCkBlock();
+});
+document.getElementById("ckExit").addEventListener("click", closePlayer);
 document.getElementById("ps-newtab").addEventListener("click", () => {
-  if (!currentItem) return;
-  window.open(buildSrc(currentItem), "_blank", "noopener");
-});
-document.getElementById("blockedNewTab").addEventListener("click", () => {
-  if (!currentItem) return;
-  window.open(buildSrc(currentItem), "_blank", "noopener");
+  if (!currentGame) return;
+  const src = buildSrc(currentGame);
+  window.open(src, "_blank", "noopener");
 });
 document.getElementById("ps-fav").addEventListener("click", () => {
-  if (!currentItem) return;
-  const id = String(currentItem.id);
+  if (!currentGame) return;
+  const id = String(currentGame.id);
   if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
   else favorites.push(id);
   localStorage.setItem(FAVS_KEY, JSON.stringify(favorites));
@@ -940,27 +1031,31 @@ document.getElementById("quickSettings").addEventListener("click", openSettings)
 document.getElementById("quickFav").addEventListener("click", () => go("favorites"));
 settingsModal.addEventListener("click", e => { if (e.target === settingsModal) closeSettings(); });
 
-/* Cloak quick menu */
+/* ---- Cloak quick menu (topbar) ---- */
 const cloakMenu = document.getElementById("cloakMenu");
 const cloakOpts = document.getElementById("cloakOpts");
 const cloakSelect = document.getElementById("cloakSelect");
 function renderCloakChoices(){
+  // populate quick menu
   cloakOpts.innerHTML = Object.entries(CLOAKS).map(([id, c]) => `
     <div class="cloak-opt ${settings.cloak===id?'active':''}" data-cloak="${id}">
       <img src="${c.icon}" onerror="this.style.visibility='hidden'" alt="">
       <span>${c.label}</span>
       <i class="fas fa-check check"></i>
-    </div>`).join("");
+    </div>
+  `).join("");
   cloakOpts.querySelectorAll(".cloak-opt").forEach(o => o.addEventListener("click", () => {
     settings.cloak = o.dataset.cloak; saveSettings(); applySettings(); renderCloakChoices();
     cloakMenu.classList.remove("open");
   }));
+  // populate settings <select>
   cloakSelect.innerHTML = Object.entries(CLOAKS)
     .map(([id, c]) => `<option value="${id}">${c.label}</option>`).join("");
   cloakSelect.value = settings.cloak;
 }
 document.getElementById("quickCloak").addEventListener("click", (e) => {
-  e.stopPropagation(); cloakMenu.classList.toggle("open");
+  e.stopPropagation();
+  cloakMenu.classList.toggle("open");
 });
 document.addEventListener("click", (e) => {
   if (!e.target.closest("#cloakMenu") && !e.target.closest("#quickCloak")) cloakMenu.classList.remove("open");
@@ -973,6 +1068,7 @@ document.querySelectorAll(".stab").forEach(t => t.addEventListener("click", () =
   document.querySelector(`.panel[data-panel="${t.dataset.tab}"]`).classList.add("active");
 }));
 
+/* Theme grid */
 function renderThemes(){
   const grid = document.getElementById("themeGrid");
   grid.innerHTML = THEMES.map(t => `
@@ -994,6 +1090,7 @@ function applySettings(){
   document.getElementById("compactToggle").checked = !!settings.compact;
   document.getElementById("animToggle").checked = !!settings.anim;
   document.getElementById("collapseToggle").checked = !!settings.collapsed;
+  // cloak
   if (!CLOAKS[settings.cloak]) settings.cloak = "google";
   const sel = document.getElementById("cloakSelect");
   if (sel.options.length) sel.value = settings.cloak;
@@ -1033,45 +1130,27 @@ document.getElementById("mobileMenu").addEventListener("click", () => {
   document.body.classList.toggle("side-open");
 });
 
-/* ============ STASH DIALOG ============ */
-const stashModal = document.getElementById("stashModal");
-function openStashDialog(){ stashModal.classList.add("open"); }
-document.getElementById("stashClose").addEventListener("click", () => stashModal.classList.remove("open"));
-stashModal.addEventListener("click", e => { if (e.target === stashModal) stashModal.classList.remove("open"); });
-document.getElementById("stashOpen").addEventListener("click", () => {
-  stashModal.classList.remove("open");
-  openPlayer({ id:"tool-stash", title:"Ultimate Game Stash", url: STASH_URL, kind:"tool" });
-});
-
-/* ============ CARP LOADER DIALOG ============ */
-const carpModal = document.getElementById("carpModal");
-function openCarpDialog(){ carpModal.classList.add("open"); }
-document.getElementById("carpClose").addEventListener("click", () => carpModal.classList.remove("open"));
-carpModal.addEventListener("click", e => { if (e.target === carpModal) carpModal.classList.remove("open"); });
-document.getElementById("carpPickFolder").addEventListener("click", () => document.getElementById("carpFolderInput").click());
-document.getElementById("carpPickFile").addEventListener("click", () => document.getElementById("carpFileInput").click());
-
-function listCarpFiles(files){
-  const list = document.getElementById("carpFileList");
-  const html = files.filter(f => /\.html?$/i.test(f.name)).map((f, i) => `
-    <div class="fi" data-idx="${i}"><i class="fas fa-file-code"></i><span>${escapeHTML(f.webkitRelativePath || f.name)}</span></div>
-  `).join("");
-  list.innerHTML = html || `<div style="padding:14px;color:var(--muted);font-size:13px;text-align:center">No .html files found.</div>`;
-  list.querySelectorAll(".fi").forEach(el => el.addEventListener("click", () => {
-    const f = files.filter(x => /\.html?$/i.test(x.name))[+el.dataset.idx];
-    const url = URL.createObjectURL(f);
-    carpModal.classList.remove("open");
-    openPlayer({ id:"carp-"+f.name, title:f.name.replace(/\.html?$/i,""), _localUrl:url, kind:"game" });
-  }));
-}
-document.getElementById("carpFolderInput").addEventListener("change", e => {
-  listCarpFiles(Array.from(e.target.files || []));
-});
-document.getElementById("carpFileInput").addEventListener("change", e => {
-  listCarpFiles(Array.from(e.target.files || []));
-});
-
 /* ============ BOOT ============ */
+function flashCatalogHint(card, item){
+  const title = card.querySelector("h3")?.textContent || "this title";
+  let t = document.getElementById("nx-toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "nx-toast";
+    t.className = "toast";
+    document.body.appendChild(t);
+  }
+  const where = item?.srcName || "a stash above";
+  t.innerHTML = `<b>${escapeHTML(title)}</b> — display only. Opening <b>${escapeHTML(where)}</b>… you'll have to find it yourself.`;
+  t.classList.add("show");
+  clearTimeout(flashCatalogHint._t);
+  flashCatalogHint._t = setTimeout(()=>t.classList.remove("show"), 3200);
+  // brief shake
+  card.animate(
+    [{transform:"translateY(-4px)"},{transform:"translateY(-4px) translateX(-4px)"},{transform:"translateY(-4px) translateX(4px)"},{transform:"translateY(-4px)"}],
+    {duration:260, easing:"ease-in-out"}
+  );
+}
 renderCloakChoices();
 applySettings();
 renderThemes();
