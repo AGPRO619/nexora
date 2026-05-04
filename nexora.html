@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title id="tabTitle">Google</title>
 <link id="tabIcon" rel="icon" href="https://www.google.com/favicon.ico">
-<meta name="description" content="Nexora — a free sci-fi browser arcade. Hundreds of games. No sign-up. Just press play." />
+<meta name="description" content="A game website made for the people by the people, credits to GN-MATH for making this possible" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -162,6 +162,19 @@
   .about h1{font-size:42px;margin-top:8px}
   .about p{margin-top:18px;color:var(--muted);font-size:17px}
 
+  /* ---------- PROXY QUEST CARDS (from Nexora 3) ---------- */
+  .quest-row{display:grid;gap:18px;grid-template-columns:1fr;margin-top:18px}
+  @media(min-width:780px){.quest-row{grid-template-columns:1fr 1fr}}
+  .quest{padding:28px;border-radius:16px;border:1px solid var(--border);background:var(--surface);position:relative;transition:.2s;cursor:pointer}
+  .quest:hover{border-color:color-mix(in oklab, var(--accent) 60%, transparent);transform:translateY(-3px);box-shadow:0 0 0 1px var(--accent-glow)}
+  .quest .qi{font-size:32px;color:var(--accent);margin-bottom:12px}
+  .quest h3{font-size:18px;margin-bottom:6px}
+  .quest p.sub{color:var(--muted);font-size:13px;font-style:italic;margin-bottom:14px}
+  .quest ul{list-style:none;padding-top:14px;border-top:1px solid var(--border)}
+  .quest ul li{font-size:13px;color:var(--muted);padding:4px 0;display:flex;gap:10px}
+  .quest ul li::before{content:"✓";color:var(--accent);font-weight:700}
+  .quest.locked::after{content:"LOCKED";position:absolute;top:14px;right:-30px;background:#ff5a89;color:#fff;padding:4px 35px;transform:rotate(45deg);font-size:10px;font-weight:800;letter-spacing:.15em}
+
   /* ---------- PLAYER ---------- */
   .player{display:none;flex-direction:row;min-height:100vh;background:var(--bg);position:fixed;inset:0;z-index:80}
   .player.active{display:flex}
@@ -283,6 +296,60 @@
   .toast b{color:var(--accent)}
   .cloak-opt.active .check{opacity:1}
 
+  /* ---------- DEV MENU ---------- */
+  .dev-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:24px}
+  .dev-modal.open{display:flex}
+  .dev-card{width:100%;max-width:880px;max-height:90vh;background:var(--surface);border:1px solid color-mix(in oklab, var(--accent) 50%, var(--border));border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+  .dev-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:color-mix(in oklab, var(--accent) 8%, var(--surface))}
+  .dev-head h2{font-family:'Orbitron';font-size:16px;letter-spacing:.18em;color:var(--accent);flex:1}
+  .dev-head .kbd{font-family:ui-monospace,Menlo,monospace;font-size:11px;padding:2px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}
+  .dev-tabs{display:flex;gap:4px;padding:8px 12px;border-bottom:1px solid var(--border);overflow-x:auto;flex:none}
+  .dev-tabs button{padding:7px 14px;border-radius:8px;font-size:12px;color:var(--muted);border:1px solid transparent;white-space:nowrap}
+  .dev-tabs button.active{color:var(--accent);background:color-mix(in oklab, var(--accent) 12%, transparent);border-color:color-mix(in oklab, var(--accent) 35%, transparent)}
+  .dev-body{padding:18px;overflow:auto;flex:1}
+  .dev-panel{display:none}
+  .dev-panel.active{display:block}
+  .dev-panel h3{font-family:'Orbitron';font-size:13px;letter-spacing:.12em;color:var(--accent);margin-bottom:8px}
+  .dev-panel p.hint{color:var(--muted);font-size:12px;margin-bottom:10px}
+  .dev-input,.dev-area{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font:inherit;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  .dev-area{min-height:120px;resize:vertical}
+  .dev-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .dev-btn{padding:9px 16px;border-radius:8px;background:color-mix(in oklab, var(--accent) 14%, transparent);border:1px solid color-mix(in oklab, var(--accent) 50%, transparent);color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  .dev-btn:hover{background:color-mix(in oklab, var(--accent) 22%, transparent)}
+  .dev-btn.ghost{background:var(--surface-2);color:var(--muted);border-color:var(--border)}
+  .dev-btn.danger{background:rgba(255,107,138,.12);border-color:#ff6b8a;color:#ff6b8a}
+  .dev-out{margin-top:10px;padding:10px 12px;background:#000;color:#9affc6;font-family:ui-monospace,Menlo,monospace;font-size:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;max-height:240px;overflow:auto;border:1px solid var(--border)}
+  .dev-out.err{color:#ff8aa6}
+  .dev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.dev-grid{grid-template-columns:1fr}}
+  .dev-section{padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);margin-bottom:14px}
+  .dev-label{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+
+  /* ---------- CK BLOCK REVAMP ---------- */
+  .ck-block{
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,107,138,.18), transparent 55%),
+      radial-gradient(circle at 70% 80%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 55%),
+      linear-gradient(180deg, #060912, #02040a) !important;
+  }
+  .ck-block::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,107,138,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,138,.06) 1px, transparent 1px);
+    background-size:32px 32px;
+    mask-image:radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    pointer-events:none;
+  }
+  .ck-block .ck-card{
+    position:relative;max-width:560px;padding:32px;border-radius:18px;
+    background:color-mix(in oklab, #0a0d18 85%, var(--accent));
+    border:1px solid color-mix(in oklab, #ff6b8a 50%, var(--border));
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.7), 0 0 60px -20px rgba(255,107,138,.4);
+  }
+  .ck-block .ck-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(255,107,138,.15);color:#ff8aa6;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px}
+  .ck-block .ck-detail{margin-top:16px;padding:10px 12px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);text-align:left;word-break:break-all}
+
   /* ---------- RESPONSIVE ---------- */
   @media(max-width:780px){
     aside.side{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .2s}
@@ -316,6 +383,7 @@
     <div class="nav-item" data-route="games"><i class="fas fa-gamepad"></i><span>Games</span></div>
     <div class="nav-item" data-route="movies"><i class="fas fa-film"></i><span>Movies</span></div>
     <div class="nav-item" data-route="apps"><i class="fas fa-grip"></i><span>Apps</span></div>
+    <div class="nav-item" data-route="proxy"><i class="fas fa-globe"></i><span>Proxy</span></div>
 
     <div class="side-section">Library</div>
     <div class="nav-item" data-route="favorites"><i class="fas fa-heart"></i><span>Favorites</span></div>
@@ -370,7 +438,7 @@
             <i class="fas fa-circle-info"></i>
             <div>
               <div class="nt">// Heads up</div>
-              <div class="nb">Sorry that a lot of the games aren't working right now, and that we keep changing how the site looks — we're just trying to make it better. Thanks for hanging in there.</div>
+              <div class="nb">Hey so im sorry we keep changing how the site looks but were making it better also sorry for the games not working i lowkey think there might be a fix.</div>
             </div>
           </div>
         </div>
@@ -428,6 +496,36 @@
       </div>
     </section>
 
+    <!-- PROXY (REPLACED FROM NEXORA 3) -->
+    <section id="view-proxy" class="view">
+      <div class="container">
+        <div class="page-head">
+          <div><p class="mono" style="color:var(--accent)">// Unblock</p><h1>Proxy</h1><p class="sub">Pick a proxy. Sites open inside Nexora.</p></div>
+        </div>
+        <div class="quest-row">
+          <div class="quest" data-proxy="default">
+            <div class="qi"><i class="fas fa-globe"></i></div>
+            <h3>Default Proxy</h3>
+            <p class="sub">"It sometimes works i guess"</p>
+            <ul>
+              <li>Wide range of website access</li>
+              <li>No logins supported</li>
+            </ul>
+          </div>
+          <div class="quest locked" data-proxy="tech">
+            <div class="qi"><i class="fas fa-bolt"></i></div>
+            <h3>Best Tech</h3>
+            <p class="sub">"Unblocks everything and lets you log in but requires a hotspot"</p>
+            <ul>
+              <li>Unlimited website access</li>
+              <li>Full login support</li>
+              <li>No trace to history</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- FAVORITES -->
     <section id="view-favorites" class="view">
       <div class="container">
@@ -470,15 +568,127 @@
   <div class="frame">
     <iframe id="player-frame" allow="fullscreen; autoplay; gamepad; clipboard-write" allowfullscreen></iframe>
     <div class="ck-block" id="ckBlock">
-      <div class="ck-icon"><i class="fas fa-shield-halved"></i></div>
-      <h2>Blocked by your district</h2>
-      <p id="ckBlockMsg">Looks like <b>ContentKeeper</b> (or a similar district filter) intercepted this page. We're working on a replacement — in the meantime, you can try loading it again in case it was a false alarm.</p>
-      <p style="font-size:12px;opacity:.7">If you proceed past this once for the same link, we'll trust it for the rest of the session and won't bug you again.</p>
-      <div class="ck-actions">
-        <button class="primary" id="ckRetry"><i class="fas fa-rotate"></i> Try Again</button>
-        <button id="ckProceed"><i class="fas fa-arrow-right"></i> Proceed Anyway</button>
-        <button id="ckExit"><i class="fas fa-xmark"></i> Close</button>
+      <div class="ck-card">
+        <span class="ck-tag"><i class="fas fa-triangle-exclamation"></i> District Filter Tripped</span>
+        <div class="ck-icon"><i class="fas fa-shield-halved"></i></div>
+        <h2>This page got intercepted</h2>
+        <p id="ckBlockMsg">Your district's filter (ContentKeeper, GoGuardian, Securly or similar) grabbed this link before it could load. We're already hunting for a replacement — but it might just be a false alarm.</p>
+        <div class="ck-detail" id="ckBlockUrl">—</div>
+        <p style="font-size:12px;opacity:.7;margin-top:14px">Hit <b>Proceed</b> once and we'll trust this link for the rest of your session.</p>
+        <div class="ck-actions">
+          <button class="primary" id="ckRetry"><i class="fas fa-rotate"></i> Try Again</button>
+          <button id="ckProceed"><i class="fas fa-arrow-right"></i> Proceed Anyway</button>
+          <button id="ckExit"><i class="fas fa-xmark"></i> Close</button>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DEV MENU MODAL ============ -->
+<div id="devModal" class="dev-modal">
+  <div class="dev-card">
+    <div class="dev-head">
+      <i class="fas fa-terminal" style="color:var(--accent)"></i>
+      <h2>Dev Menu</h2>
+      <span class="kbd">press \ to toggle</span>
+      <button class="icon-btn" id="closeDev"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="dev-tabs" id="devTabs">
+      <button class="active" data-dtab="url"><i class="fas fa-link"></i> URL Opener</button>
+      <button data-dtab="iframe"><i class="fas fa-window-restore"></i> Iframe Test</button>
+      <button data-dtab="js"><i class="fas fa-code"></i> JS Console</button>
+      <button data-dtab="html"><i class="fas fa-file-code"></i> HTML Inject</button>
+      <button data-dtab="links"><i class="fas fa-list"></i> Quick Links</button>
+      <button data-dtab="storage"><i class="fas fa-database"></i> Storage</button>
+      <button data-dtab="ck"><i class="fas fa-shield-halved"></i> Block Sim</button>
+      <button data-dtab="info"><i class="fas fa-circle-info"></i> Info</button>
+    </div>
+    <div class="dev-body">
+
+      <div class="dev-panel active" data-dpanel="url">
+        <h3>Custom URL Opener</h3>
+        <p class="hint">Drop any URL — it'll open inside the Nexora player so you can test embeds, proxies, or random sites.</p>
+        <input id="devUrl" class="dev-input" placeholder="https://example.com" />
+        <div class="dev-row">
+          <button class="dev-btn" id="devUrlGo">Open in Player</button>
+          <button class="dev-btn ghost" id="devUrlNew">Open in New Tab</button>
+          <button class="dev-btn ghost" id="devUrlAbout">about:blank → write</button>
+        </div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="iframe">
+        <h3>Iframe Sandbox Test</h3>
+        <p class="hint">Tweak iframe attributes and reload the current player iframe to debug embed issues.</p>
+        <label class="dev-label">src</label>
+        <input id="devIfSrc" class="dev-input" placeholder="https://…" />
+        <div class="dev-grid" style="margin-top:10px">
+          <div>
+            <label class="dev-label">sandbox</label>
+            <input id="devIfSandbox" class="dev-input" placeholder="allow-scripts allow-same-origin" />
+          </div>
+          <div>
+            <label class="dev-label">referrerpolicy</label>
+            <input id="devIfRef" class="dev-input" placeholder="no-referrer" />
+          </div>
+        </div>
+        <div class="dev-row">
+          <button class="dev-btn" id="devIfApply">Apply &amp; Reload</button>
+          <button class="dev-btn ghost" id="devIfReset">Reset</button>
+        </div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="js">
+        <h3>JS Console</h3>
+        <p class="hint">Run JavaScript against the Nexora page. Output shows the return value or thrown error.</p>
+        <textarea id="devJs" class="dev-area" placeholder="// e.g. GAMES?.length"></textarea>
+        <div class="dev-row">
+          <button class="dev-btn" id="devJsRun">Run</button>
+          <button class="dev-btn ghost" id="devJsClear">Clear</button>
+        </div>
+        <div class="dev-out" id="devJsOut">// output will appear here</div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="html">
+        <h3>HTML Inject</h3>
+        <p class="hint">Build a quick HTML payload and load it inside the player as a blob.</p>
+        <textarea id="devHtml" class="dev-area" placeholder="<h1>hello</h1>"></textarea>
+        <div class="dev-row">
+          <button class="dev-btn" id="devHtmlGo">Load in Player</button>
+        </div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="links">
+        <h3>Quick Links</h3>
+        <p class="hint">One-click test launches.</p>
+        <div class="dev-row" id="devQuick"></div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="storage">
+        <h3>localStorage</h3>
+        <p class="hint">Inspect, edit, or wipe Nexora's saved data.</p>
+        <div class="dev-row">
+          <button class="dev-btn ghost" id="devLsDump">Dump</button>
+          <button class="dev-btn danger" id="devLsWipe">Wipe All</button>
+        </div>
+        <div class="dev-out" id="devLsOut">// click Dump</div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="ck">
+        <h3>Block Warning Simulator</h3>
+        <p class="hint">Force-trigger the district-block screen so you can see/test the new warning UI without actually getting filtered.</p>
+        <div class="dev-row">
+          <button class="dev-btn" id="devCkShow">Show Block Screen</button>
+          <button class="dev-btn ghost" id="devCkHide">Hide</button>
+          <button class="dev-btn ghost" id="devCkClear">Clear Trusted URLs</button>
+        </div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="info">
+        <h3>Runtime Info</h3>
+        <div class="dev-out" id="devInfoOut">…</div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -575,31 +785,19 @@ const CLOAKS = {
   khan:       { label:"Khan Academy",    title:"Khan Academy | Free Online Courses", icon:"https://cdn.kastatic.org/images/favicon.ico?logo" },
 };
 
-/* ============ TRENDING CONFIG ============
- * Add game titles here (case-insensitive, partial match) to PIN them as trending.
- * Empty array  -> 3 random.
- * 1 pinned     -> that one + 2 random.
- * 2 pinned     -> those two + 1 random.
- * 3+ pinned    -> first 3 (no random).
- * Example:  const PINNED_TRENDING = ["Tomodachi Life"];
- */
 const PINNED_TRENDING = [
-  // "Tomodachi Life",
+  "Tomodachi Life (OLDER 3DS EDITION)",
 ];
 const TRENDING_COUNT = 3;
 
-/* Curated movies & apps (same vibe as the original sidebar) */
 const MOVIES = [
   { id:"m1", title:"SZVY Central", desc:"Streaming hub", url:"https://szvy-central-v2.mystrikingly.com/", image:"https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800" },
   { id:"m2", title:"Movie Sheet",  desc:"Big movie database", url:"https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit", image:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800" },
 ];
 
-/* Movie catalog — DISPLAY ONLY. Clicking shows a warning, then opens the
-   stash where that title actually lives so the user can hunt it down. */
 const SZVY_URL  = "https://szvy-central-v2.mystrikingly.com/";
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1k1qun6SXekAe8T4eSxvkkH1jLibumvoETCsU4lIPynY/edit";
 
-/* Titles that live on SZVY Central */
 const MOVIE_CATALOG_SZVY = [
   "Lilo & Stitch","KPop Demon Hunters","Superman","Dragon Ball Super: Super Hero",
   "Apocalipsis Z","Plankton: The Movie","Mufasa: The Lion King","Dog Man",
@@ -639,7 +837,6 @@ const MOVIE_CATALOG_SZVY = [
   "How to Train Your Dragon","How to Train Your Dragon 2",
 ];
 
-/* Titles that live on the Movie Sheet */
 const MOVIE_CATALOG_SHEET = [
   "NARUTO MANGA","Invincible","MINECRAFT MOVIE","Spider-Man Into The Spider Verse",
   "DOG MAN MOVIE","Jaws","Ant-Man and The Wasp","We Are Still Here",
@@ -687,16 +884,18 @@ const MOVIE_CATALOG = [
   ...MOVIE_CATALOG_SHEET.map((t,i)=>({ id:"mcs"+i, title:t, src:"sheet", srcUrl:SHEET_URL, srcName:"Movie Sheet" })),
 ];
 const APPS = [
-  { id:"a1", title:"YouTube",    desc:"Videos",     url:"https://youtube.com",    image:"https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800" },
-  { id:"a2", title:"Spotify",    desc:"Music",      url:"https://open.spotify.com", image:"https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800" },
-  { id:"a3", title:"Discord",    desc:"Chat",       url:"https://discord.com/app", image:"https://images.unsplash.com/photo-1611926653458-09294b3142bf?w=800" },
-  { id:"a4", title:"TikTok",     desc:"Short video",url:"https://www.tiktok.com", image:"https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800" },
-  { id:"a5", title:"Google",     desc:"Search",     url:"https://www.google.com", image:"https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800" },
-  { id:"a6", title:"ChatGPT",    desc:"AI chat",    url:"https://chat.openai.com",image:"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800" },
+  { id:"a1", title:"Test 1", desc:"Reference slot", url:"about:blank", image:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" },
+  { id:"a2", title:"Test 2", desc:"Reference slot", url:"about:blank", image:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800" },
 ];
 
-/* ============ GAME LOADER (GitHub manifests) ============ */
-const GAME_FILES = ["AAAaaaasavelaod.js","ok.js","Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","selja.js"];
+/* Proxy targets (from Nexora 3) */
+const PROXIES = {
+  default: "https://stellarhistory.imageinsightvault.com/",
+  tech:    "https://stellarhistory.imageinsightvault.com/",
+};
+
+/* ============ GAME LOADER ============ */
+const GAME_FILES = ["AAAaaaasavelaod.js","slope.js","fat.js","","ok.js","Brawl Stars.js","Duck.js","Pool.js","Supermonkey.js","bigbunch2.js","bigbunch3.js","bigbunch4.js","buck.js","bunch3.js","bunch4.js","gamebunch1.js","ngon.js","people.js","fish.js","fnafwholegams.js","baby.js","","selja.js", "AAAAAAAAAAAAAAAAAAA", "ball.js","bunchogams.js",""];
 const RAW_BASE = "https://raw.githubusercontent.com/AGPRO619/nexora/main/";
 function parseManifest(raw){ try{ return JSON.parse(raw); } catch{ return new Function('"use strict"; return ('+raw+');')(); } }
 
@@ -712,8 +911,7 @@ async function loadGames(){
       const items = Array.isArray(data) ? data : [data];
       for (const it of items) {
         if (!it || !it.title) continue;
-        const hasUrl = typeof it.url === "string" && it.url && it.url !== "THIS LINK IS BLOCKED SORRY ";
-        // Skip GN Math / Google Sites Gadget games
+        const hasUrl = typeof it.url === "string" && it.url && it.url !== "INSERT_URL_HERE";
         if (!hasUrl && it.code) {
           try { if (atob(it.code).slice(0,60).trimStart().startsWith("<Module")) continue; }
           catch { continue; }
@@ -740,7 +938,6 @@ function buildSrc(item){
 /* ============ HELPERS ============ */
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function cardHTML(item, opts={}){
-  const isGame = item.kind === "game" || (!item.kind && (item.code || (item.url && /raw\.githubusercontent/.test(JSON.stringify(item)))));
   const fav = favorites.includes(String(item.id));
   const img = item.image
     ? `<img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy" onerror="this.style.display='none'"/>`
@@ -758,7 +955,6 @@ function skeletons(n){ return Array.from({length:n}).map(()=>'<div class="skel">
 function pickTrending(games){
   const used = new Set();
   const picks = [];
-  // 1) Resolve pinned titles (case-insensitive partial match)
   for (const name of PINNED_TRENDING) {
     if (picks.length >= TRENDING_COUNT) break;
     const needle = String(name).trim().toLowerCase();
@@ -766,7 +962,6 @@ function pickTrending(games){
     const match = games.find(g => !used.has(g.id) && g.title.toLowerCase().includes(needle));
     if (match) { picks.push(match); used.add(match.id); }
   }
-  // 2) Fill remaining slots with random games
   const pool = games.filter(g => !used.has(g.id));
   while (picks.length < TRENDING_COUNT && pool.length) {
     const i = Math.floor(Math.random() * pool.length);
@@ -849,11 +1044,11 @@ async function go(route){
 document.querySelectorAll(".nav-item").forEach(n => n.addEventListener("click", () => go(n.dataset.route)));
 document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
 
-/* ============ SEARCH (cross-section) ============ */
+/* ============ SEARCH ============ */
 const search = document.getElementById("globalSearch");
 search.addEventListener("input", () => {
   const active = document.querySelector(".nav-item.active")?.dataset.route || "home";
-  if (active === "games" || active === "home" || active === "movies" || active === "apps") {
+  if (["games","home","movies","apps"].includes(active)) {
     if (active === "home" && search.value.trim()) { go("games"); return; }
     if (active === "games") renderGames(search.value);
     if (active === "movies") renderMovies(search.value);
@@ -861,7 +1056,7 @@ search.addEventListener("input", () => {
   }
 });
 
-/* ============ CARD CLICKS (delegated) ============ */
+/* ============ CARD CLICKS ============ */
 document.addEventListener("click", async (e) => {
   const fav = e.target.closest("[data-fav]");
   if (fav) {
@@ -888,35 +1083,34 @@ document.addEventListener("click", async (e) => {
       if (it?.srcUrl) {
         openPlayer({ id:it.id, title:`${it.title} — ${it.srcName}`, url:it.srcUrl, kind:"movie" });
       }
-      return;
     } else {
       const list = kind === "movie" ? MOVIES : APPS;
       const it = list.find(x => x.id === id);
-      if (it?.url) openPlayer({ id:it.id, title:it.title, url:it.url, kind });
+      const url = it?.url;
+      if (url) openPlayer({ id:it.id, title:it.title, url, kind });
     }
   }
 });
 
+/* Proxy click logic (from Nexora 3) */
+document.querySelectorAll(".quest").forEach(q => q.addEventListener("click", () => {
+  const id = q.dataset.proxy;
+  if (q.classList.contains("locked")) {
+    const code = prompt("Enter passcode:");
+    if (code !== "password") return;
+    q.classList.remove("locked");
+  }
+  const url = PROXIES[id]; if (!url) return;
+  openPlayer({ id:"proxy-"+id, title: id==="default"?"Default Proxy":"Best Tech", url, kind:"proxy" });
+}));
+
 /* ============ PLAYER ============ */
 let activeBlobUrl = null;
 let currentGame = null;
-/* ContentKeeper / district-block detection
- * If the iframe's location ends up on a known blocking domain (or we can't tell
- * but the page never finishes loading anything useful), surface a warning with
- * Try Again / Proceed. URLs the user has proceeded past are remembered for the
- * session so we don't keep nagging them. */
 const CK_TRUSTED = new Set();
 const CK_BLOCK_PATTERNS = [
-  /(^|\.)contentkeeper\./i,
-  /(^|\.)ck\./i,
-  /contentkeeper/i,
-  /lightspeedsystems\./i,
-  /goguardian\./i,
-  /securly\./i,
-  /gocopia\./i,
-  /blocksi\./i,
-  /\bblocked\b/i,
-  /\bfiltered\b/i,
+  /(^|\.)contentkeeper\./i, /(^|\.)ck\./i, /contentkeeper/i, /lightspeedsystems\./i,
+  /goguardian\./i, /securly\./i, /gocopia\./i, /blocksi\./i, /\bblocked\b/i, /\bfiltered\b/i,
 ];
 function looksBlocked(url){
   if (!url) return false;
@@ -930,6 +1124,8 @@ let ckExpectedSrc = "";
 function showCkBlock(msg){
   const el = document.getElementById("ckBlock");
   if (msg) document.getElementById("ckBlockMsg").innerHTML = msg;
+  const u = document.getElementById("ckBlockUrl");
+  if (u) u.textContent = ckExpectedSrc || "(unknown)";
   el.classList.add("show");
 }
 function hideCkBlock(){ document.getElementById("ckBlock").classList.remove("show"); }
@@ -938,15 +1134,12 @@ function startCkWatch(src){
   ckExpectedSrc = src;
   if (CK_TRUSTED.has(src)) { hideCkBlock(); return; }
   const frame = document.getElementById("player-frame");
-  // Quick check: try to read frame URL after a moment. If cross-origin we can't,
-  // which is normal — only flag if we CAN read it AND it matches a block pattern,
-  // OR if the navigated src itself matches a pattern.
   if (looksBlocked(src)) { showCkBlock(); return; }
   ckCheckTimer = setTimeout(() => {
     try {
       const here = frame.contentWindow?.location?.href;
       if (here && here !== "about:blank" && looksBlocked(here)) showCkBlock();
-    } catch { /* cross-origin = working fine */ }
+    } catch {}
   }, 1800);
 }
 function openPlayer(g){
@@ -962,7 +1155,6 @@ function openPlayer(g){
   startCkWatch(src);
   player.classList.add("active");
   document.body.style.overflow = "hidden";
-  // sync fav button state
   document.getElementById("ps-fav").classList.toggle("on", favorites.includes(String(g.id)));
 }
 function closePlayer(){
@@ -1031,12 +1223,10 @@ document.getElementById("quickSettings").addEventListener("click", openSettings)
 document.getElementById("quickFav").addEventListener("click", () => go("favorites"));
 settingsModal.addEventListener("click", e => { if (e.target === settingsModal) closeSettings(); });
 
-/* ---- Cloak quick menu (topbar) ---- */
 const cloakMenu = document.getElementById("cloakMenu");
 const cloakOpts = document.getElementById("cloakOpts");
 const cloakSelect = document.getElementById("cloakSelect");
 function renderCloakChoices(){
-  // populate quick menu
   cloakOpts.innerHTML = Object.entries(CLOAKS).map(([id, c]) => `
     <div class="cloak-opt ${settings.cloak===id?'active':''}" data-cloak="${id}">
       <img src="${c.icon}" onerror="this.style.visibility='hidden'" alt="">
@@ -1048,18 +1238,11 @@ function renderCloakChoices(){
     settings.cloak = o.dataset.cloak; saveSettings(); applySettings(); renderCloakChoices();
     cloakMenu.classList.remove("open");
   }));
-  // populate settings <select>
-  cloakSelect.innerHTML = Object.entries(CLOAKS)
-    .map(([id, c]) => `<option value="${id}">${c.label}</option>`).join("");
+  cloakSelect.innerHTML = Object.entries(CLOAKS).map(([id, c]) => `<option value="${id}">${c.label}</option>`).join("");
   cloakSelect.value = settings.cloak;
 }
-document.getElementById("quickCloak").addEventListener("click", (e) => {
-  e.stopPropagation();
-  cloakMenu.classList.toggle("open");
-});
-document.addEventListener("click", (e) => {
-  if (!e.target.closest("#cloakMenu") && !e.target.closest("#quickCloak")) cloakMenu.classList.remove("open");
-});
+document.getElementById("quickCloak").addEventListener("click", (e) => { e.stopPropagation(); cloakMenu.classList.toggle("open"); });
+document.addEventListener("click", (e) => { if (!e.target.closest("#cloakMenu") && !e.target.closest("#quickCloak")) cloakMenu.classList.remove("open"); });
 
 document.querySelectorAll(".stab").forEach(t => t.addEventListener("click", () => {
   document.querySelectorAll(".stab").forEach(x => x.classList.remove("active"));
@@ -1068,7 +1251,6 @@ document.querySelectorAll(".stab").forEach(t => t.addEventListener("click", () =
   document.querySelector(`.panel[data-panel="${t.dataset.tab}"]`).classList.add("active");
 }));
 
-/* Theme grid */
 function renderThemes(){
   const grid = document.getElementById("themeGrid");
   grid.innerHTML = THEMES.map(t => `
@@ -1090,7 +1272,6 @@ function applySettings(){
   document.getElementById("compactToggle").checked = !!settings.compact;
   document.getElementById("animToggle").checked = !!settings.anim;
   document.getElementById("collapseToggle").checked = !!settings.collapsed;
-  // cloak
   if (!CLOAKS[settings.cloak]) settings.cloak = "google";
   const sel = document.getElementById("cloakSelect");
   if (sel.options.length) sel.value = settings.cloak;
@@ -1105,9 +1286,7 @@ document.getElementById("animToggle").addEventListener("change",   e => { settin
 document.getElementById("collapseToggle").addEventListener("change",e => { settings.collapsed = e.target.checked; saveSettings(); applySettings(); });
 document.getElementById("cloakSelect").addEventListener("change",   e => { settings.cloak   = e.target.value; saveSettings(); applySettings(); });
 
-document.getElementById("resetBtn").addEventListener("click", () => {
-  settings = { ...defaultSettings }; saveSettings(); applySettings(); renderThemes();
-});
+document.getElementById("resetBtn").addEventListener("click", () => { settings = { ...defaultSettings }; saveSettings(); applySettings(); renderThemes(); });
 document.getElementById("wipeFavsBtn").addEventListener("click", () => {
   if (!confirm("Clear all favorites?")) return;
   favorites = []; localStorage.setItem(FAVS_KEY, "[]");
@@ -1117,46 +1296,112 @@ document.getElementById("wipeFavsBtn").addEventListener("click", () => {
 });
 document.getElementById("wipeAllBtn").addEventListener("click", () => {
   if (!confirm("Wipe ALL Nexora data on this device?")) return;
-  localStorage.removeItem(SETTINGS_KEY);
-  localStorage.removeItem(FAVS_KEY);
-  location.reload();
+  localStorage.removeItem(SETTINGS_KEY); localStorage.removeItem(FAVS_KEY); location.reload();
 });
 
-/* Sidebar collapse + mobile menu */
-document.getElementById("collapseBtn").addEventListener("click", () => {
-  settings.collapsed = !settings.collapsed; saveSettings(); applySettings();
-});
-document.getElementById("mobileMenu").addEventListener("click", () => {
-  document.body.classList.toggle("side-open");
-});
+document.getElementById("collapseBtn").addEventListener("click", () => { settings.collapsed = !settings.collapsed; saveSettings(); applySettings(); });
+document.getElementById("mobileMenu").addEventListener("click", () => { document.body.classList.toggle("side-open"); });
 
 /* ============ BOOT ============ */
 function flashCatalogHint(card, item){
   const title = card.querySelector("h3")?.textContent || "this title";
   let t = document.getElementById("nx-toast");
-  if (!t) {
-    t = document.createElement("div");
-    t.id = "nx-toast";
-    t.className = "toast";
-    document.body.appendChild(t);
-  }
+  if (!t) { t = document.createElement("div"); t.id = "nx-toast"; t.className = "toast"; document.body.appendChild(t); }
   const where = item?.srcName || "a stash above";
   t.innerHTML = `<b>${escapeHTML(title)}</b> — display only. Opening <b>${escapeHTML(where)}</b>… you'll have to find it yourself.`;
   t.classList.add("show");
   clearTimeout(flashCatalogHint._t);
   flashCatalogHint._t = setTimeout(()=>t.classList.remove("show"), 3200);
-  // brief shake
-  card.animate(
-    [{transform:"translateY(-4px)"},{transform:"translateY(-4px) translateX(-4px)"},{transform:"translateY(-4px) translateX(4px)"},{transform:"translateY(-4px)"}],
-    {duration:260, easing:"ease-in-out"}
-  );
+  card.animate([{transform:"translateY(-4px)"},{transform:"translateY(-4px) translateX(-4px)"},{transform:"translateY(-4px) translateX(4px)"},{transform:"translateY(-4px)"}],{duration:260, easing:"ease-in-out"});
 }
-renderCloakChoices();
-applySettings();
-renderThemes();
-renderMovies();
-renderApps();
-go("home");
+renderCloakChoices(); applySettings(); renderThemes(); renderMovies(); renderApps(); go("home");
+
+/* ============ DEV MENU ============ */
+const devModal = document.getElementById("devModal");
+function openDev(){ devModal.classList.add("open"); refreshDevInfo(); }
+function closeDev(){ devModal.classList.remove("open"); }
+document.getElementById("closeDev").addEventListener("click", closeDev);
+devModal.addEventListener("click", e => { if (e.target === devModal) closeDev(); });
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "\\") return;
+  const t = e.target;
+  const tag = (t?.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || t?.isContentEditable) return;
+  e.preventDefault();
+  devModal.classList.contains("open") ? closeDev() : openDev();
+});
+
+document.querySelectorAll("#devTabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#devTabs button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".dev-panel").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.querySelector(`.dev-panel[data-dpanel="${b.dataset.dtab}"]`).classList.add("active");
+}));
+
+function devNormalizeUrl(u){
+  u = (u||"").trim(); if (!u) return "";
+  if (!/^[a-z]+:\/\//i.test(u) && !u.startsWith("about:") && !u.startsWith("blob:") && !u.startsWith("data:")) u = "https://" + u;
+  return u;
+}
+document.getElementById("devUrlGo").addEventListener("click", () => {
+  const u = devNormalizeUrl(document.getElementById("devUrl").value); if (!u) return;
+  closeDev(); openPlayer({ id:"dev:"+u, title:"Dev → "+u, url:u, kind:"dev" });
+});
+document.getElementById("devUrlNew").addEventListener("click", () => { const u = devNormalizeUrl(document.getElementById("devUrl").value); if (u) window.open(u, "_blank", "noopener"); });
+document.getElementById("devUrlAbout").addEventListener("click", () => { closeDev(); openPlayer({ id:"dev:blank", title:"about:blank", url:"about:blank", kind:"dev" }); });
+
+document.getElementById("devIfApply").addEventListener("click", () => {
+  const f = document.getElementById("player-frame");
+  const src = devNormalizeUrl(document.getElementById("devIfSrc").value) || f.src;
+  const sb = document.getElementById("devIfSandbox").value.trim();
+  const rp = document.getElementById("devIfRef").value.trim();
+  if (sb) f.setAttribute("sandbox", sb); else f.removeAttribute("sandbox");
+  if (rp) f.setAttribute("referrerpolicy", rp); else f.removeAttribute("referrerpolicy");
+  closeDev(); openPlayer({ id:"dev:if", title:"Iframe Test", url:src, kind:"dev" });
+});
+document.getElementById("devIfReset").addEventListener("click", () => {
+  const f = document.getElementById("player-frame"); f.removeAttribute("sandbox"); f.removeAttribute("referrerpolicy");
+  document.getElementById("devIfSandbox").value = ""; document.getElementById("devIfRef").value = "";
+});
+
+const devJsOut = document.getElementById("devJsOut");
+document.getElementById("devJsRun").addEventListener("click", () => {
+  const code = document.getElementById("devJs").value; devJsOut.classList.remove("err");
+  try { const r = (new Function("return ("+code+")"))(); devJsOut.textContent = typeof r === "object" ? JSON.stringify(r, null, 2) : String(r); }
+  catch (err) { try { const r = (new Function(code))(); devJsOut.textContent = r === undefined ? "(undefined)" : String(r); } catch (err2) { devJsOut.classList.add("err"); devJsOut.textContent = err2.message; } }
+});
+document.getElementById("devJsClear").addEventListener("click", () => { devJsOut.textContent = ""; });
+
+document.getElementById("devHtmlGo").addEventListener("click", () => {
+  const html = document.getElementById("devHtml").value; const blob = new Blob([html], { type:"text/html" }); const url = URL.createObjectURL(blob);
+  closeDev(); openPlayer({ id:"dev:html", title:"HTML Inject", url, kind:"dev" });
+});
+
+const QUICK_LINKS = [
+  ["SZVY Central", SZVY_URL], ["Movie Sheet", SHEET_URL], ["Rammerhead", "https://rammerhead.org/"], ["Ultraviolet", "https://uv.holyubofficial.net/"],
+  ["Google", "https://www.google.com"], ["YouTube", "https://www.youtube.com"], ["Classroom", "https://classroom.google.com"], ["Test CK", "https://contentkeeper.example.com/blocked"],
+];
+document.getElementById("devQuick").innerHTML = QUICK_LINKS.map(([n,u]) => `<button class="dev-btn ghost" data-qurl="${u}">${n}</button>`).join("");
+document.getElementById("devQuick").addEventListener("click", e => { const b = e.target.closest("[data-qurl]"); if (!b) return; closeDev(); openPlayer({ id:"dev:"+b.dataset.qurl, title:b.textContent, url:b.dataset.qurl, kind:"dev" }); });
+
+document.getElementById("devLsDump").addEventListener("click", () => {
+  const obj = {}; for (let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); obj[k]=localStorage.getItem(k); }
+  document.getElementById("devLsOut").textContent = JSON.stringify(obj, null, 2);
+});
+document.getElementById("devLsWipe").addEventListener("click", () => { if (!confirm("Wipe ALL localStorage on this device?")) return; localStorage.clear(); location.reload(); });
+
+document.getElementById("devCkShow").addEventListener("click", () => {
+  if (!document.getElementById("player").classList.contains("active")) { openPlayer({ id:"dev:ck", title:"Block Simulator", url:"about:blank", kind:"dev" }); }
+  ckExpectedSrc = "https://contentkeeper.example.com/blocked?simulated=true"; showCkBlock();
+});
+document.getElementById("devCkHide").addEventListener("click", hideCkBlock);
+document.getElementById("devCkClear").addEventListener("click", () => { CK_TRUSTED.clear(); alert("Trusted URL list cleared."); });
+
+function refreshDevInfo(){
+  const info = { games_loaded: GAMES?.length ?? "(not loaded)", favorites: favorites.length, theme: settings.theme, cloak: settings.cloak, trusted_urls: [...CK_TRUSTED], user_agent: navigator.userAgent, viewport: `${innerWidth}x${innerHeight}` };
+  document.getElementById("devInfoOut").textContent = JSON.stringify(info, null, 2);
+}
 </script>
 </body>
 </html>
