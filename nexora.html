@@ -1109,7 +1109,7 @@ let activeBlobUrl = null;
 let currentGame = null;
 const CK_TRUSTED = new Set();
 const CK_BLOCK_PATTERNS = [
-  /(^|\.)contentkeeper\./i, /(^|\.)ck\./i, /contentkeeper/i, /lightspeedsystems\./i,
+  /(^|\.)contentkeeper\./i, /(^|\.)ck\./i, /ckf04-mgmt.psjaisd.us/i, /lightspeedsystems\./i,
   /goguardian\./i, /securly\./i, /gocopia\./i, /blocksi\./i, /\bblocked\b/i, /\bfiltered\b/i,
 ];
 function looksBlocked(url){
@@ -1393,7 +1393,7 @@ document.getElementById("devLsWipe").addEventListener("click", () => { if (!conf
 
 document.getElementById("devCkShow").addEventListener("click", () => {
   if (!document.getElementById("player").classList.contains("active")) { openPlayer({ id:"dev:ck", title:"Block Simulator", url:"about:blank", kind:"dev" }); }
-  ckExpectedSrc = "https://contentkeeper.example.com/blocked?simulated=true"; showCkBlock();
+  ckExpectedSrc = "https://ckf04-mgmt.psjaisd.us"; showCkBlock();
 });
 document.getElementById("devCkHide").addEventListener("click", hideCkBlock);
 document.getElementById("devCkClear").addEventListener("click", () => { CK_TRUSTED.clear(); alert("Trusted URL list cleared."); });
