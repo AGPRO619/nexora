@@ -603,6 +603,7 @@
       <button data-dtab="storage"><i class="fas fa-database"></i> Storage</button>
       <button data-dtab="ck"><i class="fas fa-shield-halved"></i> Block Sim</button>
       <button data-dtab="cdn"><i class="fas fa-arrows-rotate"></i> CDN Rewriter</button>
+      <button data-dtab="debug"><i class="fas fa-bug"></i> Game Debug</button>
       <button data-dtab="info"><i class="fas fa-circle-info"></i> Info</button>
     </div>
     <div class="dev-body">
@@ -701,6 +702,18 @@
         <div class="dev-out" id="cdnLog" style="max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all">Waiting for game manifests…</div>
       </div>
 
+      <div class="dev-panel" data-dpanel="debug">
+        <h3>Game Debugger</h3>
+        <p class="hint">View active game code and console outputs. (Console capture only works for blob/code-based games).</p>
+        <label class="dev-label">Active Source Code</label>
+        <textarea id="devDebugCode" class="dev-area" style="height:200px" readonly placeholder="No game currently running..."></textarea>
+        <label class="dev-label" style="margin-top:14px">Iframe Console Logs</label>
+        <div id="devDebugLogs" class="dev-out" style="height:200px; overflow-y:auto; color:#9affc6"></div>
+        <div class="dev-row">
+            <button class="dev-btn ghost" id="devClearDebugLogs">Clear Logs</button>
+        </div>
+      </div>
+
       <div class="dev-panel" data-dpanel="info">
         <h3>Runtime Info</h3>
         <div class="dev-out" id="devInfoOut">…</div>
@@ -782,6 +795,7 @@ const CDN_KEY = "nexora_v8_cdn";
 const defaultSettings = { theme:"default", compact:false, anim:true, collapsed:false, cloak:"google" };
 let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")) };
 let favorites = JSON.parse(localStorage.getItem(FAVS_KEY) || "[]");
+let gameLogs = [];
 
 /* ============ CDN REWRITER (live) ============ */
 let cdnRule = { from:"cdn.jsdelivr.net", to:"fastly.jsdelivr.net", ...(JSON.parse(localStorage.getItem(CDN_KEY) || "{}")) };
@@ -1005,7 +1019,27 @@ async function loadGames(){
 
 function buildSrc(item){
   if (item.url) return item.url;
-  if (item.code) { try { return URL.createObjectURL(new Blob([atob(item.code)], {type:"text/html"})); } catch {} }
+  if (item.code) { 
+    try { 
+      let html = b64decodeUtf8(item.code);
+      const bridge = `
+      <script>
+        (function() {
+          const hook = (type) => {
+            const orig = console[type];
+            console[type] = (...args) => {
+              window.parent.postMessage({ type: 'nx_log', level: type, msg: args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') }, '*');
+              orig.apply(console, args);
+            };
+          };
+          hook('log'); hook('warn'); hook('error'); hook('info');
+          window.onerror = (m, s, l, c, e) => { window.parent.postMessage({ type: 'nx_log', level: 'error', msg: m }, '*'); };
+        })();
+      <\/script>`;
+      html = bridge + html;
+      return URL.createObjectURL(new Blob([html], {type:"text/html"})); 
+    } catch {} 
+  }
   return "about:blank";
 }
 
@@ -1218,6 +1252,9 @@ function startCkWatch(src){
 }
 function openPlayer(g){
   currentGame = g;
+  gameLogs = [];
+  const logEl = document.getElementById("devDebugLogs");
+  if (logEl) logEl.textContent = "";
   const player = document.getElementById("player");
   const frame = document.getElementById("player-frame");
   document.getElementById("player-title").textContent = g.title;
@@ -1392,7 +1429,16 @@ renderCloakChoices(); applySettings(); renderThemes(); renderMovies(); renderApp
 
 /* ============ DEV MENU ============ */
 const devModal = document.getElementById("devModal");
-function openDev(){ devModal.classList.add("open"); refreshDevInfo(); }
+function openDev(){ 
+    devModal.classList.add("open"); 
+    refreshDevInfo(); 
+    const codeArea = document.getElementById("devDebugCode");
+    if (currentGame) {
+        codeArea.value = currentGame.code ? b64decodeUtf8(currentGame.code) : currentGame.url;
+    } else {
+        codeArea.value = "";
+    }
+}
 function closeDev(){ devModal.classList.remove("open"); }
 document.getElementById("closeDev").addEventListener("click", closeDev);
 devModal.addEventListener("click", e => { if (e.target === devModal) closeDev(); });
@@ -1495,6 +1541,28 @@ function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRule)); }
   document.getElementById("cdnClearLog").addEventListener("click", () => { cdnLogEntries.length = 0; renderCdnLog(); });
   renderCdnLog();
 })();
+
+/* ============ GAME DEBUG WIRING ============ */
+window.addEventListener("message", e => {
+  if (e.data?.type === 'nx_log') {
+    const logStr = `[${e.data.level.toUpperCase()}] ${e.data.msg}`;
+    gameLogs.push(logStr);
+    const logEl = document.getElementById("devDebugLogs");
+    if (logEl) {
+      const line = document.createElement("div");
+      line.textContent = logStr;
+      if (e.data.level === 'error') line.style.color = '#ff8aa6';
+      if (e.data.level === 'warn') line.style.color = '#ffea8a';
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  }
+});
+document.getElementById("devClearDebugLogs").addEventListener("click", () => {
+    gameLogs = [];
+    const logEl = document.getElementById("devDebugLogs");
+    if (logEl) logEl.textContent = "";
+});
 </script>
 </body>
 </html>
