@@ -602,6 +602,7 @@
       <button data-dtab="links"><i class="fas fa-list"></i> Quick Links</button>
       <button data-dtab="storage"><i class="fas fa-database"></i> Storage</button>
       <button data-dtab="ck"><i class="fas fa-shield-halved"></i> Block Sim</button>
+      <button data-dtab="cdn"><i class="fas fa-arrows-rotate"></i> CDN Rewriter</button>
       <button data-dtab="info"><i class="fas fa-circle-info"></i> Info</button>
     </div>
     <div class="dev-body">
@@ -684,6 +685,22 @@
         </div>
       </div>
 
+      <div class="dev-panel" data-dpanel="cdn">
+        <h3>CDN Rewriter (live)</h3>
+        <p class="hint">Game codes from GitHub get scanned on load. Any matching CDN host inside the base64 payload is swapped in real time (decoded → replaced → re-encoded) before the game runs. Path, filename, and game logic stay identical.</p>
+        <label class="dev-label">Replace host</label>
+        <div class="dev-grid">
+          <input id="cdnFrom" class="dev-input" value="cdn.jsdelivr.net">
+          <input id="cdnTo"   class="dev-input" value="fastly.jsdelivr.net">
+        </div>
+        <div class="dev-row" style="margin-top:10px">
+          <button class="dev-btn" id="cdnReload">Re-scan games now</button>
+          <button class="dev-btn ghost" id="cdnClearLog">Clear log</button>
+          <span class="hint" style="align-self:center">Total rewrites: <b id="cdnCount" style="color:var(--accent)">0</b></span>
+        </div>
+        <div class="dev-out" id="cdnLog" style="max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all">Waiting for game manifests…</div>
+      </div>
+
       <div class="dev-panel" data-dpanel="info">
         <h3>Runtime Info</h3>
         <div class="dev-out" id="devInfoOut">…</div>
@@ -761,9 +778,55 @@
 /* ============ STATE ============ */
 const SETTINGS_KEY = "nexora_v8_settings";
 const FAVS_KEY = "nexora_v8_favs";
+const CDN_KEY = "nexora_v8_cdn";
 const defaultSettings = { theme:"default", compact:false, anim:true, collapsed:false, cloak:"google" };
 let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")) };
 let favorites = JSON.parse(localStorage.getItem(FAVS_KEY) || "[]");
+
+/* ============ CDN REWRITER (live) ============ */
+let cdnRule = { from:"cdn.jsdelivr.net", to:"fastly.jsdelivr.net", ...(JSON.parse(localStorage.getItem(CDN_KEY) || "{}")) };
+const cdnLogEntries = [];
+function cdnLog(msg, kind){
+  cdnLogEntries.push({ stamp:new Date().toLocaleTimeString(), msg, kind:kind||"info" });
+  renderCdnLog();
+}
+function renderCdnLog(){
+  const el = document.getElementById("cdnLog");
+  const c  = document.getElementById("cdnCount");
+  if (!el) return;
+  const hits = cdnLogEntries.filter(e => e.kind==="hit").reduce((n,e)=>n+(e.count||1),0);
+  if (c) c.textContent = "("+hits+" rewrite"+(hits===1?"":"s")+")";
+  el.textContent = cdnLogEntries.length
+    ? cdnLogEntries.slice(-300).map(e => `[${e.stamp}] ${e.msg}`).join("\n")
+    : "No activity yet.";
+  el.scrollTop = el.scrollHeight;
+}
+function rewriteCdnInText(text, label){
+  const from = (cdnRule.from||"").trim();
+  const to   = (cdnRule.to||"").trim();
+  if (!from || !to || from === to || typeof text !== "string") return { text, count:0 };
+  const re = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+  let count = 0;
+  const out = text.replace(re, () => { count++; return to; });
+  if (count > 0) cdnLogEntries.push({ stamp:new Date().toLocaleTimeString(), msg:`✓ ${label}: replaced ${count}× "${from}" → "${to}"`, kind:"hit", count });
+  return { text: out, count };
+}
+// UTF-8 safe base64 helpers
+function b64decodeUtf8(b64){
+  const bin = atob(b64);
+  try { return decodeURIComponent(escape(bin)); } catch { return bin; }
+}
+function b64encodeUtf8(str){
+  try { return btoa(unescape(encodeURIComponent(str))); } catch { return btoa(str); }
+}
+function rewriteCdnInBase64(b64, label){
+  try {
+    const text = b64decodeUtf8(b64);
+    const { text: out, count } = rewriteCdnInText(text, label);
+    if (!count) return b64;
+    return b64encodeUtf8(out);
+  } catch { return b64; }
+}
 
 const THEMES = [
   { id:"default",  name:"Default",  color:"#5ce1ff" },
@@ -902,6 +965,7 @@ function parseManifest(raw){ try{ return JSON.parse(raw); } catch{ return new Fu
 let GAMES = null;
 async function loadGames(){
   if (GAMES) return GAMES;
+  cdnLog(`Loading ${GAME_FILES.length} game manifests from GitHub…`);
   const out = [], seen = new Set();
   await Promise.all(GAME_FILES.map(async file => {
     try {
@@ -920,12 +984,22 @@ async function loadGames(){
         const key = String(it.id ?? it.title);
         if (seen.has(key)) continue;
         seen.add(key);
-        out.push({ ...it, id:key, kind:"game" });
+        const game = { ...it, id:key, kind:"game" };
+        if (typeof game.url === "string") {
+          const r = rewriteCdnInText(game.url, `${game.title} [url]`);
+          game.url = r.text;
+        }
+        if (typeof game.code === "string") {
+          game.code = rewriteCdnInBase64(game.code, `${game.title} [code]`);
+        }
+        out.push(game);
       }
     } catch {}
   }));
   out.sort((a,b)=>a.title.localeCompare(b.title));
   GAMES = out;
+  cdnLog(`Done. ${out.length} games ready.`);
+  renderCdnLog();
   return out;
 }
 
@@ -1109,7 +1183,7 @@ let activeBlobUrl = null;
 let currentGame = null;
 const CK_TRUSTED = new Set();
 const CK_BLOCK_PATTERNS = [
-  /(^|\.)contentkeeper\./i, /(^|\.)ck\./i, /ckf04-mgmt.psjaisd.us/i, /lightspeedsystems\./i,
+  /(^|\.)contentkeeper\./i, /(^|\.)ck\./i, /contentkeeper/i, /lightspeedsystems\./i,
   /goguardian\./i, /securly\./i, /gocopia\./i, /blocksi\./i, /\bblocked\b/i, /\bfiltered\b/i,
 ];
 function looksBlocked(url){
@@ -1393,7 +1467,7 @@ document.getElementById("devLsWipe").addEventListener("click", () => { if (!conf
 
 document.getElementById("devCkShow").addEventListener("click", () => {
   if (!document.getElementById("player").classList.contains("active")) { openPlayer({ id:"dev:ck", title:"Block Simulator", url:"about:blank", kind:"dev" }); }
-  ckExpectedSrc = "https://ckf04-mgmt.psjaisd.us"; showCkBlock();
+  ckExpectedSrc = "https://contentkeeper.example.com/blocked?simulated=true"; showCkBlock();
 });
 document.getElementById("devCkHide").addEventListener("click", hideCkBlock);
 document.getElementById("devCkClear").addEventListener("click", () => { CK_TRUSTED.clear(); alert("Trusted URL list cleared."); });
@@ -1402,6 +1476,25 @@ function refreshDevInfo(){
   const info = { games_loaded: GAMES?.length ?? "(not loaded)", favorites: favorites.length, theme: settings.theme, cloak: settings.cloak, trusted_urls: [...CK_TRUSTED], user_agent: navigator.userAgent, viewport: `${innerWidth}x${innerHeight}` };
   document.getElementById("devInfoOut").textContent = JSON.stringify(info, null, 2);
 }
+
+/* ============ CDN REWRITER WIRING ============ */
+function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRule)); }
+(function wireCdn(){
+  const f = document.getElementById("cdnFrom"), t = document.getElementById("cdnTo");
+  if (!f) return;
+  f.value = cdnRule.from; t.value = cdnRule.to;
+  f.addEventListener("change", () => { cdnRule.from = f.value.trim(); saveCdn(); cdnLog(`Rule updated: "${cdnRule.from}" → "${cdnRule.to}". Re-scan to apply.`); });
+  t.addEventListener("change", () => { cdnRule.to   = t.value.trim(); saveCdn(); cdnLog(`Rule updated: "${cdnRule.from}" → "${cdnRule.to}". Re-scan to apply.`); });
+  document.getElementById("cdnReload").addEventListener("click", async () => {
+    GAMES = null; cdnLogEntries.length = 0; cdnLog("Re-scanning game manifests…");
+    await loadGames();
+    if (document.getElementById("view-games")?.classList.contains("active")) try { renderGames(); } catch {}
+    if (document.getElementById("view-home")?.classList.contains("active"))  try { renderHome();  } catch {}
+    if (document.getElementById("view-favorites")?.classList.contains("active")) try { renderFavorites(); } catch {}
+  });
+  document.getElementById("cdnClearLog").addEventListener("click", () => { cdnLogEntries.length = 0; renderCdnLog(); });
+  renderCdnLog();
+})();
 </script>
 </body>
 </html>
