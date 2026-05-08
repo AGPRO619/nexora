@@ -1096,6 +1096,18 @@ function buildSrc(item){
    HTML directly into it, instead of handing over a blob: URL. */
 function openGameInNewTab(game){
   if (!game) return;
+  if (game._stash) {
+    const url = `https://fastly.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encodeURIComponent(game.file)}?t=${Date.now()}`;
+    const w = window.open("about:blank", "_blank");
+    if (!w) return;
+    try { w.document.title = game.title || "Stash Game"; } catch {}
+    fetch(url).then(r=>r.text()).then(t => {
+      const { text } = rewriteCdnInText(t, `${game.title} [stash newtab]`);
+      try { w.document.open(); w.document.write(text); w.document.close(); }
+      catch { w.location.href = URL.createObjectURL(new Blob([text], {type:"text/html"})); }
+    }).catch(() => { try { w.location.href = url; } catch {} });
+    return;
+  }
   if (game.code) {
     try {
       const html = atob(game.code); // already fastly-rewritten by loadGames()
@@ -1348,6 +1360,19 @@ function startGameNow(){
   const g = currentGame; if (!g) return;
   document.getElementById("prelaunchBlock").style.display = "none";
   const frame = document.getElementById("player-frame");
+  if (g._stash) {
+    const url = `https://fastly.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encodeURIComponent(g.file)}?t=${Date.now()}`;
+    frame.src = "about:blank";
+    fetch(url).then(r=>r.text()).then(t => {
+      const { text } = rewriteCdnInText(t, `${g.title} [stash embed]`);
+      const blob = new Blob([text], {type:"text/html"});
+      const src = URL.createObjectURL(blob);
+      activeBlobUrl = src;
+      frame.src = src;
+      startCkWatch(src);
+    }).catch(() => { frame.src = url; startCkWatch(url); });
+    return;
+  }
   const src = buildSrc(g);
   if (src.startsWith("blob:")) activeBlobUrl = src;
   frame.src = src;
@@ -1544,11 +1569,10 @@ function renderSuggestStash(query=""){
 document.addEventListener("click", (e) => {
   const c = e.target.closest("[data-stash]");
   if (!c) return;
+  if (e.target.closest("[data-fav]")) return;
   const item = STASH.find(x => x.id === c.dataset.stash);
   if (!item) return;
-  const url = `https://fastly.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encodeURIComponent(item.file)}?t=${Date.now()}`;
-  const w = window.open("about:blank", "_blank");
-  fetch(url).then(r=>r.text()).then(t=>{ if(w){ w.document.open(); w.document.write(t); w.document.close(); } }).catch(()=>{ if(w) w.location.href = url; });
+  openPlayer({ id:item.id, title:item.title, _stash:true, file:item.file, kind:"stash" });
 });
 document.addEventListener("DOMContentLoaded", () => {
   const ss = document.getElementById("stashSearch");
