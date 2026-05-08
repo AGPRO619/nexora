@@ -454,6 +454,15 @@
           <a class="view-all" data-go="games">View all →</a>
         </div>
         <div id="trending-grid" class="grid trending"></div>
+
+        <div id="home-search-section" style="display:none;margin-top:30px">
+          <div class="block-head">
+            <div><p class="mono" style="color:var(--accent)">// Search</p><h2 id="home-search-title">Search results</h2></div>
+            <a class="view-all" id="home-search-clear" style="cursor:pointer">Clear ✕</a>
+          </div>
+          <div id="home-search-grid" class="grid"></div>
+          <div id="home-search-empty" class="empty" style="display:none"></div>
+        </div>
       </div>
     </section>
 
@@ -489,6 +498,9 @@
           </div>
           <div id="stash-grid-main" class="grid"></div>
           <div id="stash-empty-main" class="empty" style="display:none"></div>
+          <div id="stash-more-main" style="text-align:center;margin-top:14px;display:none">
+            <button class="btn ghost" id="stash-more-main-btn"><i class="fas fa-chevron-down"></i> See more stash games</button>
+          </div>
         </div>
       </div>
     </section>
@@ -594,6 +606,9 @@
         <p class="sub" id="stash-count" style="margin-bottom:10px">Loading stash…</p>
         <div id="stash-grid" class="grid"></div>
         <div id="stash-empty" class="empty" style="display:none"></div>
+        <div id="stash-more-suggest" style="text-align:center;margin-top:14px;display:none">
+          <button class="btn ghost" id="stash-more-suggest-btn"><i class="fas fa-chevron-down"></i> See more stash games</button>
+        </div>
       </div>
     </section>
 
@@ -1232,7 +1247,7 @@ async function go(route){
   if (route === "settings") { openSettings(); return; }
   setActive(route);
   showView(route);
-  if (route === "home") renderHome();
+  if (route === "home") { renderHome(); renderHomeSearch(document.getElementById("globalSearch").value); }
   if (route === "games") renderGames(document.getElementById("globalSearch").value);
   if (route === "movies") renderMovies(document.getElementById("globalSearch").value);
   if (route === "apps") renderApps(document.getElementById("globalSearch").value);
@@ -1247,11 +1262,57 @@ const search = document.getElementById("globalSearch");
 search.addEventListener("input", () => {
   const active = document.querySelector(".nav-item.active")?.dataset.route || "home";
   if (["games","home","movies","apps","suggest"].includes(active)) {
-    if (active === "home" && search.value.trim()) { go("games"); return; }
+    if (active === "home") { renderHomeSearch(search.value); return; }
     if (active === "games") renderGames(search.value);
     if (active === "movies") renderMovies(search.value);
     if (active === "apps") renderApps(search.value);
     if (active === "suggest") { const ss=document.getElementById("stashSearch"); if (ss) ss.value = search.value; renderSuggestStash(search.value); }
+  }
+});
+
+async function renderHomeSearch(query=""){
+  const section = document.getElementById("home-search-section");
+  const grid    = document.getElementById("home-search-grid");
+  const empty   = document.getElementById("home-search-empty");
+  const title   = document.getElementById("home-search-title");
+  const trending = document.getElementById("trending-grid");
+  const trendingHead = trending?.previousElementSibling;
+  const q = (query||"").trim().toLowerCase();
+  if (!q) {
+    section.style.display = "none";
+    if (trending) trending.style.display = "";
+    if (trendingHead) trendingHead.style.display = "";
+    return;
+  }
+  if (trending) trending.style.display = "none";
+  if (trendingHead) trendingHead.style.display = "none";
+  section.style.display = "block";
+  const games = await loadGames();
+  const all = [
+    ...games.map(g=>({...g,kind:"game"})),
+    ...STASH.map(s=>({...s,kind:"stash"})),
+    ...MOVIES.map(m=>({...m,kind:"movie"})),
+    ...MOVIE_CATALOG.map(m=>({...m,kind:"movie-catalog"})),
+    ...APPS.map(a=>({...a,kind:"app"})),
+  ];
+  const list = all.filter(x => (x.title||"").toLowerCase().includes(q));
+  title.textContent = `Search results for "${query}" (${list.length})`;
+  if (!list.length) {
+    grid.innerHTML = "";
+    empty.textContent = `Nothing matches "${query}".`;
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+  const cap = list.slice(0, 120);
+  grid.innerHTML = cap.map(x => x.kind === "stash" ? stashCardHTML(x) : cardHTML(x,{kind:x.kind})).join("")
+    + (list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}. Refine your search to see more.</div>` : "");
+}
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#home-search-clear")) {
+    const s = document.getElementById("globalSearch");
+    if (s) s.value = "";
+    renderHomeSearch("");
   }
 });
 
@@ -1545,26 +1606,48 @@ function renderStashIntoGames(query=""){
   const grid = document.getElementById("stash-grid-main");
   const empty = document.getElementById("stash-empty-main");
   const count = document.getElementById("stash-inline-count");
+  const more  = document.getElementById("stash-more-main");
   if (!grid) return;
   const q = (query||"").trim().toLowerCase();
   const list = q ? STASH.filter(s => s.title.toLowerCase().includes(q)) : STASH;
   count.textContent = q ? `(${list.length} of ${STASH.length} match)` : `(${STASH.length} titles)`;
-  if (!list.length) { grid.innerHTML = ""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; }
-  else { empty.style.display="none"; const cap = list.slice(0, 600); grid.innerHTML = cap.map(stashCardHTML).join("") + (list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}. Refine your search to see more.</div>` : ""); }
+  if (!list.length) { grid.innerHTML = ""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; if (more) more.style.display="none"; return; }
+  empty.style.display="none";
+  const initial = 60;
+  const expanded = renderStashIntoGames._expanded || false;
+  const showAll = q ? true : expanded;
+  const cap = showAll ? list.slice(0, 600) : list.slice(0, initial);
+  grid.innerHTML = cap.map(stashCardHTML).join("") + (showAll && list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}.</div>` : "");
+  if (more) more.style.display = (!q && list.length > initial && !expanded) ? "block" : "none";
 }
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#stash-more-main-btn")) {
+    renderStashIntoGames._expanded = true;
+    renderStashIntoGames(document.getElementById("globalSearch")?.value || "");
+  }
+  if (e.target.closest("#stash-more-suggest-btn")) {
+    renderSuggestStash._expanded = true;
+    renderSuggestStash(document.getElementById("stashSearch")?.value || "");
+  }
+});
 /* Also render the existing /suggest view, if present */
 function renderSuggestStash(query=""){
   const grid = document.getElementById("stash-grid");
   const empty = document.getElementById("stash-empty");
   const count = document.getElementById("stash-count");
+  const more  = document.getElementById("stash-more-suggest");
   if (!grid) return;
   const q = (query||"").trim().toLowerCase();
   const list = q ? STASH.filter(s => s.title.toLowerCase().includes(q)) : STASH;
   if (count) count.textContent = `${list.length} of ${STASH.length} stash games`;
-  if (!list.length) { grid.innerHTML=""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; return; }
+  if (!list.length) { grid.innerHTML=""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; if (more) more.style.display="none"; return; }
   empty.style.display="none";
-  const cap = list.slice(0, 600);
-  grid.innerHTML = cap.map(stashCardHTML).join("") + (list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}.</div>` : "");
+  const initial = 60;
+  const expanded = renderSuggestStash._expanded || false;
+  const showAll = q ? true : expanded;
+  const cap = showAll ? list.slice(0, 600) : list.slice(0, initial);
+  grid.innerHTML = cap.map(stashCardHTML).join("") + (showAll && list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}.</div>` : "");
+  if (more) more.style.display = (!q && list.length > initial && !expanded) ? "block" : "none";
 }
 document.addEventListener("click", (e) => {
   const c = e.target.closest("[data-stash]");
