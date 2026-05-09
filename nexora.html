@@ -1304,15 +1304,22 @@ async function renderHomeSearch(query=""){
     return;
   }
   empty.style.display = "none";
-  const cap = list.slice(0, 120);
+  renderHomeSearch._shown = Math.min(list.length, renderHomeSearch._shown || 120);
+  const shown = renderHomeSearch._shown;
+  const cap = list.slice(0, shown);
   grid.innerHTML = cap.map(x => x.kind === "stash" ? stashCardHTML(x) : cardHTML(x,{kind:x.kind})).join("")
-    + (list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}. Refine your search to see more.</div>` : "");
+    + (shown<list.length ? `<div class="empty" style="grid-column:1/-1"><button class="btn ghost" id="home-search-more"><i class="fas fa-chevron-down"></i> See more (${shown} / ${list.length})</button></div>` : "");
 }
 document.addEventListener("click", (e) => {
   if (e.target.closest("#home-search-clear")) {
     const s = document.getElementById("globalSearch");
     if (s) s.value = "";
+    renderHomeSearch._shown = 0;
     renderHomeSearch("");
+  }
+  if (e.target.closest("#home-search-more")) {
+    renderHomeSearch._shown = (renderHomeSearch._shown || 120) + 120;
+    renderHomeSearch(document.getElementById("globalSearch")?.value || "");
   }
 });
 
@@ -1613,20 +1620,29 @@ function renderStashIntoGames(query=""){
   count.textContent = q ? `(${list.length} of ${STASH.length} match)` : `(${STASH.length} titles)`;
   if (!list.length) { grid.innerHTML = ""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; if (more) more.style.display="none"; return; }
   empty.style.display="none";
-  const initial = 60;
-  const expanded = renderStashIntoGames._expanded || false;
-  const showAll = q ? true : expanded;
-  const cap = showAll ? list.slice(0, 600) : list.slice(0, initial);
-  grid.innerHTML = cap.map(stashCardHTML).join("") + (showAll && list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}.</div>` : "");
-  if (more) more.style.display = (!q && list.length > initial && !expanded) ? "block" : "none";
+  const step = 60;
+  if (q) renderStashIntoGames._shown = list.length;
+  else renderStashIntoGames._shown = Math.min(list.length, renderStashIntoGames._shown || step);
+  const shown = renderStashIntoGames._shown;
+  const cap = list.slice(0, shown);
+  grid.innerHTML = cap.map(stashCardHTML).join("");
+  if (more) {
+    if (shown < list.length) {
+      more.style.display = "block";
+      const btn = document.getElementById("stash-more-main-btn");
+      if (btn) btn.innerHTML = `<i class="fas fa-chevron-down"></i> See more stash games (${shown} / ${list.length})`;
+    } else {
+      more.style.display = "none";
+    }
+  }
 }
 document.addEventListener("click", (e) => {
   if (e.target.closest("#stash-more-main-btn")) {
-    renderStashIntoGames._expanded = true;
+    renderStashIntoGames._shown = (renderStashIntoGames._shown || 60) + 60;
     renderStashIntoGames(document.getElementById("globalSearch")?.value || "");
   }
   if (e.target.closest("#stash-more-suggest-btn")) {
-    renderSuggestStash._expanded = true;
+    renderSuggestStash._shown = (renderSuggestStash._shown || 60) + 60;
     renderSuggestStash(document.getElementById("stashSearch")?.value || "");
   }
 });
@@ -1642,12 +1658,21 @@ function renderSuggestStash(query=""){
   if (count) count.textContent = `${list.length} of ${STASH.length} stash games`;
   if (!list.length) { grid.innerHTML=""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; if (more) more.style.display="none"; return; }
   empty.style.display="none";
-  const initial = 60;
-  const expanded = renderSuggestStash._expanded || false;
-  const showAll = q ? true : expanded;
-  const cap = showAll ? list.slice(0, 600) : list.slice(0, initial);
-  grid.innerHTML = cap.map(stashCardHTML).join("") + (showAll && list.length>cap.length ? `<div class="empty" style="grid-column:1/-1">Showing first ${cap.length} of ${list.length}.</div>` : "");
-  if (more) more.style.display = (!q && list.length > initial && !expanded) ? "block" : "none";
+  const step = 60;
+  if (q) renderSuggestStash._shown = list.length;
+  else renderSuggestStash._shown = Math.min(list.length, renderSuggestStash._shown || step);
+  const shown = renderSuggestStash._shown;
+  const cap = list.slice(0, shown);
+  grid.innerHTML = cap.map(stashCardHTML).join("");
+  if (more) {
+    if (shown < list.length) {
+      more.style.display = "block";
+      const btn = document.getElementById("stash-more-suggest-btn");
+      if (btn) btn.innerHTML = `<i class="fas fa-chevron-down"></i> See more stash games (${shown} / ${list.length})`;
+    } else {
+      more.style.display = "none";
+    }
+  }
 }
 document.addEventListener("click", (e) => {
   const c = e.target.closest("[data-stash]");
