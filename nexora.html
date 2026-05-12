@@ -35,6 +35,7 @@
       radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--accent) 10%, transparent), transparent 55%);
     background-attachment:fixed;
   }
+  body.custom-bg, body.custom-bg html { background: transparent !important; background-image: none !important; }
   body.no-anim *{animation:none!important;transition:none!important}
   h1,h2,h3,.font-display{font-family:'Orbitron',sans-serif;letter-spacing:.02em}
   a{color:inherit;text-decoration:none}
@@ -372,6 +373,12 @@
 </style>
 </head>
 <body class="t-default">
+
+<!-- ============ BACKGROUND + EFFECT LAYERS ============ -->
+<div id="bgLayer" style="position:fixed;inset:0;z-index:-3;pointer-events:none;background:transparent;transition:background .3s"></div>
+<div id="bgImage" style="position:fixed;inset:0;z-index:-2;pointer-events:none;background-size:cover;background-position:center;background-repeat:no-repeat;transition:opacity .3s,filter .3s;opacity:0"></div>
+<div id="bgTint"  style="position:fixed;inset:0;z-index:-1;pointer-events:none;background:transparent;transition:background .3s"></div>
+<canvas id="fxLayer" style="position:fixed;inset:0;z-index:5;pointer-events:none"></canvas>
 
 <div class="app">
   <!-- ============ SIDEBAR ============ -->
@@ -805,6 +812,8 @@
     <div class="modal-side">
       <h3>Settings</h3>
       <div class="stab active" data-tab="appearance"><i class="fas fa-palette"></i> Appearance</div>
+      <div class="stab" data-tab="background"><i class="fas fa-image"></i> Background</div>
+      <div class="stab" data-tab="effects"><i class="fas fa-wand-magic-sparkles"></i> Effects</div>
       <div class="stab" data-tab="layout"><i class="fas fa-table-cells-large"></i> Layout</div>
       <div class="stab" data-tab="cloak"><i class="fas fa-mask"></i> Tab Cloak</div>
       <div class="stab" data-tab="data"><i class="fas fa-database"></i> Data</div>
@@ -818,7 +827,87 @@
         <div class="theme-grid" id="themeGrid"></div>
       </div>
 
+      <div class="panel" data-panel="background">
+        <h2>Background</h2>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Layer a solid color, an image with opacity, and a darken overlay.</p>
+        <div class="row">
+          <div><div class="label">Custom background</div><div class="hint">Turn on to override the theme background.</div></div>
+          <label class="switch"><input type="checkbox" id="bgEnabled"><span class="slider"></span></label>
+        </div>
+        <div class="row">
+          <div><div class="label">Base color</div><div class="hint">The solid color shown behind the image.</div></div>
+          <input id="bgColor" type="color" class="input" style="width:60px;height:34px;padding:2px"/>
+        </div>
+        <div class="row">
+          <div class="label">Image source</div>
+          <select id="bgImageType" class="input">
+            <option value="none">No image</option>
+            <option value="preset">Preset</option>
+            <option value="url">Image URL</option>
+            <option value="upload">Upload file</option>
+          </select>
+        </div>
+        <div class="row" id="bgPresetRow" style="display:none">
+          <div class="label" style="align-self:flex-start">Preset</div>
+          <div id="bgPresetGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;flex:1"></div>
+        </div>
+        <div class="row" id="bgUrlRow" style="display:none">
+          <div class="label">Image URL</div>
+          <input id="bgUrl" class="input" placeholder="https://..." style="flex:1;min-width:200px"/>
+        </div>
+        <div class="row" id="bgUploadRow" style="display:none">
+          <div class="label">Upload</div>
+          <input id="bgUpload" type="file" accept="image/*" class="input" style="flex:1"/>
+        </div>
+        <div class="row">
+          <div><div class="label">Image opacity</div><div class="hint">0 = only color shows, 100 = only image shows.</div></div>
+          <input id="bgOpacity" type="range" min="0" max="100" value="60" style="width:160px"/>
+        </div>
+        <div class="row">
+          <div><div class="label">Image blur</div><div class="hint">Soften image so UI stays readable.</div></div>
+          <input id="bgBlur" type="range" min="0" max="30" value="0" style="width:160px"/>
+        </div>
+        <div class="row">
+          <div><div class="label">Darken overlay</div><div class="hint">Tints everything darker on top.</div></div>
+          <input id="bgDim" type="range" min="0" max="90" value="0" style="width:160px"/>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="effects">
+        <h2>Visual Effects</h2>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Add atmospheric particles like falling petals, snow, or sparks.</p>
+        <div class="row"><div class="label">Effect</div>
+          <select id="fxType" class="input">
+            <option value="none">None</option>
+            <option value="petals">🌸 Cherry blossom petals</option>
+            <option value="snow">❄️ Snowflakes</option>
+            <option value="leaves">🍃 Falling leaves</option>
+            <option value="stars">✨ Drifting stars</option>
+            <option value="bubbles">🫧 Rising bubbles</option>
+            <option value="sparks">🔥 Floating sparks</option>
+            <option value="rain">🌧️ Rain</option>
+            <option value="confetti">🎉 Confetti</option>
+          </select>
+        </div>
+        <div class="row"><div><div class="label">Intensity</div><div class="hint">How many particles on screen.</div></div>
+          <input id="fxIntensity" type="range" min="5" max="200" value="50" style="width:160px"/>
+        </div>
+        <div class="row"><div><div class="label">Speed</div><div class="hint">Particle fall/drift speed.</div></div>
+          <input id="fxSpeed" type="range" min="1" max="30" value="10" style="width:160px"/>
+        </div>
+        <div class="row"><div><div class="label">Size</div><div class="hint">Particle size.</div></div>
+          <input id="fxSize" type="range" min="2" max="30" value="10" style="width:160px"/>
+        </div>
+        <div class="row"><div><div class="label">Use accent color</div><div class="hint">Tint particles with the theme color.</div></div>
+          <label class="switch"><input type="checkbox" id="fxUseAccent"><span class="slider"></span></label>
+        </div>
+        <div class="row" id="fxColorRow"><div class="label">Custom color</div>
+          <input id="fxColor" type="color" class="input" value="#ff7eb6" style="width:60px;height:34px;padding:2px"/>
+        </div>
+      </div>
+
       <div class="panel" data-panel="layout">
+        <!-- placeholder anchor -->
         <h2>Layout</h2>
         <div class="row">
           <div><div class="label">Compact mode</div><div class="hint">Tighter cards, more on screen.</div></div>
@@ -877,8 +966,14 @@
 const SETTINGS_KEY = "nexora_v8_settings";
 const FAVS_KEY = "nexora_v8_favs";
 const CDN_KEY = "nexora_v8_cdn";
-const defaultSettings = { theme:"default", compact:false, anim:true, collapsed:false, cloak:"google" };
+const defaultSettings = {
+  theme:"default", compact:false, anim:true, collapsed:false, cloak:"google",
+  bg:{ enabled:false, color:"#0a1020", imageType:"none", preset:"", url:"", upload:"", opacity:60, blur:0, dim:0 },
+  fx:{ type:"none", intensity:50, speed:10, size:10, useAccent:true, color:"#ff7eb6" }
+};
 let settings = { ...defaultSettings, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")) };
+settings.bg = { ...defaultSettings.bg, ...(settings.bg||{}) };
+settings.fx = { ...defaultSettings.fx, ...(settings.fx||{}) };
 let favorites = JSON.parse(localStorage.getItem(FAVS_KEY) || "[]");
 
 /* ============ BLACKLIST / HIDDEN GAMES ============
@@ -1714,7 +1809,11 @@ document.getElementById("animToggle").addEventListener("change",   e => { settin
 document.getElementById("collapseToggle").addEventListener("change",e => { settings.collapsed = e.target.checked; saveSettings(); applySettings(); });
 document.getElementById("cloakSelect").addEventListener("change",   e => { settings.cloak   = e.target.value; saveSettings(); applySettings(); });
 
-document.getElementById("resetBtn").addEventListener("click", () => { settings = { ...defaultSettings }; saveSettings(); applySettings(); renderThemes(); });
+document.getElementById("resetBtn").addEventListener("click", () => {
+  settings = JSON.parse(JSON.stringify(defaultSettings));
+  saveSettings(); applySettings(); renderThemes();
+  if (typeof refreshBgUI === "function") { refreshBgUI(); renderBgPresets(); applyBackground(); refreshFxUI(); applyEffects(); }
+});
 document.getElementById("wipeFavsBtn").addEventListener("click", () => {
   if (!confirm("Clear all favorites?")) return;
   favorites = []; localStorage.setItem(FAVS_KEY, "[]");
@@ -1729,6 +1828,224 @@ document.getElementById("wipeAllBtn").addEventListener("click", () => {
 
 document.getElementById("collapseBtn").addEventListener("click", () => { settings.collapsed = !settings.collapsed; saveSettings(); applySettings(); });
 document.getElementById("mobileMenu").addEventListener("click", () => { document.body.classList.toggle("side-open"); });
+
+/* ============ BACKGROUND CUSTOMIZATION ============ */
+const BG_PRESETS = [
+  { id:"space",    name:"Deep Space",     url:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1920&q=80" },
+  { id:"nebula",   name:"Nebula",         url:"https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=1920&q=80" },
+  { id:"mountain", name:"Mountains",      url:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80" },
+  { id:"forest",   name:"Forest",         url:"https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80" },
+  { id:"ocean",    name:"Ocean",          url:"https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80" },
+  { id:"sunset",   name:"Sunset",         url:"https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=1920&q=80" },
+  { id:"sakura",   name:"Cherry Blossom", url:"https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&q=80" },
+  { id:"neon",     name:"Neon City",      url:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1920&q=80" },
+  { id:"abstract", name:"Abstract",       url:"https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=1920&q=80" },
+  { id:"aurora",   name:"Aurora",         url:"https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1920&q=80" },
+  { id:"galaxy",   name:"Galaxy",         url:"https://images.unsplash.com/photo-1539593395743-7da5ee10ff07?w=1920&q=80" },
+  { id:"waves",    name:"Waves",          url:"https://images.unsplash.com/photo-1530053969600-caed2596d242?w=1920&q=80" },
+];
+
+const bgLayer = document.getElementById("bgLayer");
+const bgImage = document.getElementById("bgImage");
+const bgTint  = document.getElementById("bgTint");
+
+function currentBgImageUrl(){
+  const b = settings.bg;
+  if (b.imageType === "preset") {
+    const p = BG_PRESETS.find(x => x.id === b.preset);
+    return p ? p.url : "";
+  }
+  if (b.imageType === "url")    return b.url || "";
+  if (b.imageType === "upload") return b.upload || "";
+  return "";
+}
+
+function applyBackground(){
+  const b = settings.bg;
+  document.body.classList.toggle("custom-bg", !!b.enabled);
+  if (!b.enabled) {
+    bgLayer.style.background = "transparent";
+    bgImage.style.backgroundImage = "none";
+    bgImage.style.opacity = 0;
+    bgTint.style.background = "transparent";
+    return;
+  }
+  // Base color always visible
+  bgLayer.style.background = b.color || "#000";
+  // Image overlay
+  const img = currentBgImageUrl();
+  if (img) {
+    bgImage.style.backgroundImage = `url("${img}")`;
+    bgImage.style.opacity = (b.opacity/100);
+    bgImage.style.filter = b.blur > 0 ? `blur(${b.blur}px)` : "";
+  } else {
+    bgImage.style.backgroundImage = "none";
+    bgImage.style.opacity = 0;
+  }
+  // Darken overlay
+  bgTint.style.background = (b.dim>0) ? `rgba(0,0,0,${b.dim/100})` : "transparent";
+}
+
+function renderBgPresets(){
+  const grid = document.getElementById("bgPresetGrid");
+  grid.innerHTML = BG_PRESETS.map(p => `
+    <div class="bg-preset ${settings.bg.preset===p.id?'active':''}" data-bg="${p.id}"
+         style="cursor:pointer;border-radius:8px;overflow:hidden;border:2px solid ${settings.bg.preset===p.id?'var(--accent)':'var(--border)'};aspect-ratio:16/10;background:url('${p.url}') center/cover;position:relative">
+      <span style="position:absolute;left:0;right:0;bottom:0;font-size:10px;padding:3px 5px;background:rgba(0,0,0,.55);color:#fff;text-align:center">${p.name}</span>
+    </div>`).join("");
+  grid.querySelectorAll(".bg-preset").forEach(el => el.addEventListener("click", () => {
+    _bgAutoEnable();
+    settings.bg.preset = el.dataset.bg;
+    settings.bg.imageType = "preset";
+    saveSettings(); refreshBgUI(); applyBackground(); renderBgPresets();
+  }));
+}
+
+function refreshBgUI(){
+  const it = settings.bg.imageType;
+  document.getElementById("bgEnabled").checked  = !!settings.bg.enabled;
+  document.getElementById("bgImageType").value  = it;
+  document.getElementById("bgPresetRow").style.display = it==="preset" ? "" : "none";
+  document.getElementById("bgUrlRow").style.display    = it==="url"    ? "" : "none";
+  document.getElementById("bgUploadRow").style.display = it==="upload" ? "" : "none";
+  document.getElementById("bgUrl").value     = settings.bg.url || "";
+  document.getElementById("bgColor").value   = settings.bg.color || "#0a1020";
+  document.getElementById("bgOpacity").value = settings.bg.opacity;
+  document.getElementById("bgBlur").value    = settings.bg.blur;
+  document.getElementById("bgDim").value     = settings.bg.dim;
+}
+
+document.getElementById("bgEnabled").addEventListener("change", e => {
+  settings.bg.enabled = e.target.checked; saveSettings(); applyBackground();
+});
+document.getElementById("bgImageType").addEventListener("change", e => {
+  settings.bg.imageType = e.target.value; if (!settings.bg.enabled) settings.bg.enabled = true;
+  saveSettings(); refreshBgUI(); renderBgPresets(); applyBackground();
+});
+function _bgAutoEnable(){ if (!settings.bg.enabled){ settings.bg.enabled=true; document.getElementById("bgEnabled").checked=true; } }
+document.getElementById("bgUrl").addEventListener("input", e => { _bgAutoEnable(); settings.bg.url = e.target.value.trim(); saveSettings(); applyBackground(); });
+document.getElementById("bgColor").addEventListener("input", e => { _bgAutoEnable(); settings.bg.color = e.target.value; saveSettings(); applyBackground(); });
+document.getElementById("bgOpacity").addEventListener("input", e => { _bgAutoEnable(); settings.bg.opacity = +e.target.value; saveSettings(); applyBackground(); });
+document.getElementById("bgBlur").addEventListener("input", e => { _bgAutoEnable(); settings.bg.blur = +e.target.value; saveSettings(); applyBackground(); });
+document.getElementById("bgDim").addEventListener("input", e => { _bgAutoEnable(); settings.bg.dim = +e.target.value; saveSettings(); applyBackground(); });
+document.getElementById("bgUpload").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (f.size > 5*1024*1024) { alert("Image too large (max 5MB)."); return; }
+  const r = new FileReader();
+  r.onload = () => { _bgAutoEnable(); settings.bg.upload = r.result; settings.bg.imageType = "upload"; saveSettings(); refreshBgUI(); applyBackground(); };
+  r.readAsDataURL(f);
+});
+
+/* ============ VISUAL EFFECTS (canvas particles) ============ */
+const fxCanvas = document.getElementById("fxLayer");
+const fxCtx = fxCanvas.getContext("2d");
+let _fxParticles = [];
+let _fxRaf = null;
+function fxResize(){ fxCanvas.width = innerWidth; fxCanvas.height = innerHeight; }
+addEventListener("resize", fxResize); fxResize();
+
+function fxAccentColor(){
+  if (settings.fx.useAccent) {
+    const c = getComputedStyle(document.body).getPropertyValue("--accent").trim();
+    return c || settings.fx.color;
+  }
+  return settings.fx.color;
+}
+
+function _spawnParticle(){
+  const type = settings.fx.type;
+  const sz = settings.fx.size;
+  const sp = settings.fx.speed/10;
+  const w = fxCanvas.width, h = fxCanvas.height;
+  const base = { x:Math.random()*w, y:-20, r:sz*(0.6+Math.random()*0.8), a:Math.random()*Math.PI*2, va:(Math.random()-.5)*0.05, vx:(Math.random()-.5)*sp, vy:sp*(0.5+Math.random()*1.2), life:1, type };
+  if (type === "rain")    { base.vy = sp*8+Math.random()*sp*4; base.vx = sp*0.8; base.r = sz*0.3; }
+  if (type === "bubbles") { base.y = h+20; base.vy = -(sp*0.6+Math.random()*sp); base.vx=(Math.random()-.5)*sp*0.4; }
+  if (type === "stars")   { base.vy = sp*0.3; base.vx=(Math.random()-.5)*sp*0.3; base.r = sz*0.4; }
+  if (type === "sparks")  { base.y = h+10; base.vy = -(sp*1.2+Math.random()*sp); base.r = sz*0.3; }
+  if (type === "confetti"){ base.color = `hsl(${Math.random()*360},80%,60%)`; }
+  return base;
+}
+
+function _drawParticle(p){
+  const col = (p.type==="confetti") ? p.color : fxAccentColor();
+  fxCtx.save(); fxCtx.translate(p.x, p.y); fxCtx.rotate(p.a);
+  fxCtx.fillStyle = col;
+  fxCtx.globalAlpha = 0.85*p.life;
+  if (p.type === "petals") {
+    fxCtx.beginPath();
+    fxCtx.ellipse(0,0,p.r,p.r*0.55,0,0,Math.PI*2);
+    fxCtx.fill();
+  } else if (p.type === "snow") {
+    fxCtx.beginPath(); fxCtx.arc(0,0,p.r*0.6,0,Math.PI*2); fxCtx.fillStyle="#fff"; fxCtx.fill();
+  } else if (p.type === "leaves") {
+    fxCtx.fillStyle = `hsl(${(80+Math.sin(p.a)*40)|0},60%,45%)`;
+    fxCtx.beginPath(); fxCtx.ellipse(0,0,p.r*0.9,p.r*0.4,0,0,Math.PI*2); fxCtx.fill();
+  } else if (p.type === "stars") {
+    fxCtx.fillStyle = "#fff";
+    fxCtx.beginPath(); fxCtx.arc(0,0,p.r*0.4,0,Math.PI*2); fxCtx.fill();
+    fxCtx.globalAlpha = 0.4*p.life; fxCtx.beginPath(); fxCtx.arc(0,0,p.r,0,Math.PI*2); fxCtx.fill();
+  } else if (p.type === "bubbles") {
+    fxCtx.strokeStyle = col; fxCtx.lineWidth=1.2; fxCtx.globalAlpha=0.5*p.life;
+    fxCtx.beginPath(); fxCtx.arc(0,0,p.r,0,Math.PI*2); fxCtx.stroke();
+  } else if (p.type === "sparks") {
+    fxCtx.fillStyle = col;
+    fxCtx.beginPath(); fxCtx.arc(0,0,p.r*0.5,0,Math.PI*2); fxCtx.fill();
+  } else if (p.type === "rain") {
+    fxCtx.strokeStyle = col; fxCtx.lineWidth = Math.max(1,p.r*0.4); fxCtx.globalAlpha=0.6*p.life;
+    fxCtx.beginPath(); fxCtx.moveTo(0,0); fxCtx.lineTo(-p.vx*1.5, -p.vy*1.5); fxCtx.stroke();
+  } else if (p.type === "confetti") {
+    fxCtx.fillRect(-p.r*0.5,-p.r*0.25,p.r,p.r*0.5);
+  }
+  fxCtx.restore();
+}
+
+function _fxStep(){
+  if (settings.fx.type === "none") { fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height); _fxRaf=null; return; }
+  fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  const target = settings.fx.intensity;
+  while (_fxParticles.length < target) _fxParticles.push(_spawnParticle());
+  while (_fxParticles.length > target) _fxParticles.pop();
+  for (let i=_fxParticles.length-1;i>=0;i--){
+    const p = _fxParticles[i];
+    p.x += p.vx + Math.sin((p.y+p.a*30)*0.01)*0.4;
+    p.y += p.vy;
+    p.a += p.va;
+    if (p.type === "sparks") { p.life -= 0.005; if (p.life<=0) { _fxParticles[i]=_spawnParticle(); continue; } }
+    if (p.y > fxCanvas.height+30 && p.type!=="bubbles" && p.type!=="sparks") _fxParticles[i] = _spawnParticle();
+    if ((p.type==="bubbles"||p.type==="sparks") && p.y < -30) _fxParticles[i] = _spawnParticle();
+    if (p.x > fxCanvas.width+30) p.x = -20;
+    if (p.x < -30) p.x = fxCanvas.width+20;
+    _drawParticle(p);
+  }
+  _fxRaf = requestAnimationFrame(_fxStep);
+}
+
+function applyEffects(){
+  _fxParticles = [];
+  if (_fxRaf) { cancelAnimationFrame(_fxRaf); _fxRaf=null; }
+  if (settings.fx.type !== "none") _fxRaf = requestAnimationFrame(_fxStep);
+  else fxCtx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+}
+
+function refreshFxUI(){
+  document.getElementById("fxType").value      = settings.fx.type;
+  document.getElementById("fxIntensity").value = settings.fx.intensity;
+  document.getElementById("fxSpeed").value     = settings.fx.speed;
+  document.getElementById("fxSize").value      = settings.fx.size;
+  document.getElementById("fxUseAccent").checked = !!settings.fx.useAccent;
+  document.getElementById("fxColor").value     = settings.fx.color;
+  document.getElementById("fxColorRow").style.display = settings.fx.useAccent ? "none" : "";
+}
+document.getElementById("fxType").addEventListener("change", e => { settings.fx.type = e.target.value; saveSettings(); applyEffects(); });
+document.getElementById("fxIntensity").addEventListener("input", e => { settings.fx.intensity = +e.target.value; saveSettings(); });
+document.getElementById("fxSpeed").addEventListener("input", e => { settings.fx.speed = +e.target.value; saveSettings(); _fxParticles=[]; });
+document.getElementById("fxSize").addEventListener("input", e => { settings.fx.size = +e.target.value; saveSettings(); _fxParticles=[]; });
+document.getElementById("fxUseAccent").addEventListener("change", e => { settings.fx.useAccent = e.target.checked; saveSettings(); refreshFxUI(); });
+document.getElementById("fxColor").addEventListener("input", e => { settings.fx.color = e.target.value; saveSettings(); });
+
+// initial UI sync + apply
+refreshBgUI(); renderBgPresets(); applyBackground();
+refreshFxUI(); applyEffects();
 
 
 /* ============ STASH GAMES (display catalog) ============ */
