@@ -1283,11 +1283,24 @@ async function renderGames(query=""){
   const games = await loadGames();
   document.getElementById("games-count").textContent = `${(games.length + STASH.length).toLocaleString()} games available`;
   const q = query.trim().toLowerCase();
-  let list = q ? games.filter(g=>g.title.toLowerCase().includes(q)) : games;
-  list = applyVisibility(list);
-  if (!list.length) { grid.innerHTML=""; empty.textContent = q ? `No games match "${q}".` : "No games."; empty.style.display="block"; }
-  else grid.innerHTML = list.map(g=>cardHTML(g,{kind:"game"})).join("");
-  renderStashIntoGames(query);
+  const stashSection = document.getElementById("stash-section");
+  if (q) {
+    // Unified search: regular games + stash games together in one grid.
+    const regular = games.filter(g=>g.title.toLowerCase().includes(q))
+                         .map(g=>({...g,kind:"game"}));
+    const stash   = STASH.filter(s=>s.title.toLowerCase().includes(q))
+                         .map(s=>({...s,kind:"stash"}));
+    const list = applyVisibility(regular.concat(stash));
+    if (stashSection) stashSection.style.display = "none";
+    if (!list.length) { grid.innerHTML=""; empty.textContent = `No games match "${q}".`; empty.style.display="block"; }
+    else grid.innerHTML = list.map(x => x.kind === "stash" ? stashCardHTML(x) : cardHTML(x,{kind:"game"})).join("");
+  } else {
+    const list = applyVisibility(games);
+    if (stashSection) stashSection.style.display = "";
+    if (!list.length) { grid.innerHTML=""; empty.textContent = "No games."; empty.style.display="block"; }
+    else grid.innerHTML = list.map(g=>cardHTML(g,{kind:"game"})).join("");
+    renderStashIntoGames("");
+  }
 }
 function renderMovies(query=""){
   const q = query.trim().toLowerCase();
@@ -1795,16 +1808,28 @@ document.addEventListener("click", (e) => {
   }
 });
 /* Also render the existing /suggest view, if present */
-function renderSuggestStash(query=""){
+async function renderSuggestStash(query=""){
   const grid = document.getElementById("stash-grid");
   const empty = document.getElementById("stash-empty");
   const count = document.getElementById("stash-count");
   const more  = document.getElementById("stash-more-suggest");
   if (!grid) return;
   const q = (query||"").trim().toLowerCase();
-  const all = q ? STASH.filter(s => s.title.toLowerCase().includes(q)) : STASH;
-  const list = applyVisibility(all);
-  if (count) count.textContent = `${list.length} of ${STASH.length} stash games`;
+  let combined;
+  if (q) {
+    const games = await loadGames();
+    const regular = games.filter(g=>g.title.toLowerCase().includes(q))
+                         .map(g=>({...g,kind:"game"}));
+    const stash   = STASH.filter(s=>s.title.toLowerCase().includes(q))
+                         .map(s=>({...s,kind:"stash"}));
+    combined = regular.concat(stash);
+  } else {
+    combined = STASH.map(s=>({...s,kind:"stash"}));
+  }
+  const list = applyVisibility(combined);
+  if (count) count.textContent = q
+    ? `${list.length} matches across games + stash`
+    : `${list.length} of ${STASH.length} stash games`;
   if (!list.length) { grid.innerHTML=""; empty.textContent = `No stash games match "${query}".`; empty.style.display="block"; if (more) more.style.display="none"; return; }
   empty.style.display="none";
   const step = 60;
@@ -1812,7 +1837,7 @@ function renderSuggestStash(query=""){
   else renderSuggestStash._shown = Math.min(list.length, renderSuggestStash._shown || step);
   const shown = renderSuggestStash._shown;
   const cap = list.slice(0, shown);
-  grid.innerHTML = cap.map(stashCardHTML).join("");
+  grid.innerHTML = cap.map(x => x.kind === "stash" ? stashCardHTML(x) : cardHTML(x,{kind:"game"})).join("");
   if (more) more.style.display = "none";
   if (shown < list.length) {
     _attachInfiniteScroll(
