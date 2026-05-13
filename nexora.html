@@ -479,7 +479,7 @@
         </div>
 
         <div class="block-head">
-          <div><p class="mono">// Featured · global plays across all of Nexora</p><h2>Trending games</h2></div>
+          <div><p class="mono">// Featured</p><h2>Trending games</h2></div>
           <a class="view-all" data-go="games">View all →</a>
         </div>
         <div id="trending-grid" class="grid trending"></div>
@@ -742,7 +742,6 @@
       <button data-dtab="ck"><i class="fas fa-shield-halved"></i> Block Sim</button>
       <button data-dtab="cdn"><i class="fas fa-arrows-rotate"></i> CDN Rewriter</button>
       <button data-dtab="inspector"><i class="fas fa-magnifying-glass-chart"></i> Game Inspector</button>
-      <button data-dtab="trend"><i class="fas fa-fire"></i> Trending Admin</button>
       <button data-dtab="info"><i class="fas fa-circle-info"></i> Info</button>
     </div>
     <div class="dev-body">
@@ -863,38 +862,6 @@
       <div class="dev-panel" data-dpanel="info">
         <h3>Runtime Info</h3>
         <div class="dev-out" id="devInfoOut">…</div>
-      </div>
-
-      <div class="dev-panel" data-dpanel="trend">
-        <h3>Trending Admin</h3>
-        <p class="hint">Global trending bucket: <b id="trendBucket" style="color:var(--accent)">…</b>. Counts are shared across every player and persist forever. Enter the password to unlock manual reset and game injection.</p>
-        <label class="dev-label">Password</label>
-        <input id="trendPass" class="dev-input" type="password" placeholder="enter password" />
-        <div class="dev-row" style="margin-top:10px">
-          <button class="dev-btn" id="trendUnlock">Unlock</button>
-          <span class="hint" id="trendStatus" style="align-self:center">locked</span>
-        </div>
-        <div id="trendAdminBody" style="display:none;margin-top:14px">
-          <div class="dev-section">
-            <label class="dev-label">Reset trending</label>
-            <p class="hint">Rotates to a brand-new global bucket and clears local play caches. The homepage will rebuild trending from new plays — for everyone.</p>
-            <div class="dev-row">
-              <button class="dev-btn danger" id="trendReset"><i class="fas fa-rotate-left"></i> Reset trending now</button>
-            </div>
-          </div>
-          <div class="dev-section" style="margin-top:14px">
-            <label class="dev-label">Inject trending game</label>
-            <p class="hint">Pick any game from Nexora and we'll boost its play count so it appears in Trending. Sends real hits to the global counter (capped) and locally promotes it instantly.</p>
-            <input id="trendInjectName" class="dev-input" list="trendGameList" placeholder="Start typing a game title…" />
-            <datalist id="trendGameList"></datalist>
-            <div class="dev-row" style="margin-top:8px">
-              <label class="dev-label" style="align-self:center">Boost amount</label>
-              <input id="trendInjectAmt" class="dev-input" type="number" min="1" max="100000" value="10000" style="width:120px" />
-              <button class="dev-btn" id="trendInjectGo"><i class="fas fa-fire"></i> Inject</button>
-            </div>
-            <div class="dev-out" id="trendInjectOut" style="margin-top:10px;max-height:200px;overflow:auto">// idle</div>
-          </div>
-        </div>
       </div>
 
     </div>
@@ -1568,76 +1535,6 @@ function cardHTML(item, opts={}){
 function skeletons(n){ return Array.from({length:n}).map(()=>'<div class="skel"></div>').join(""); }
 
 /* ============ RENDER ============ */
-/* ===== Trending counter (cross-user, no backend) =====
-   Uses abacus.jasoncameron.dev — free public hit-counter API, CORS-enabled.
-   The namespace is STABLE (one global bucket forever, plus an admin salt
-   for forced resets). That means every play from every Nexora player on
-   any device accumulates into the same global counter and persists
-   indefinitely. No weekly reset — trending is genuine all-time global. */
-const TRENDING_POOL_KEY = "nexora_play_pool_v1";
-const TRENDING_CACHE_KEY = "nexora_play_cache_v1";
-const TRENDING_CACHE_TTL = 5 * 60 * 1000; // 5 min
-const TRENDING_SALT_KEY = "nexora_trend_salt_v1";
-const TRENDING_LOCAL_BOOST_KEY = "nexora_trend_boost_v1";
-/* Stable global bucket. Salt is the ONLY thing that changes the namespace,
-   and only when an admin manually resets trending. */
-function trendBucket(){
-  const salt = (localStorage.getItem(TRENDING_SALT_KEY) || "0").replace(/\D/g,"") || "0";
-  return `nexora-global-s${salt}`;
-}
-function trendNS(){ return trendBucket(); }
-function _loadBoosts(){
-  try { return JSON.parse(localStorage.getItem(TRENDING_LOCAL_BOOST_KEY) || "{}") || {}; }
-  catch { return {}; }
-}
-function _saveBoosts(b){
-  try { localStorage.setItem(TRENDING_LOCAL_BOOST_KEY, JSON.stringify(b)); } catch {}
-}
-function _trendKey(id){ return String(id).replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,80); }
-function _loadPool(){
-  try { return new Set(JSON.parse(localStorage.getItem(TRENDING_POOL_KEY) || "[]")); }
-  catch { return new Set(); }
-}
-function _savePool(set){
-  try { localStorage.setItem(TRENDING_POOL_KEY, JSON.stringify([...set].slice(-300))); } catch {}
-}
-function trackPlay(id){
-  if (!id) return;
-  const k = _trendKey(id);
-  const pool = _loadPool(); pool.add(String(id)); _savePool(pool);
-  fetch(`https://abacus.jasoncameron.dev/hit/${trendNS()}/${encodeURIComponent(k)}`)
-    .catch(()=>{});
-}
-async function fetchTrendingCounts(ids){
-  // Cached batch — only refetch if stale
-  let cache = {};
-  const cacheBucket = trendNS();
-  try { const raw = JSON.parse(localStorage.getItem(TRENDING_CACHE_KEY) || "{}");
-        if (raw && raw._b === cacheBucket && Date.now() - (raw._t||0) < TRENDING_CACHE_TTL) cache = raw.v || {}; } catch {}
-  const need = ids.filter(id => !(id in cache));
-  // Throttled parallelism — every Nexora game is queried so the trending row
-  // truly reflects global plays, not just what this device has launched.
-  const CONCURRENCY = 12;
-  let cursor = 0;
-  async function worker(){
-    while (cursor < need.length){
-      const id = need[cursor++];
-      try {
-        const r = await fetch(`https://abacus.jasoncameron.dev/get/${cacheBucket}/${encodeURIComponent(_trendKey(id))}`);
-        if (!r.ok) { cache[id] = 0; continue; }
-        const j = await r.json(); cache[id] = Number(j.value)||0;
-      } catch { cache[id] = 0; }
-    }
-  }
-  await Promise.all(Array.from({length: Math.min(CONCURRENCY, need.length)}, worker));
-  try { localStorage.setItem(TRENDING_CACHE_KEY, JSON.stringify({_t:Date.now(), _b:cacheBucket, v:cache})); } catch {}
-  // Apply local admin boosts on top so injected games surface immediately.
-  const boosts = _loadBoosts();
-  const merged = { ...cache };
-  for (const [id, val] of Object.entries(boosts)) merged[id] = (merged[id]||0) + Number(val||0);
-  return merged;
-}
-
 function pickTrending(games){
   const used = new Set();
   const picks = [];
@@ -1657,33 +1554,13 @@ function pickTrending(games){
   }
   return picks;
 }
-async function pickTrendingByPlays(games){
-  const combined = applyVisibility(games);
-  const byId = new Map(combined.map(g => [String(g.id), g]));
-  // Candidate pool: EVERY non-stash game on Nexora. Trending is fully
-  // universal — counts come from abacus (shared across every player), so
-  // ranking the entire catalog gives a true global top list regardless of
-  // what this particular device has launched.
-  const pool = combined.map(g => String(g.id));
-  if (!pool.length) return null;
-  const counts = await fetchTrendingCounts(pool);
-  const ranked = pool
-    .map(id => ({ g: byId.get(id), c: counts[id]||0 }))
-    .filter(x => x.g && x.c > 0)
-    .sort((a,b) => b.c - a.c)
-    .slice(0, TRENDING_COUNT)
-    .map(x => x.g);
-  return ranked.length ? ranked : null;
-}
 async function renderHome(){
   const grid = document.getElementById("trending-grid");
   grid.innerHTML = skeletons(TRENDING_COUNT);
   const games = await loadGames();
   document.getElementById("stat-games").textContent = (games.length + STASH.length).toLocaleString();
   document.getElementById("stat-favs").textContent = favorites.length;
-  let trending = null;
-  try { trending = await pickTrendingByPlays(games); } catch {}
-  if (!trending || !trending.length) trending = pickTrending(games);
+  const trending = pickTrending(games);
   grid.innerHTML = trending.length
     ? trending.map(g => g._stash ? stashCardHTML(g) : cardHTML(g,{kind:"game"})).join("")
     : `<div class="empty" style="grid-column:1/-1">No games available right now.</div>`;
@@ -1956,7 +1833,6 @@ function startGameNow(){
   const g = currentGame; if (!g) return;
   document.getElementById("prelaunchBlock").style.display = "none";
   showGameLoading();
-  try { if (g && g.id) trackPlay(g.id); } catch {}
   const frame = document.getElementById("player-frame");
   const runHtml = (raw) => {
     const withInsp = injectInspector(raw);
@@ -2882,76 +2758,7 @@ document.getElementById("devCkClear").addEventListener("click", () => { CK_TRUST
 function refreshDevInfo(){
   const info = { games_loaded: GAMES?.length ?? "(not loaded)", favorites: favorites.length, theme: settings.theme, cloak: settings.cloak, trusted_urls: [...CK_TRUSTED], user_agent: navigator.userAgent, viewport: `${innerWidth}x${innerHeight}` };
   document.getElementById("devInfoOut").textContent = JSON.stringify(info, null, 2);
-  refreshTrendAdmin();
 }
-
-/* ============ TRENDING ADMIN ============ */
-const TRENDING_ADMIN_PASS = "1127";
-let _trendUnlocked = false;
-function refreshTrendAdmin(){
-  const b = document.getElementById("trendBucket"); if (b) b.textContent = trendBucket();
-  const list = document.getElementById("trendGameList");
-  if (list && GAMES && !list.dataset.filled) {
-    list.innerHTML = GAMES.map(g => `<option value="${escapeHTML(g.title)}"></option>`).join("");
-    list.dataset.filled = "1";
-  }
-}
-document.getElementById("trendUnlock").addEventListener("click", () => {
-  const v = document.getElementById("trendPass").value;
-  const status = document.getElementById("trendStatus");
-  if (v === TRENDING_ADMIN_PASS) {
-    _trendUnlocked = true;
-    document.getElementById("trendAdminBody").style.display = "";
-    status.textContent = "unlocked"; status.style.color = "var(--accent)";
-    refreshTrendAdmin();
-  } else {
-    status.textContent = "wrong password"; status.style.color = "#ff6b6b";
-  }
-});
-document.getElementById("trendReset").addEventListener("click", () => {
-  if (!_trendUnlocked) return;
-  if (!confirm("Reset trending now? This rotates the weekly bucket and clears local play caches.")) return;
-  const cur = parseInt(localStorage.getItem(TRENDING_SALT_KEY) || "0", 10) || 0;
-  localStorage.setItem(TRENDING_SALT_KEY, String(cur + 1));
-  localStorage.removeItem(TRENDING_CACHE_KEY);
-  localStorage.removeItem(TRENDING_POOL_KEY);
-  localStorage.removeItem(TRENDING_LOCAL_BOOST_KEY);
-  refreshTrendAdmin();
-  if (typeof renderHome === "function") renderHome();
-  alert("Trending reset. New bucket: " + trendBucket());
-});
-document.getElementById("trendInjectGo").addEventListener("click", async () => {
-  if (!_trendUnlocked) return;
-  const out = document.getElementById("trendInjectOut");
-  const name = document.getElementById("trendInjectName").value.trim().toLowerCase();
-  const amt = Math.max(1, Math.min(100000, parseInt(document.getElementById("trendInjectAmt").value, 10) || 0));
-  if (!name) { out.textContent = "// pick a game first"; return; }
-  const games = await loadGames();
-  const g = games.find(x => x.title.toLowerCase() === name) || games.find(x => x.title.toLowerCase().includes(name));
-  if (!g) { out.textContent = "// no game matches \"" + name + "\""; return; }
-  const id = String(g.id);
-  // 1) Local promotion — pool + boost cache so it's trending on this device instantly.
-  const pool = _loadPool(); pool.add(id); _savePool(pool);
-  const boosts = _loadBoosts(); boosts[id] = (boosts[id]||0) + amt; _saveBoosts(boosts);
-  // 2) Cross-user — fire real hits to the global counter (capped at 200 to avoid hammering).
-  const realHits = Math.min(amt, 200);
-  out.textContent = `// promoted "${g.title}" locally (+${amt}). Sending ${realHits} global hits…`;
-  const ns = trendNS(); const k = encodeURIComponent(_trendKey(id));
-  let done = 0;
-  const concurrency = 8;
-  async function worker(){
-    while (done < realHits){
-      const i = done++; if (i >= realHits) break;
-      try { await fetch(`https://abacus.jasoncameron.dev/hit/${ns}/${k}`); } catch {}
-      if (i % 25 === 0) out.textContent = `// "${g.title}": local +${amt}, global ${i+1}/${realHits}…`;
-    }
-  }
-  await Promise.all(Array.from({length:concurrency}, worker));
-  // Invalidate count cache so the next render picks up the new value.
-  localStorage.removeItem(TRENDING_CACHE_KEY);
-  out.textContent = `// done. "${g.title}" boosted (+${amt} local, ${realHits} global hits). Refresh home to see it trend.`;
-  if (typeof renderHome === "function") renderHome();
-});
 
 /* ============ CDN REWRITER WIRING ============ */
 function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRules)); }
