@@ -479,7 +479,7 @@
         </div>
 
         <div class="block-head">
-          <div><p class="mono">// Featured · resets every Monday</p><h2>Weekly trending games</h2></div>
+          <div><p class="mono">// Featured · global plays across all of Nexora</p><h2>Trending games</h2></div>
           <a class="view-all" data-go="games">View all →</a>
         </div>
         <div id="trending-grid" class="grid trending"></div>
@@ -867,7 +867,7 @@
 
       <div class="dev-panel" data-dpanel="trend">
         <h3>Trending Admin</h3>
-        <p class="hint">Weekly trending bucket: <b id="trendBucket" style="color:var(--accent)">…</b>. Counters auto-reset every Monday. Enter the password to unlock manual reset and game injection.</p>
+        <p class="hint">Global trending bucket: <b id="trendBucket" style="color:var(--accent)">…</b>. Counts are shared across every player and persist forever. Enter the password to unlock manual reset and game injection.</p>
         <label class="dev-label">Password</label>
         <input id="trendPass" class="dev-input" type="password" placeholder="enter password" />
         <div class="dev-row" style="margin-top:10px">
@@ -877,14 +877,14 @@
         <div id="trendAdminBody" style="display:none;margin-top:14px">
           <div class="dev-section">
             <label class="dev-label">Reset trending</label>
-            <p class="hint">Rotates the weekly bucket immediately and clears local play caches. The homepage will rebuild trending from new plays.</p>
+            <p class="hint">Rotates to a brand-new global bucket and clears local play caches. The homepage will rebuild trending from new plays — for everyone.</p>
             <div class="dev-row">
               <button class="dev-btn danger" id="trendReset"><i class="fas fa-rotate-left"></i> Reset trending now</button>
             </div>
           </div>
           <div class="dev-section" style="margin-top:14px">
             <label class="dev-label">Inject trending game</label>
-            <p class="hint">Pick any game from Nexora and we'll boost its play count for the current week so it appears in Weekly Trending. Sends real hits to the global counter (capped) and locally promotes it instantly.</p>
+            <p class="hint">Pick any game from Nexora and we'll boost its play count so it appears in Trending. Sends real hits to the global counter (capped) and locally promotes it instantly.</p>
             <input id="trendInjectName" class="dev-input" list="trendGameList" placeholder="Start typing a game title…" />
             <datalist id="trendGameList"></datalist>
             <div class="dev-row" style="margin-top:8px">
@@ -1570,29 +1570,20 @@ function skeletons(n){ return Array.from({length:n}).map(()=>'<div class="skel">
 /* ============ RENDER ============ */
 /* ===== Trending counter (cross-user, no backend) =====
    Uses abacus.jasoncameron.dev — free public hit-counter API, CORS-enabled.
-   - On every game launch we POST a hit for that game id (skips stash games).
-   - Each device caches every id it has ever seen launched in TRENDING_POOL_KEY
-     so the homepage can fetch counts in bulk and rank globally.
-   - Falls back silently to the old random/pinned trending if the API is down. */
+   The namespace is STABLE (one global bucket forever, plus an admin salt
+   for forced resets). That means every play from every Nexora player on
+   any device accumulates into the same global counter and persists
+   indefinitely. No weekly reset — trending is genuine all-time global. */
 const TRENDING_POOL_KEY = "nexora_play_pool_v1";
 const TRENDING_CACHE_KEY = "nexora_play_cache_v1";
 const TRENDING_CACHE_TTL = 5 * 60 * 1000; // 5 min
 const TRENDING_SALT_KEY = "nexora_trend_salt_v1";
 const TRENDING_LOCAL_BOOST_KEY = "nexora_trend_boost_v1";
-/* ISO-week bucket so trending naturally rotates every Monday. The optional
-   admin "salt" lets us force-reset to a fresh bucket mid-week. */
-function _isoWeek(d){
-  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  const day = t.getUTCDay() || 7;
-  t.setUTCDate(t.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(t.getUTCFullYear(),0,1));
-  const wk = Math.ceil((((t - yearStart) / 86400000) + 1) / 7);
-  return { y: t.getUTCFullYear(), w: wk };
-}
+/* Stable global bucket. Salt is the ONLY thing that changes the namespace,
+   and only when an admin manually resets trending. */
 function trendBucket(){
-  const {y,w} = _isoWeek(new Date());
   const salt = (localStorage.getItem(TRENDING_SALT_KEY) || "0").replace(/\D/g,"") || "0";
-  return `nexora-w${y}-${String(w).padStart(2,"0")}-s${salt}`;
+  return `nexora-global-s${salt}`;
 }
 function trendNS(){ return trendBucket(); }
 function _loadBoosts(){
