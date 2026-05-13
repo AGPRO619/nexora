@@ -1045,7 +1045,7 @@
 /* ============ STATE ============ */
 const SETTINGS_KEY = "nexora_v8_settings";
 const FAVS_KEY = "nexora_v8_favs";
-const CDN_KEY = "nexora_v8_cdn";
+const CDN_KEY = "nexora_v9_cdn";
 const defaultSettings = {
   theme:"default", compact:false, anim:true, collapsed:false, cloak:"google",
   bg:{ enabled:false, color:"#0a1020", imageType:"none", preset:"", url:"", upload:"", opacity:60, blur:0, dim:0 },
@@ -1093,13 +1093,6 @@ function applyVisibility(list){
 /* ============ CDN REWRITER (live, multi-rule) ============ */
 const DEFAULT_CDN_RULES = [
   { from:"cdn.jsdelivr.net",          to:"fastly.jsdelivr.net" },
-  { from:"www.jsdelivr.net",          to:"fastly.jsdelivr.net" },
-  { from:"jsdelivr.net",              to:"fastly.jsdelivr.net" },
-  { from:"cdnjs.cloudflare.com",      to:"fastly.jsdelivr.net/gh/cdnjs/cdnjs/ajax/libs" },
-  { from:"unpkg.com",                 to:"fastly.jsdelivr.net/npm" },
-  { from:"cdn.skypack.dev",           to:"fastly.jsdelivr.net/npm" },
-  { from:"esm.sh",                    to:"fastly.jsdelivr.net/npm" },
-  { from:"raw.githubusercontent.com", to:"fastly.jsdelivr.net/gh" },
 ];
 let cdnRules = (() => {
   try {
