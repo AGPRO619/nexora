@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8545160253527774" crossorigin="anonymous"></script>
 <style>
   /* ---------- THEMES ---------- */
   :root{
@@ -213,6 +214,19 @@
   .ck-block button.primary{background:linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, #fff));color:#0a0d18;border-color:transparent}
   .ck-block button:hover{transform:translateY(-1px);filter:brightness(1.1)}
 
+  /* ---------- GAME LOADING OVERLAY (fake, 7s, just a white ring) ---------- */
+  .gl-load{position:absolute;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:6}
+  .gl-load.show{display:flex}
+  .gl-ring{width:78px;height:78px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;animation:gl-spin 0.9s linear infinite}
+  @keyframes gl-spin{to{transform:rotate(360deg)}}
+  /* ---------- NEXORA BOOT LOADER ---------- */
+  #bootLoader{position:fixed;inset:0;background:#05070d;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;color:#e6ecff;font-family:system-ui,sans-serif;text-align:center;padding:30px}
+  #bootLoader.hide{opacity:0;pointer-events:none;transition:opacity .35s ease}
+  #bootLoader .br{width:78px;height:78px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;animation:gl-spin 0.9s linear infinite}
+  #bootLoader h1{font-family:'Orbitron',system-ui;font-size:22px;margin:0;letter-spacing:.06em}
+  #bootLoader p{margin:0;font-size:13px;color:#8fa1c7;max-width:520px;line-height:1.55}
+  #bootLoader b{color:#7cc4ff}
+
   /* ---------- MODAL / SETTINGS ---------- */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:90;display:none;align-items:center;justify-content:center;padding:24px}
   .modal.open{display:flex}
@@ -374,6 +388,14 @@
 </head>
 <body class="t-default">
 
+<!-- ============ NEXORA BOOT LOADER ============ -->
+<div id="bootLoader">
+  <div class="br"></div>
+  <h1>NEXORA</h1>
+  <p id="bootMsg">Booting library and patching CDN paths to <b>fastly.jsdelivr.net</b>…</p>
+  <p id="bootStat" style="font-size:12px;opacity:.7">0 rewrites · 0 packs</p>
+</div>
+
 <!-- ============ BACKGROUND + EFFECT LAYERS ============ -->
 <div id="bgLayer" style="position:fixed;inset:0;z-index:-3;pointer-events:none;background:transparent;transition:background .3s"></div>
 <div id="bgImage" style="position:fixed;inset:0;z-index:-2;pointer-events:none;background-size:cover;background-position:center;background-repeat:no-repeat;transition:opacity .3s,filter .3s;opacity:0"></div>
@@ -436,7 +458,7 @@
         <div class="hero">
           <p class="mono float">// Welcome</p>
           <h1>NEX<span class="o">O</span>RA</h1>
-          <p class="lead">A free spot for browser games, movies and handy apps. No sign-up — just hit play.</p>
+          <p class="lead">The best site</p>
           <div class="cta">
             <button class="btn primary" data-go="games">Browse Games</button>
             <button class="btn ghost" data-go="about">How it works</button>
@@ -462,6 +484,17 @@
         </div>
         <div id="trending-grid" class="grid trending"></div>
 
+        <div style="margin:32px 0;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden">
+          <p class="mono" style="margin:0 0 8px;opacity:.55;font-size:11px">// Sponsored</p>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-8545160253527774"
+               data-ad-slot="1182148945"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <script>try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}</script>
+        </div>
+
         <div id="home-search-section" style="display:none;margin-top:30px">
           <div class="block-head">
             <div><p class="mono" style="color:var(--accent)">// Search</p><h2 id="home-search-title">Search results</h2></div>
@@ -483,6 +516,11 @@
             <button class="btn ghost" id="loadFolderBtn"><i class="fas fa-folder-open"></i> Load From Folder</button>
             <input type="file" id="folderInput" webkitdirectory directory multiple accept=".html,.htm" style="display:none" />
           </div>
+        </div>
+        <div id="category-bar" class="cat-bar">
+          <div class="cat-row" id="catTopRow"></div>
+          <div class="cat-row cat-sub" id="catGroupRow" style="display:none"></div>
+          <div class="cat-row cat-sub" id="catConsoleRow" style="display:none"></div>
         </div>
         <div id="games-grid" class="grid"></div>
         <div id="games-empty" class="empty" style="display:none"></div>
@@ -649,6 +687,10 @@
   </aside>
   <div class="frame">
     <iframe id="player-frame" allow="fullscreen; autoplay; gamepad; clipboard-write" allowfullscreen></iframe>
+    <div class="gl-load" id="gameLoading">
+      <div class="gl-ring"></div>
+      <button id="glSkip" style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.25);padding:10px 22px;border-radius:999px;font:600 13px/1 'Space Grotesk',sans-serif;cursor:pointer;letter-spacing:.04em">Skip loading →</button>
+    </div>
     <div class="ck-block" id="ckBlock">
       <div class="ck-card">
         <span class="ck-tag"><i class="fas fa-triangle-exclamation"></i> Blocked by your network</span>
@@ -699,6 +741,7 @@
       <button data-dtab="storage"><i class="fas fa-database"></i> Storage</button>
       <button data-dtab="ck"><i class="fas fa-shield-halved"></i> Block Sim</button>
       <button data-dtab="cdn"><i class="fas fa-arrows-rotate"></i> CDN Rewriter</button>
+      <button data-dtab="inspector"><i class="fas fa-magnifying-glass-chart"></i> Game Inspector</button>
       <button data-dtab="info"><i class="fas fa-circle-info"></i> Info</button>
     </div>
     <div class="dev-body">
@@ -783,18 +826,37 @@
 
       <div class="dev-panel" data-dpanel="cdn">
         <h3>CDN Rewriter (live)</h3>
-        <p class="hint">Game codes from GitHub get scanned on load. Any matching CDN host inside the base64 payload is swapped in real time (decoded → replaced → re-encoded) before the game runs. Path, filename, and game logic stay identical.</p>
-        <label class="dev-label">Replace host</label>
-        <div class="dev-grid">
-          <input id="cdnFrom" class="dev-input" value="cdn.jsdelivr.net">
-          <input id="cdnTo"   class="dev-input" value="fastly.jsdelivr.net">
-        </div>
+        <p class="hint">Every game payload (URL or base64) is decoded and scanned at boot. Each rule below is applied in order; matches are swapped in-place and re-encoded before the game runs. Default ruleset re-routes jsdelivr / cdnjs / unpkg / skypack / esm.sh / raw.githubusercontent through <b>fastly.jsdelivr.net</b>.</p>
+        <label class="dev-label">Active rules (one per line, format: <code>from → to</code>)</label>
+        <textarea id="cdnRulesText" class="dev-area" style="min-height:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea>
         <div class="dev-row" style="margin-top:10px">
+          <button class="dev-btn" id="cdnSaveRules">Save rules</button>
           <button class="dev-btn" id="cdnReload">Re-scan games now</button>
+          <button class="dev-btn ghost" id="cdnResetRules">Reset to defaults</button>
           <button class="dev-btn ghost" id="cdnClearLog">Clear log</button>
           <span class="hint" style="align-self:center">Total rewrites: <b id="cdnCount" style="color:var(--accent)">0</b></span>
         </div>
         <div class="dev-out" id="cdnLog" style="max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all">Waiting for game manifests…</div>
+      </div>
+
+      <div class="dev-panel" data-dpanel="inspector">
+        <h3>Game Inspector — <span id="inspTitle" style="color:var(--text);font-family:inherit;letter-spacing:0">no game running</span></h3>
+        <p class="hint">Live view of the raw HTML currently executing in the player iframe, plus the captured <code>console.*</code> output from the game itself.</p>
+        <div class="dev-section">
+          <label class="dev-label">Running source (post-CDN-rewrite)</label>
+          <pre id="inspSrc" class="dev-out" style="max-height:260px;overflow:auto;white-space:pre;word-break:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px">// no game running</pre>
+          <div class="dev-row" style="margin-top:8px">
+            <button class="dev-btn ghost" id="inspCopySrc"><i class="fas fa-copy"></i> Copy source</button>
+            <button class="dev-btn ghost" id="inspDownloadSrc"><i class="fas fa-download"></i> Download .html</button>
+          </div>
+        </div>
+        <div class="dev-section">
+          <label class="dev-label">Game console output (log / warn / error)</label>
+          <div id="inspLog" class="dev-out" style="max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:12px">// console output from the running game will appear here</div>
+          <div class="dev-row" style="margin-top:8px">
+            <button class="dev-btn ghost" id="inspClearLog"><i class="fas fa-broom"></i> Clear log</button>
+          </div>
+        </div>
       </div>
 
       <div class="dev-panel" data-dpanel="info">
@@ -830,6 +892,10 @@
       <div class="panel" data-panel="background">
         <h2>Background</h2>
         <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Layer a solid color, an image with opacity, and a darken overlay.</p>
+        <div class="row" style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;margin-bottom:12px">
+          <div><div class="label">Quick reset</div><div class="hint">Turn the custom background off and clear all settings.</div></div>
+          <button class="ghost-btn" id="bgResetBtn"><i class="fas fa-rotate-left"></i> Reset Background</button>
+        </div>
         <div class="row">
           <div><div class="label">Custom background</div><div class="hint">Turn on to override the theme background.</div></div>
           <label class="switch"><input type="checkbox" id="bgEnabled"><span class="slider"></span></label>
@@ -876,6 +942,10 @@
       <div class="panel" data-panel="effects">
         <h2>Visual Effects</h2>
         <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Add atmospheric particles like falling petals, snow, or sparks.</p>
+        <div class="row" style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;margin-bottom:12px">
+          <div><div class="label">Quick reset</div><div class="hint">Turn effects off and restore default values.</div></div>
+          <button class="ghost-btn" id="fxResetBtn"><i class="fas fa-rotate-left"></i> Reset Effects</button>
+        </div>
         <div class="row"><div class="label">Effect</div>
           <select id="fxType" class="input">
             <option value="none">None</option>
@@ -960,6 +1030,16 @@
 .card .stash-warn:hover{background:rgba(0,0,0,.85);color:#ffd966}
 .stash-section{margin-top:38px}
 .stash-section .nb code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;font-size:12px}
+
+/* ============ CATEGORY BAR ============ */
+.cat-bar{display:flex;flex-direction:column;gap:8px;margin:14px 0 18px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);position:relative;z-index:10}
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cat-sub{padding-top:8px;border-top:1px dashed var(--border)}
+.cat-btn{padding:8px 14px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:8px;transition:all .15s;font-family:inherit;white-space:nowrap}
+.cat-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cat-btn.active{background:var(--accent);color:#000;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.cat-btn img.cat-logo{width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 1px rgba(0,0,0,.4))}
+.cat-btn .cat-count{opacity:.65;font-size:11px;margin-left:4px}
 </style>
 <script>
 /* ============ STATE ============ */
@@ -1010,9 +1090,29 @@ function applyVisibility(list){
 }
 
 
-/* ============ CDN REWRITER (live) ============ */
-let cdnRule = { from:"cdn.jsdelivr.net", to:"fastly.jsdelivr.net", ...(JSON.parse(localStorage.getItem(CDN_KEY) || "{}")) };
+/* ============ CDN REWRITER (live, multi-rule) ============ */
+const DEFAULT_CDN_RULES = [
+  { from:"cdn.jsdelivr.net",          to:"fastly.jsdelivr.net" },
+  { from:"www.jsdelivr.net",          to:"fastly.jsdelivr.net" },
+  { from:"jsdelivr.net",              to:"fastly.jsdelivr.net" },
+  { from:"cdnjs.cloudflare.com",      to:"fastly.jsdelivr.net/gh/cdnjs/cdnjs/ajax/libs" },
+  { from:"unpkg.com",                 to:"fastly.jsdelivr.net/npm" },
+  { from:"cdn.skypack.dev",           to:"fastly.jsdelivr.net/npm" },
+  { from:"esm.sh",                    to:"fastly.jsdelivr.net/npm" },
+  { from:"raw.githubusercontent.com", to:"fastly.jsdelivr.net/gh" },
+];
+let cdnRules = (() => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CDN_KEY) || "null");
+    if (Array.isArray(saved) && saved.length) return saved;
+    if (saved && saved.from && saved.to) return [saved, ...DEFAULT_CDN_RULES.filter(r => r.from !== saved.from)];
+  } catch {}
+  return DEFAULT_CDN_RULES.slice();
+})();
+/* legacy alias for any code that still references cdnRule */
+let cdnRule = cdnRules[0];
 const cdnLogEntries = [];
+let cdnTotalRewrites = 0;
 function cdnLog(msg, kind){
   cdnLogEntries.push({ stamp:new Date().toLocaleTimeString(), msg, kind:kind||"info" });
   renderCdnLog();
@@ -1021,22 +1121,34 @@ function renderCdnLog(){
   const el = document.getElementById("cdnLog");
   const c  = document.getElementById("cdnCount");
   if (!el) return;
-  const hits = cdnLogEntries.filter(e => e.kind==="hit").reduce((n,e)=>n+(e.count||1),0);
-  if (c) c.textContent = "("+hits+" rewrite"+(hits===1?"":"s")+")";
+  if (c) c.textContent = "("+cdnTotalRewrites.toLocaleString()+" rewrite"+(cdnTotalRewrites===1?"":"s")+")";
   el.textContent = cdnLogEntries.length
     ? cdnLogEntries.slice(-300).map(e => `[${e.stamp}] ${e.msg}`).join("\n")
     : "No activity yet.";
   el.scrollTop = el.scrollHeight;
+  const bs = document.getElementById("bootStat");
+  if (bs && document.getElementById("bootLoader") && !document.getElementById("bootLoader").classList.contains("hide")) {
+    bs.textContent = `${cdnTotalRewrites.toLocaleString()} rewrites · loading game packs…`;
+  }
 }
 function rewriteCdnInText(text, label){
-  const from = (cdnRule.from||"").trim();
-  const to   = (cdnRule.to||"").trim();
-  if (!from || !to || from === to || typeof text !== "string") return { text, count:0 };
-  const re = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
-  let count = 0;
-  const out = text.replace(re, () => { count++; return to; });
-  if (count > 0) cdnLogEntries.push({ stamp:new Date().toLocaleTimeString(), msg:`✓ ${label}: replaced ${count}× "${from}" → "${to}"`, kind:"hit", count });
-  return { text: out, count };
+  if (typeof text !== "string") return { text, count:0 };
+  let total = 0, out = text;
+  const perRule = [];
+  for (const rule of cdnRules) {
+    const from = (rule.from||"").trim();
+    const to   = (rule.to||"").trim();
+    if (!from || !to || from === to) continue;
+    const re = new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+    let n = 0;
+    out = out.replace(re, () => { n++; return to; });
+    if (n) { total += n; perRule.push(`${n}× "${from}"→"${to}"`); }
+  }
+  if (total > 0) {
+    cdnTotalRewrites += total;
+    cdnLogEntries.push({ stamp:new Date().toLocaleTimeString(), msg:`✓ ${label}: ${perRule.join(", ")}`, kind:"hit", count: total });
+  }
+  return { text: out, count: total };
 }
 // UTF-8 safe base64 helpers
 function b64decodeUtf8(b64){
@@ -1279,46 +1391,129 @@ function buildSrc(item){
   return "about:blank";
 }
 
+/* Minimal blank-white loading shell written into a freshly opened tab.
+   It's only visible briefly while we fetch + rewrite the raw game HTML;
+   the final tab content is ONLY the game's raw code (the loading shell
+   is overwritten via document.write before the user sees anything). */
+function newTabLoadingHTML(){
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Loading…</title>
+<style>html,body{margin:0;height:100%;background:#000;display:grid;place-items:center}
+.r{width:64px;height:64px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:#fff;animation:s .9s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}</style></head>
+<body><div class="r"></div></body></html>`;
+}
+function openLoadingTab(){
+  const w = window.open("about:blank", "_blank");
+  if (!w) return null;
+  try { w.document.open(); w.document.write(newTabLoadingHTML()); w.document.close(); } catch {}
+  return w;
+}
+
+/* In-player FAKE loading overlay — black bg, just a white spinning ring,
+   shown for a fixed ~7s every time a game starts. The iframe is loading
+   underneath the whole time; we just hide the overlay after the timer. */
+const GL_FAKE_MS = 7000;
+let _glHideTimer = null;
+function showGameLoading(){
+  const el = document.getElementById("gameLoading");
+  if (!el) return;
+  el.classList.add("show");
+  clearTimeout(_glHideTimer);
+  _glHideTimer = setTimeout(() => el.classList.remove("show"), GL_FAKE_MS);
+}
+function hideGameLoading(){
+  const el = document.getElementById("gameLoading");
+  if (el) el.classList.remove("show");
+  clearTimeout(_glHideTimer);
+}
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "glSkip") hideGameLoading();
+});
+/* Listen for console messages posted from the game iframe (Inspector). */
+window.addEventListener("message", (ev) => {
+  const d = ev.data;
+  if (!d || d.__nx !== 1) return;
+  pushInspectorLog(d.k, d.a);
+});
+
 /* Open a game in a fresh blank tab by writing the (already CDN-rewritten)
    HTML directly into it, instead of handing over a blob: URL. */
 function openGameInNewTab(game){
   if (!game) return;
+  // Always write ONLY the raw game HTML into the new tab — no Nexora wrapper,
+  // no titles, no chrome. The temporary white spinner is overwritten in place.
+  const writeRaw = (raw) => {
+    const w = openLoadingTab();
+    if (!w) return;
+    try { w.document.open(); w.document.write(raw); w.document.close(); }
+    catch { try { w.location.href = URL.createObjectURL(new Blob([raw], {type:"text/html"})); } catch {} }
+  };
   if (game._stash) {
     const url = `https://fastly.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encodeURIComponent(game.file)}?t=${Date.now()}`;
-    const w = window.open("about:blank", "_blank");
-    if (!w) return;
-    try { w.document.title = game.title || "Stash Game"; } catch {}
     fetch(url).then(r=>r.text()).then(t => {
       const { text } = rewriteCdnInText(t, `${game.title} [stash newtab]`);
-      try { w.document.open(); w.document.write(text); w.document.close(); }
-      catch { w.location.href = URL.createObjectURL(new Blob([text], {type:"text/html"})); }
-    }).catch(() => { try { w.location.href = url; } catch {} });
+      writeRaw(text);
+    }).catch(() => { window.open(url, "_blank", "noopener"); });
     return;
   }
   if (game._gnmath) {
     if (game.gnExternal) { window.open(game.gnurl, "_blank", "noopener"); return; }
-    const w = window.open("about:blank", "_blank");
-    if (!w) return;
-    try { w.document.title = game.title || "Game"; } catch {}
     fetch(game.gnurl + "?t=" + Date.now()).then(r=>r.text()).then(t => {
       const { text } = rewriteCdnInText(t, `${game.title} [gn-math newtab]`);
-      try { w.document.open(); w.document.write(text); w.document.close(); }
-      catch { w.location.href = URL.createObjectURL(new Blob([text], {type:"text/html"})); }
-    }).catch(() => { try { w.location.href = game.gnurl; } catch {} });
+      writeRaw(text);
+    }).catch(() => { window.open(game.gnurl, "_blank", "noopener"); });
     return;
   }
   if (game.code) {
     try {
       const html = atob(game.code); // already fastly-rewritten by loadGames()
-      const w = window.open("about:blank", "_blank");
-      if (!w) return;
-      try { w.document.open(); w.document.write(html); w.document.close(); }
-      catch { w.location.href = URL.createObjectURL(new Blob([html], {type:"text/html"})); }
-      try { w.document.title = game.title || "Game"; } catch {}
+      writeRaw(html);
       return;
     } catch {}
   }
   if (game.url) window.open(game.url, "_blank", "noopener");
+}
+
+/* ============ GAME INSPECTOR (Dev Tool) ============ */
+let inspectorSource = "";          // raw HTML currently running in the iframe
+let inspectorLogs   = [];          // captured console.* from the iframe
+function INSPECTOR_INJECT(){
+  return `<script>(function(){try{
+    var send=function(k,a){try{parent.postMessage({__nx:1,k:k,a:a.map(function(x){try{return typeof x==="string"?x:JSON.stringify(x)}catch(e){return String(x)}})},"*")}catch(e){}};
+    ["log","info","warn","error","debug"].forEach(function(k){var o=console[k]?console[k].bind(console):function(){};console[k]=function(){send(k,[].slice.call(arguments));return o.apply(null,arguments)}});
+    window.addEventListener("error",function(e){send("error",[e.message+" @ "+(e.filename||"")+":"+(e.lineno||"")])});
+    window.addEventListener("unhandledrejection",function(e){send("error",["Unhandled rejection: "+(e.reason&&e.reason.message||String(e.reason))])});
+  }catch(e){}})();<\/script>`;
+}
+function injectInspector(html){
+  if (typeof html !== "string") return html;
+  const tag = INSPECTOR_INJECT();
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, m => m + tag);
+  if (/<html[^>]*>/i.test(html)) return html.replace(/<html[^>]*>/i, m => m + "<head>" + tag + "</head>");
+  return tag + html;
+}
+function setInspectorSource(html, title){
+  inspectorSource = String(html || "");
+  inspectorLogs = [];
+  renderInspector(title || (currentGame && currentGame.title));
+}
+function pushInspectorLog(kind, args){
+  inspectorLogs.push({ stamp: new Date().toLocaleTimeString(), kind, args });
+  if (inspectorLogs.length > 500) inspectorLogs.shift();
+  renderInspector();
+}
+function renderInspector(title){
+  const srcEl = document.getElementById("inspSrc");
+  const logEl = document.getElementById("inspLog");
+  const ttl   = document.getElementById("inspTitle");
+  if (ttl && title) ttl.textContent = title;
+  if (srcEl) srcEl.textContent = inspectorSource ? inspectorSource.slice(0, 200000) : "// no game running";
+  if (logEl) {
+    logEl.textContent = inspectorLogs.length
+      ? inspectorLogs.map(l => `[${l.stamp}] ${l.kind.toUpperCase()}  ${l.args.join(" ")}`).join("\n")
+      : "// console output from the running game will appear here";
+    logEl.scrollTop = logEl.scrollHeight;
+  }
 }
 
 /* ============ HELPERS ============ */
@@ -1340,11 +1535,53 @@ function cardHTML(item, opts={}){
 function skeletons(n){ return Array.from({length:n}).map(()=>'<div class="skel"></div>').join(""); }
 
 /* ============ RENDER ============ */
+/* ===== Trending counter (cross-user, no backend) =====
+   Uses abacus.jasoncameron.dev — free public hit-counter API, CORS-enabled.
+   - On every game launch we POST a hit for that game id (skips stash games).
+   - Each device caches every id it has ever seen launched in TRENDING_POOL_KEY
+     so the homepage can fetch counts in bulk and rank globally.
+   - Falls back silently to the old random/pinned trending if the API is down. */
+const TRENDING_NS = "nexora-v1";
+const TRENDING_POOL_KEY = "nexora_play_pool_v1";
+const TRENDING_CACHE_KEY = "nexora_play_cache_v1";
+const TRENDING_CACHE_TTL = 5 * 60 * 1000; // 5 min
+function _trendKey(id){ return String(id).replace(/[^a-zA-Z0-9_-]/g,"_").slice(0,80); }
+function _loadPool(){
+  try { return new Set(JSON.parse(localStorage.getItem(TRENDING_POOL_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function _savePool(set){
+  try { localStorage.setItem(TRENDING_POOL_KEY, JSON.stringify([...set].slice(-300))); } catch {}
+}
+function trackPlay(id){
+  if (!id) return;
+  const k = _trendKey(id);
+  const pool = _loadPool(); pool.add(String(id)); _savePool(pool);
+  fetch(`https://abacus.jasoncameron.dev/hit/${TRENDING_NS}/${encodeURIComponent(k)}`)
+    .catch(()=>{});
+}
+async function fetchTrendingCounts(ids){
+  // Cached batch — only refetch if stale
+  let cache = {};
+  try { const raw = JSON.parse(localStorage.getItem(TRENDING_CACHE_KEY) || "{}");
+        if (raw && Date.now() - (raw._t||0) < TRENDING_CACHE_TTL) cache = raw.v || {}; } catch {}
+  const need = ids.filter(id => !(id in cache));
+  await Promise.all(need.slice(0, 60).map(async id => {
+    try {
+      const r = await fetch(`https://abacus.jasoncameron.dev/get/${TRENDING_NS}/${encodeURIComponent(_trendKey(id))}`);
+      if (!r.ok) { cache[id] = 0; return; }
+      const j = await r.json(); cache[id] = Number(j.value)||0;
+    } catch { cache[id] = 0; }
+  }));
+  try { localStorage.setItem(TRENDING_CACHE_KEY, JSON.stringify({_t:Date.now(), v:cache})); } catch {}
+  return cache;
+}
+
 function pickTrending(games){
   const used = new Set();
   const picks = [];
-  const stashPool = (typeof STASH !== "undefined" ? STASH : []).map(s => ({...s, _stash:true}));
-  const combined = applyVisibility(games.concat(stashPool));
+  // Stash games are excluded from trending — only "real" games here.
+  const combined = applyVisibility(games);
   for (const name of PINNED_TRENDING) {
     if (picks.length >= TRENDING_COUNT) break;
     const needle = String(name).trim().toLowerCase();
@@ -1359,13 +1596,35 @@ function pickTrending(games){
   }
   return picks;
 }
+async function pickTrendingByPlays(games){
+  const combined = applyVisibility(games);
+  const byId = new Map(combined.map(g => [String(g.id), g]));
+  // Candidate pool: every id this device has seen played + pinned matches.
+  const pool = [..._loadPool()].filter(id => byId.has(id));
+  for (const name of PINNED_TRENDING) {
+    const needle = String(name).trim().toLowerCase(); if (!needle) continue;
+    const m = combined.find(g => g.title.toLowerCase().includes(needle));
+    if (m && !pool.includes(String(m.id))) pool.push(String(m.id));
+  }
+  if (!pool.length) return null;
+  const counts = await fetchTrendingCounts(pool);
+  const ranked = pool
+    .map(id => ({ g: byId.get(id), c: counts[id]||0 }))
+    .filter(x => x.g && x.c > 0)
+    .sort((a,b) => b.c - a.c)
+    .slice(0, TRENDING_COUNT)
+    .map(x => x.g);
+  return ranked.length ? ranked : null;
+}
 async function renderHome(){
   const grid = document.getElementById("trending-grid");
   grid.innerHTML = skeletons(TRENDING_COUNT);
   const games = await loadGames();
   document.getElementById("stat-games").textContent = (games.length + STASH.length).toLocaleString();
   document.getElementById("stat-favs").textContent = favorites.length;
-  const trending = pickTrending(games);
+  let trending = null;
+  try { trending = await pickTrendingByPlays(games); } catch {}
+  if (!trending || !trending.length) trending = pickTrending(games);
   grid.innerHTML = trending.length
     ? trending.map(g => g._stash ? stashCardHTML(g) : cardHTML(g,{kind:"game"})).join("")
     : `<div class="empty" style="grid-column:1/-1">No games available right now.</div>`;
@@ -1629,6 +1888,7 @@ function openPlayer(g){
   document.getElementById("ps-fav").classList.toggle("on", favorites.includes(String(g.id)));
   // Show prelaunch screen; actual frame load happens on Continue.
   hideCkBlock();
+  hideGameLoading();
   frame.src = "about:blank";
   document.getElementById("prelaunchTitle").textContent = `Ready to play — ${g.title}`;
   document.getElementById("prelaunchBlock").style.display = "flex";
@@ -1636,24 +1896,32 @@ function openPlayer(g){
 function startGameNow(){
   const g = currentGame; if (!g) return;
   document.getElementById("prelaunchBlock").style.display = "none";
+  showGameLoading();
+  try { if (g && g.id) trackPlay(g.id); } catch {}
   const frame = document.getElementById("player-frame");
+  const runHtml = (raw) => {
+    const withInsp = injectInspector(raw);
+    setInspectorSource(raw, g.title);
+    const blob = new Blob([withInsp], {type:"text/html"});
+    const src = URL.createObjectURL(blob);
+    activeBlobUrl = src;
+    frame.src = src;
+    startCkWatch(src);
+  };
   if (g._stash) {
     const url = `https://fastly.jsdelivr.net/gh/bubbls/ugs-singlefile/UGS-Files/${encodeURIComponent(g.file)}?t=${Date.now()}`;
     frame.src = "about:blank";
     fetch(url).then(r=>r.text()).then(t => {
       const { text } = rewriteCdnInText(t, `${g.title} [stash embed]`);
-      const blob = new Blob([text], {type:"text/html"});
-      const src = URL.createObjectURL(blob);
-      activeBlobUrl = src;
-      frame.src = src;
-      startCkWatch(src);
-    }).catch(() => { frame.src = url; startCkWatch(url); });
+      runHtml(text);
+    }).catch(() => { frame.src = url; startCkWatch(url); setInspectorSource("// remote URL: "+url, g.title); });
     return;
   }
   if (g._gnmath) {
     if (g.gnExternal) {
       frame.src = g.gnurl;
       startCkWatch(g.gnurl);
+      setInspectorSource("// external gn-math: "+g.gnurl, g.title);
       return;
     }
     frame.src = "about:blank";
@@ -1661,18 +1929,22 @@ function startGameNow(){
       .then(r => r.text())
       .then(t => {
         const { text } = rewriteCdnInText(t, `${g.title} [gn-math embed]`);
-        const blob = new Blob([text], {type:"text/html"});
-        const src = URL.createObjectURL(blob);
-        activeBlobUrl = src;
-        frame.src = src;
-        startCkWatch(src);
-      }).catch(() => { frame.src = g.gnurl; startCkWatch(g.gnurl); });
+        runHtml(text);
+      }).catch(() => { frame.src = g.gnurl; startCkWatch(g.gnurl); setInspectorSource("// remote URL: "+g.gnurl, g.title); });
     return;
+  }
+  if (g.code) {
+    try {
+      const html = atob(g.code);
+      runHtml(html);
+      return;
+    } catch {}
   }
   const src = buildSrc(g);
   if (src.startsWith("blob:")) activeBlobUrl = src;
   frame.src = src;
   startCkWatch(src);
+  setInspectorSource("// external URL: "+(g.url||src), g.title);
 }
 function closePlayer(){
   const player = document.getElementById("player");
@@ -1680,6 +1952,7 @@ function closePlayer(){
   player.classList.remove("active");
   frame.src = "about:blank";
   hideCkBlock();
+  hideGameLoading();
   document.getElementById("prelaunchBlock").style.display = "none";
   clearTimeout(ckCheckTimer);
   if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
@@ -1692,6 +1965,7 @@ document.getElementById("ps-refresh").addEventListener("click", () => {
     const f = document.getElementById("player-frame");
     const src = f.src;
     hideCkBlock();
+    showGameLoading(currentGame.title);
     f.src = src;
     startCkWatch(src);
   }
@@ -1700,6 +1974,7 @@ document.getElementById("ckRetry").addEventListener("click", () => {
   const f = document.getElementById("player-frame");
   const src = ckExpectedSrc || f.src;
   hideCkBlock();
+  showGameLoading(currentGame && currentGame.title);
   f.src = "about:blank";
   setTimeout(() => { f.src = src; startCkWatch(src); }, 50);
 });
@@ -2198,6 +2473,269 @@ function flashCatalogHint(card, item){
   flashCatalogHint._t = setTimeout(()=>t.classList.remove("show"), 3200);
   card.animate([{transform:"translateY(-4px)"},{transform:"translateY(-4px) translateX(-4px)"},{transform:"translateY(-4px) translateX(4px)"},{transform:"translateY(-4px)"}],{duration:260, easing:"ease-in-out"});
 }
+
+/* ============ RETRO CONSOLE CATEGORIES ============ */
+const RETRO_CONSOLES = {
+  n64: {
+    name: "Nintendo 64", short: "N64",
+    logo: "https://cdn.simpleicons.org/nintendo64/E60012",
+    files: `clb3313 clbanjokazooie clbanjotooie clconkersbadfurday cldiddykongracing cldonkeykong64 cldoom64 clexcitebike64 clfifa99 clworldcup98 clfzerox clglover clgoldeneye007 clharvestmoon64 cljetforcegemini clkirby64 clmaddenfootball64 clmaddennfl2000 clmaddennfl2001 clmaddennfl2002 clmadden99 clmariogolf clmariokart64 clmarioparty2 clmarioparty3 clmariotennis clnflblitz clpapermario clpapermariopromode clpapermariottyd clperfectdark clpokemonsnap clpokemonstadium clresidentevil2 clsmashremix clstarfox64 clsupermario64 clsupersmashbros clmajorasmask clocarinaoftime cltripleplay2000 clwaverace64`
+  },
+  gba: {
+    name: "Game Boy / GBA", short: "GBA / GB",
+    logo: "https://cdn.simpleicons.org/nintendogameboy/8B0784",
+    files: `clnightfire cladvancewars cladvancewars2 clalienhominidgba clcastlevania clcastlevaniaariaofsorrow clcrashbandicoot clcrashbandicoot2 cldigdug cldonkeykong cldoom2 cldragonballadvance cldbzsuperwarriorssonic cldragonballzthelegacyofgoku clearthbound3 clfifa07 clfifa2000 clfireemblem clgameandwatchcollection clgoldensun clgta2 clgrandtheftautoadvance clhajimeippo clharvestmoon clkirbyandtheamzingmirror clkirbysdreamland clmaddennfl clmarioandluigisuperstarsaga clmariokartsupercircuit clmegaman2gba clmegamanzero clmetalgearsolid clmetalslugadvance clmetroidfusion clmetroidzeromission clmortalkombatadvance clnfscarbonowncity clnfsmostwanted clnfsporcheunleashed clnfsunderground clnfsunderground2 clnhl2002 clnhlhitz2003 clnicktoonsfreezeframefrenzy clonepiece clpokeblue clpokemonclover clpokemoncrystal clpokemonemerald clpokemonemeraldcrest clpokemonemeraldimperium clpokemonemeraldkaizo clpokemonemeraldmini clpokeemeraldrandom clpokemonemeraldrouge clpokemonemeraldseaglass clpokemonenergizedemerald clpokemonfirered clpokemonfireredandleafgreenplusedition clpokemonfireredrandomized clpokemonrocketedition clpokegaia clpokemongold clinclementemerald clpokemonleafgreen clpokelightplatinum clpokemonmysterydungeon clpokemonquetzal clradicalred clpokered clpokemonruby clpokemonsapphire clpokemonsilver clpokémonstunningsteel clswordandshieldultimateplus cllastfirered cltoomanytypes clpokemonultimatefusion clpokemonunbound clpokemonvega clpokeyellow clpuyopuyofever clshrek2 clsonicadvance clsonicadvance2 clsonicadvance3 clsonicbattle clstreetfighteralpha3 clsupermariobros2 clsmadvance2 clsmadvance3 clsupermariobros3 clsupermarioland clsupermarioland2 clsupermonkeyballjr cltetrisgba cllozminishcap cltonyhawkskater2 cltonyhawksunderground clwarioland4 clwariowareinc`
+  },
+  nds: {
+    name: "Nintendo DS", short: "NDS",
+    logo: "https://cdn.simpleicons.org/nintendods/EA1F26",
+    files: `clanimalcrossingwildworld clbackyardbaseball09 clbackyardbaseball10 clben10alienforce clben10racing clben10omniverse clben10protector clben10ultimatealien clcodblackops clcoddefiance clcodmodernwarfare clcodworldatwar clcod4 clcookingmama clcookingmama2 clcookingmama3 cldeblob2 cldementium cldborigins cldborigins2 cldbzattacksaiyans clfifa10 clfifa11 clfifasoccer06 clfifastreet2 clgtachina clkingdomheartsdays clkingdomheartsrecoded clkirbysqueaksquad cllegobatman cllegobatman2superheroes cllegoindianajones cllegoindianajones2 cllegoninjago cllegostarwars clinsidestory clpartnersintime clmariokartds clmariopartyds clmegamanzx clnewsupermariobros claceattorernefgsdg clpheonixjusticeforall clpheonixtrialsandyeartrhfasd clpokeblack clpokeblack2 clpokeblazeblack2redux clpokediamond clpokeheartgold clpokemysteryexplorersofsky clpokepearl clpokeplatinum clpokeplatinumrandomized clpokevoltwhite2redux clpokewhite clpokewhite2 clshinmegamitenseidevilsurvivor clskateit clsonicclassiccollection clsoniccolors clsonicrush clsonicrushadventure clsupermario64ds clultimatemortalkombat clwariowarediy`
+  },
+  nes: {
+    name: "NES", short: "NES",
+    logo: "https://cdn.simpleicons.org/nintendoswitch/E60012",
+    files: `clbomberman clbomberman2 clcastlevanianes clcastlevania2 clcastlevania3 clcontra cldigdug2 cldonkeykongnes cldrmario clduckhunt clearthbound clfamidash clfinalfantasy clgalaga clkirbysadventure clloderunner clmegaman clmegaman2 clmegaman3 clmegaman4 clmegaman5 clmegaman6 clmetalgear clmetroid clpunchout clmspacman clnintendoworldcup clpacman clsupermario clsupermariobros2us clmario3 cltecmobowl cltetris clloz1 clzelda2thelegendoflink`
+  },
+  snes: {
+    name: "SNES", short: "SNES",
+    logo: "https://cdn.simpleicons.org/nintendo/8B0784",
+    files: `clbabykaizo clchronotrigger cldonkeykongcountry cldonkeykongcountry2 clearthwormjim clfifaroadtoworldcup98 clfifasoccer96 clfifasoccer97 clffmysticquest clfinalfantasyii clff6 clfzero clmadden93 cljump clkengriffeyjrpresentsmajorleaguebaseball clkirbysdreamland3 clkirbysuperstar clmaddenfootball clmadden94 clmadden95 clmadden96 clmadden98 clmariopaint clmariosmysterymeat clmegamanx clmortalkombat clmortalkombat2 clnbajam clquickieworld clsecretofmana clstarfox clstreetfighter2 clstreetfighter2turbo clsuperbomberman clsuperdiagonalmario2 clsupermarioallstars clsupermariokart clsupermariorpg clsupermarioworld clsupermarioworld2 clsupermetroid clsuperpunchout cltetrisattack cllinktothepast`
+  },
+  genesis: {
+    name: "Sega Genesis", short: "Genesis",
+    logo: "https://cdn.simpleicons.org/sega/0080FF",
+    files: `clordinarysonicromhack clbubsy clfifainternationalsoccer clfifasoccer95 clgeneralchaos clmetalsonichyperdrive clmortalkombat3 clrocketknightadventures clsonic1scorerush clsonic2scorerush clsonic3andknuckles clsonic3complete clsonic3dblastdx clsonicandknuckles clsonicclassicheroes clsonicdeltaorigins clsonichellfiresaga clsonicmegamix clsonicspinball clsonicthehedgehog clsonicthehedgehog2 clsonicthehedgehog3 clsteelempire clultimatemortalkombat3 clzombiesatemyneighboors`
+  },
+  segacd:  { name: "Sega CD",     short: "Sega CD",     logo: "https://cdn.simpleicons.org/sega/0080FF",      files: `clsoniccd` },
+  saturn:  { name: "Sega Saturn", short: "Saturn",      logo: "https://cdn.simpleicons.org/sega/0080FF",      files: `clsonicr` },
+  ps1: {
+    name: "PlayStation", short: "PS1",
+    logo: "https://cdn.simpleicons.org/playstation/0070D1",
+    files: `clfinalfantasyvii clfinalfantasyviid2 clfinalfantasyviid3 clfinalfantasytactics clgta clgta22 clparappatherapper clpepsiman clpersona clpersona2 clsilenthill clsuperpuzzlefighter2turbo clrainbowsix clwipeout2097`
+  },
+  jaguar: {
+    name: "Atari Jaguar", short: "Jaguar",
+    logo: "https://cdn.simpleicons.org/atari/E4202E",
+    files: `clalienvspredator clcannonfodder cldoom cldinodudes clironsoldier clnbajamte clrayman cltempest2000 clthemepark clwolfenstein3d`
+  },
+  lynx:    { name: "Atari Lynx",   short: "Lynx",        logo: "https://cdn.simpleicons.org/atari/E4202E",     files: `clchipschallenge` },
+  atari2600: {
+    name: "Atari 2600", short: "Atari 2600",
+    logo: "https://cdn.simpleicons.org/atari/E4202E",
+    files: `clasteroids clbattlezone clbeamrider cldigdug26 clenduro clet clmisslecommand clpitfall clqbert clspaceinvaders clstarraiders clvanguard clyarsrevenge`
+  },
+  neogeo:  { name: "Neo Geo Pocket Color", short: "Neo Geo", logo: "https://cdn.simpleicons.org/snk/E60012",  files: `clmetalslugmission1 clmetalslugmission2` },
+  coleco:  { name: "ColecoVision", short: "ColecoVision", logo: "",                                            files: `cltapper` },
+};
+// Pre-build lowercase Sets for fast lookup
+for (const k in RETRO_CONSOLES) {
+  const tokens = String(RETRO_CONSOLES[k].files).trim().split(/\s+/).map(s => s.toLowerCase());
+  RETRO_CONSOLES[k].fileSet = new Set(tokens.map(t => t + ".html"));
+}
+function _stashFile(s){ return String(s.file||"").toLowerCase(); }
+function _consoleOf(s){
+  const f = _stashFile(s);
+  for (const k in RETRO_CONSOLES) if (RETRO_CONSOLES[k].fileSet.has(f)) return k;
+  return null;
+}
+function _countCat(key){
+  return STASH.filter(s => RETRO_CONSOLES[key].fileSet.has(_stashFile(s))).length;
+}
+
+/* Manufacturer groups -> consoles (with brand logos) */
+const _logo = (url, fallback='<i class="fas fa-gamepad"></i>') =>
+  url ? `<img src="${url}" class="cat-logo" alt=""/>` : fallback;
+
+const CONSOLE_GROUPS = {
+  nintendo: {
+    name: "Nintendo",
+    icon: _logo("https://cdn.simpleicons.org/nintendo/E60012"),
+    consoles: ["n64","snes","nes","gba","nds"]
+  },
+  sega: {
+    name: "Sega",
+    icon: _logo("https://cdn.simpleicons.org/sega/0080FF"),
+    consoles: ["genesis","segacd","saturn"]
+  },
+  sony: {
+    name: "Sony PlayStation",
+    icon: _logo("https://cdn.simpleicons.org/playstation/0070D1"),
+    consoles: ["ps1"]
+  },
+  atari: {
+    name: "Atari",
+    icon: _logo("https://cdn.simpleicons.org/atari/E4202E"),
+    consoles: ["atari2600","jaguar","lynx"]
+  },
+  other: {
+    name: "Other",
+    icon: '<i class="fas fa-ellipsis"></i>',
+    consoles: ["neogeo","coleco"]
+  },
+};
+
+let currentTop = "all";        // "all" | "emulated"
+let currentGroup = null;       // a CONSOLE_GROUPS key, or null
+let currentCategory = "all";   // "all", a group key, or a console key
+
+function _countGroup(key){
+  const g = CONSOLE_GROUPS[key]; if (!g) return 0;
+  return g.consoles.reduce((n,k)=>n+_countCat(k),0);
+}
+
+function _totalEmulated(){
+  return Object.keys(CONSOLE_GROUPS).reduce((n,k)=>n+_countGroup(k),0);
+}
+
+function renderTopRow(){
+  const row = document.getElementById("catTopRow");
+  if (!row) return;
+  const allActive = currentTop==="all" ? "active" : "";
+  const emuActive = currentTop==="emulated" ? "active" : "";
+  const chev = `<i class="fas fa-chevron-${currentTop==='emulated'?'up':'down'}" style="font-size:10px;opacity:.7"></i>`;
+  row.innerHTML = `
+    <button class="cat-btn ${allActive}" data-top="all"><i class="fas fa-grip"></i> All Games</button>
+    <button class="cat-btn ${emuActive}" data-top="emulated"><i class="fas fa-tv"></i> Emulated Games <span class="cat-count">${_totalEmulated()}</span> ${chev}</button>
+  `;
+}
+
+function renderGroupRow(){
+  const row = document.getElementById("catGroupRow");
+  if (!row) return;
+  if (currentTop !== "emulated") { row.style.display="none"; row.innerHTML=""; return; }
+  row.style.display="flex";
+  row.innerHTML = Object.entries(CONSOLE_GROUPS).map(([key,g])=>{
+    const active = (currentGroup===key) ? "active" : "";
+    const chev = `<i class="fas fa-chevron-${currentGroup===key?'up':'down'}" style="font-size:10px;opacity:.6"></i>`;
+    return `<button class="cat-btn ${active}" data-group="${key}">${g.icon} ${g.name}<span class="cat-count">${_countGroup(key)}</span> ${chev}</button>`;
+  }).join("");
+}
+
+function renderConsoleRow(){
+  const row = document.getElementById("catConsoleRow");
+  if (!row) return;
+  const g = CONSOLE_GROUPS[currentGroup];
+  if (currentTop!=="emulated" || !g || !g.consoles.length) { row.style.display="none"; row.innerHTML=""; return; }
+  row.style.display="flex";
+  const allBtn = `<button class="cat-btn ${currentCategory===currentGroup?'active':''}" data-cat="${currentGroup}"><i class="fas fa-layer-group"></i> All ${g.name}<span class="cat-count">${_countGroup(currentGroup)}</span></button>`;
+  const consoleBtns = g.consoles.map(k=>{
+    const c = RETRO_CONSOLES[k]; if (!c) return "";
+    const logo = c.logo ? `<img src="${c.logo}" class="cat-logo" alt=""/>` : `<i class="fas fa-gamepad"></i>`;
+    const active = currentCategory===k ? "active" : "";
+    return `<button class="cat-btn ${active}" data-cat="${k}">${logo} ${c.short||c.name}<span class="cat-count">${_countCat(k)}</span></button>`;
+  }).join("");
+  row.innerHTML = allBtn + consoleBtns;
+}
+
+function _renderAll(){ renderTopRow(); renderGroupRow(); renderConsoleRow(); }
+
+function setTop(key){
+  if (currentTop===key && key==="emulated") {
+    // toggle closed
+    currentTop = "all"; currentGroup = null; currentCategory = "all";
+  } else {
+    currentTop = key;
+    if (key==="all") { currentGroup = null; currentCategory = "all"; }
+    else { currentGroup = null; currentCategory = "emulated"; }
+  }
+  _renderAll();
+  renderGames(document.getElementById("globalSearch")?.value || "");
+}
+
+function setGroup(key){
+  if (currentGroup===key) { currentGroup = null; currentCategory = "emulated"; }
+  else { currentGroup = key; currentCategory = key; }
+  _renderAll();
+  renderGames(document.getElementById("globalSearch")?.value || "");
+}
+
+function setCategory(cat){
+  currentCategory = cat;
+  _renderAll();
+  renderGames(document.getElementById("globalSearch")?.value || "");
+}
+
+// keep this name for the bottom init line
+function populateCategoryMenu(){ _renderAll(); }
+
+document.addEventListener("click", (e) => {
+  const tBtn = e.target.closest("#catTopRow .cat-btn[data-top]");
+  if (tBtn) { e.stopPropagation(); setTop(tBtn.dataset.top); return; }
+  const gBtn = e.target.closest("#catGroupRow .cat-btn[data-group]");
+  if (gBtn) { e.stopPropagation(); setGroup(gBtn.dataset.group); return; }
+  const cBtn = e.target.closest("#catConsoleRow .cat-btn[data-cat]");
+  if (cBtn) { e.stopPropagation(); setCategory(cBtn.dataset.cat); return; }
+});
+
+/* Override renderGames to honor currentCategory */
+const _origRenderGames = renderGames;
+renderGames = async function(query=""){
+  const grid = document.getElementById("games-grid");
+  const empty = document.getElementById("games-empty");
+  const stashSection = document.getElementById("stash-section");
+  const cat = currentCategory;
+  const games = await loadGames();
+  document.getElementById("games-count").textContent = `${(games.length + STASH.length).toLocaleString()} games available`;
+  const q = (query||"").trim().toLowerCase();
+
+  if (cat === "all") {
+    if (stashSection) stashSection.style.display = "";
+    return _origRenderGames(query);
+  }
+
+  // Hide the separate stash section for filtered categories
+  if (stashSection) stashSection.style.display = "none";
+  empty.style.display = "none";
+
+  let list;
+  if (cat === "emulated") {
+    // all consoles across all groups
+    const sets = Object.values(RETRO_CONSOLES).map(c=>c.fileSet);
+    list = applyVisibility(STASH.filter(s => {
+      const f = _stashFile(s); return sets.some(set => set.has(f));
+    }).map(s=>({...s,kind:"stash"})));
+    if (q) list = list.filter(s => s.title.toLowerCase().includes(q));
+    grid.innerHTML = list.length ? list.map(stashCardHTML).join("") : "";
+  } else if (CONSOLE_GROUPS[cat]) {
+    // a manufacturer group -> union of its consoles
+    const keys = CONSOLE_GROUPS[cat].consoles;
+    const sets = keys.map(k => RETRO_CONSOLES[k].fileSet);
+    list = applyVisibility(STASH.filter(s => {
+      const f = _stashFile(s); return sets.some(set => set.has(f));
+    }).map(s=>({...s,kind:"stash"})));
+    if (q) list = list.filter(s => s.title.toLowerCase().includes(q));
+    grid.innerHTML = list.length ? list.map(stashCardHTML).join("") : "";
+  } else if (RETRO_CONSOLES[cat]) {
+    const set = RETRO_CONSOLES[cat].fileSet;
+    list = applyVisibility(STASH.filter(s => set.has(_stashFile(s))).map(s=>({...s,kind:"stash"})));
+    if (q) list = list.filter(s => s.title.toLowerCase().includes(q));
+    grid.innerHTML = list.length
+      ? list.map(stashCardHTML).join("")
+      : "";
+  } else {
+    list = [];
+    grid.innerHTML = "";
+  }
+
+  if (!list.length) {
+    empty.textContent = q ? `No games match "${query}" in this category.` : "No games in this category.";
+    empty.style.display = "block";
+  }
+};
+
+/* ============ EASIER RESET BUTTONS ============ */
+document.getElementById("bgResetBtn")?.addEventListener("click", () => {
+  settings.bg = JSON.parse(JSON.stringify(defaultSettings.bg));
+  saveSettings(); refreshBgUI(); renderBgPresets(); applyBackground();
+});
+document.getElementById("fxResetBtn")?.addEventListener("click", () => {
+  settings.fx = JSON.parse(JSON.stringify(defaultSettings.fx));
+  saveSettings(); refreshFxUI(); applyEffects();
+});
+
+// Initial menu populate
+populateCategoryMenu();
+
 renderCloakChoices(); applySettings(); renderThemes(); renderMovies(); renderApps(); renderStashIntoGames(); renderSuggestStash(); go("home");
 
 /* ============ DEV MENU ============ */
@@ -2288,15 +2826,35 @@ function refreshDevInfo(){
 }
 
 /* ============ CDN REWRITER WIRING ============ */
-function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRule)); }
+function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRules)); }
+function rulesToText(){ return cdnRules.map(r => `${r.from} → ${r.to}`).join("\n"); }
+function textToRules(txt){
+  const out = [];
+  String(txt||"").split(/\r?\n/).forEach(line => {
+    const s = line.trim(); if (!s || s.startsWith("#")) return;
+    const m = s.split(/\s*(?:->|→|=>|\|)\s*/);
+    if (m.length === 2 && m[0] && m[1]) out.push({ from:m[0].trim(), to:m[1].trim() });
+  });
+  return out;
+}
 (function wireCdn(){
-  const f = document.getElementById("cdnFrom"), t = document.getElementById("cdnTo");
-  if (!f) return;
-  f.value = cdnRule.from; t.value = cdnRule.to;
-  f.addEventListener("change", () => { cdnRule.from = f.value.trim(); saveCdn(); cdnLog(`Rule updated: "${cdnRule.from}" → "${cdnRule.to}". Re-scan to apply.`); });
-  t.addEventListener("change", () => { cdnRule.to   = t.value.trim(); saveCdn(); cdnLog(`Rule updated: "${cdnRule.from}" → "${cdnRule.to}". Re-scan to apply.`); });
+  const ta = document.getElementById("cdnRulesText");
+  if (!ta) return;
+  ta.value = rulesToText();
+  document.getElementById("cdnSaveRules").addEventListener("click", () => {
+    const next = textToRules(ta.value);
+    if (!next.length) { cdnLog("No valid rules — keeping previous set."); return; }
+    cdnRules = next; cdnRule = cdnRules[0]; saveCdn();
+    cdnLog(`Rules updated (${cdnRules.length}). Re-scan to apply to existing games.`);
+  });
+  document.getElementById("cdnResetRules").addEventListener("click", () => {
+    cdnRules = DEFAULT_CDN_RULES.slice(); cdnRule = cdnRules[0]; saveCdn();
+    ta.value = rulesToText();
+    cdnLog("Rules reset to defaults.");
+  });
   document.getElementById("cdnReload").addEventListener("click", async () => {
-    GAMES = null; cdnLogEntries.length = 0; cdnLog("Re-scanning game manifests…");
+    GAMES = null; cdnLogEntries.length = 0; cdnTotalRewrites = 0;
+    cdnLog("Re-scanning game manifests…");
     await loadGames();
     if (document.getElementById("view-games")?.classList.contains("active")) try { renderGames(); } catch {}
     if (document.getElementById("view-home")?.classList.contains("active"))  try { renderHome();  } catch {}
@@ -2304,6 +2862,40 @@ function saveCdn(){ localStorage.setItem(CDN_KEY, JSON.stringify(cdnRule)); }
   });
   document.getElementById("cdnClearLog").addEventListener("click", () => { cdnLogEntries.length = 0; renderCdnLog(); });
   renderCdnLog();
+})();
+
+/* ============ INSPECTOR WIRING ============ */
+(function wireInsp(){
+  const cs = document.getElementById("inspCopySrc");
+  const ds = document.getElementById("inspDownloadSrc");
+  const cl = document.getElementById("inspClearLog");
+  if (cs) cs.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(inspectorSource || ""); cs.textContent = "✓ Copied"; setTimeout(()=>cs.innerHTML='<i class="fas fa-copy"></i> Copy source',1200); } catch {}
+  });
+  if (ds) ds.addEventListener("click", () => {
+    const blob = new Blob([inspectorSource || ""], {type:"text/html"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = ((currentGame && currentGame.title) || "game").replace(/[^\w.-]+/g,"_") + ".html";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  });
+  if (cl) cl.addEventListener("click", () => { inspectorLogs = []; renderInspector(); });
+})();
+
+/* ============ BOOT: preload all games (so CDN rewrites happen up front) ============ */
+(async function bootPreload(){
+  const boot = document.getElementById("bootLoader");
+  const stat = document.getElementById("bootStat");
+  try {
+    cdnLog("Boot: preloading all game packs…");
+    await loadGames();
+    if (stat) stat.textContent = `${cdnTotalRewrites.toLocaleString()} rewrites · ${(GAMES||[]).length.toLocaleString()} games loaded`;
+  } catch (e) {
+    if (stat) stat.textContent = "Boot finished (some packs failed). Continuing…";
+  } finally {
+    setTimeout(() => { if (boot) { boot.classList.add("hide"); setTimeout(()=>boot.remove(), 400); } }, 350);
+  }
 })();
 </script>
 </body>
