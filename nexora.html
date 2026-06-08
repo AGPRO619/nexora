@@ -15,7 +15,19 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Google Sans','Roboto',-apple-system,BlinkMacSystemFont,sans-serif; user-select:none; }
   html, body { width:100%; height:100%; overflow:hidden; cursor:var(--cursor); }
-  body { background:var(--bg-url) center/cover no-repeat; transition:background 0.5s; }
+  body { background:var(--bg-url) center/cover no-repeat #000; transition:background 0.5s; }
+  /* Dark film over wallpaper to make apps stand out a bit */
+  #bgDimmer { position:fixed; inset:0; background:rgba(0,0,0,0.30); z-index:2; pointer-events:none; }
+  /* Animated YouTube background layer (hidden by default) */
+  #bgVideoLayer { position:fixed; inset:0; z-index:0; overflow:hidden; background:#000; display:none; pointer-events:none; }
+  #bgVideoLayer.on { display:block; }
+  #bgVideoLayer iframe {
+    position:absolute; top:50%; left:50%;
+    width:177.78vh; height:100vh; min-width:100vw; min-height:56.25vw;
+    transform:translate(-50%,-50%);
+    border:0; pointer-events:none;
+  }
+  body.bg-video { background:#000 !important; }
 
   /* ===== BOOT MONTAGE ===== */
   #bootScreen {
@@ -64,11 +76,11 @@
   }
   .gn-logo {
     width:100px; height:100px; border-radius:24px;
-    background:linear-gradient(135deg,#7c3aed,#5ce1ff);
+    background:#f5425d;
     display:flex; align-items:center; justify-content:center;
     font-size:36px; font-weight:900; color:#fff;
     margin-bottom:24px;
-    box-shadow:0 15px 50px rgba(124,58,237,0.5);
+    box-shadow:0 15px 50px rgba(245,66,93,0.5);
   }
 
   /* ===== LOCK ===== */
@@ -246,9 +258,9 @@
   .status-pill.user { cursor:pointer; display:flex; align-items:center; gap:8px; }
   .status-pill .mini-avatar {
     width:22px; height:22px; border-radius:50%;
-    background:linear-gradient(135deg,#4285f4,#7c3aed);
+    background:linear-gradient(135deg,#4285f4,#7c3aed) center/cover no-repeat;
     display:flex; align-items:center; justify-content:center;
-    font-size:0.7rem; font-weight:700;
+    font-size:0.7rem; font-weight:700; overflow:hidden;
   }
   .cloak-wrap { position:relative; }
   .cloak-menu {
@@ -669,7 +681,7 @@
     backdrop-filter:blur(4px);
   }
   .game-tag.nexora { background:rgba(92,225,255,0.9); color:#000; }
-  .game-tag.gn { background:rgba(124,58,237,0.9); }
+  .game-tag.gn { background:#f5425d; }
   .game-tag.stash { background:rgba(255,158,44,0.9); color:#000; }
 
   .card-actions {
@@ -847,6 +859,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- NEXORA II BRAND OVERLAY (above background, below apps) -->
+<!-- Animated YouTube background layer (shown only when an animated bg is selected) -->
+<div id="bgVideoLayer"></div>
+<!-- Dark film over the wallpaper -->
+<div id="bgDimmer"></div>
 
 <!-- NEXORA II BRAND OVERLAY (above background, below apps) -->
 <div id="nexoraBrand" aria-hidden="true">
@@ -1039,6 +1057,10 @@
     <div id="favoritesWrap" style="display:none;">
       <div class="section-title">★ Favorites <span class="count" id="favCount"></span></div>
       <div class="games-grid" id="favoritesGrid"></div>
+    </div>
+    <div id="friendsPlayedWrap" style="display:none;">
+      <div class="section-title">👥 Played by your friends <span class="count" id="friendsPlayedCount"></span></div>
+      <div class="games-grid" id="friendsPlayedGrid"></div>
     </div>
     <div class="section-title" id="allTitle">All Games <span class="count" id="allCount"></span></div>
     <div class="games-grid" id="gamesGrid">
@@ -1373,8 +1395,8 @@
     <div style="width:280px;border-right:1px solid #3c4043;display:flex;flex-direction:column;background:#1c1d20;">
       <div style="padding:14px;border-bottom:1px solid #3c4043;">
         <div style="display:flex;gap:6px;">
-          <input id="friendAddInput" placeholder="Search / add by username" maxlength="24" style="flex:1;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:9px 12px;border-radius:7px;font-family:inherit;font-size:0.9rem;outline:none;"/>
-          <button onclick="friendsSendRequest()" style="background:var(--accent);color:#000;border:none;padding:0 14px;border-radius:7px;cursor:pointer;font-weight:600;">Add</button>
+          <input id="friendAddInput" placeholder="Search username…" maxlength="24" style="flex:1;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:9px 12px;border-radius:7px;font-family:inherit;font-size:0.9rem;outline:none;"/>
+          <button onclick="friendsSearchUser()" style="background:var(--accent);color:#000;border:none;padding:0 14px;border-radius:7px;cursor:pointer;font-weight:600;">View</button>
         </div>
         <div id="friendAddMsg" style="font-size:0.78rem;color:#9aa0a6;margin-top:6px;min-height:1em;"></div>
       </div>
@@ -2046,7 +2068,16 @@ function updateUserPill(){
   const nm = document.getElementById('userPillName');
   if (!ACTIVE) return;
   nm.innerHTML = vipNameHTML(ACTIVE.username);
-  av.textContent = (ACTIVE.username[0] || '?').toUpperCase();
+  const pfp = (ACTIVE.profile && ACTIVE.profile.pfp) || getCachedPfp(ACTIVE.username) || '';
+  if (pfp) {
+    av.style.backgroundImage = `url("${pfp}")`;
+    av.style.backgroundColor = '#000';
+    av.textContent = '';
+  } else {
+    av.style.backgroundImage = '';
+    av.style.backgroundColor = '';
+    av.textContent = (ACTIVE.username[0] || '?').toUpperCase();
+  }
   pill.title = ACTIVE.isGuest ? 'Guest — click to sign in' : 'Click to sign out';
 }
 
@@ -2236,7 +2267,27 @@ function saveSettings(){ persistActiveProfile(); applySettings(); }
 function applySettings(){
   document.documentElement.style.setProperty('--accent', SETTINGS.accent);
   document.documentElement.style.setProperty('--cursor', SETTINGS.cursor);
-  document.documentElement.style.setProperty('--bg-url', `url('${SETTINGS.bgUrl}')`);
+  // Animated bg uses the format "yt:VIDEO_ID:START_SECONDS"
+  const layer = document.getElementById('bgVideoLayer');
+  const url = SETTINGS.bgUrl || '';
+  if (typeof url === 'string' && url.startsWith('yt:')) {
+    const parts = url.slice(3).split(':');
+    const vid = parts[0] || '';
+    const start = parseInt(parts[1]||'0',10) || 0;
+    const src = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(vid)}&start=${start}&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`;
+    if (layer) {
+      if (layer.dataset.src !== src) {
+        layer.innerHTML = `<iframe src="${src}" allow="autoplay; encrypted-media" allowfullscreen tabindex="-1"></iframe>`;
+        layer.dataset.src = src;
+      }
+      layer.classList.add('on');
+    }
+    document.body.classList.add('bg-video');
+  } else {
+    if (layer) { layer.classList.remove('on'); layer.innerHTML=''; layer.dataset.src=''; }
+    document.body.classList.remove('bg-video');
+    document.documentElement.style.setProperty('--bg-url', `url('${SETTINGS.bgUrl}')`);
+  }
   document.body.classList.toggle('perf-low', SETTINGS.perfLow);
   if (SETTINGS.reduceBlur) {
     document.querySelectorAll('#dock, .status-pill').forEach(e => e.style.backdropFilter='none');
@@ -3102,14 +3153,46 @@ function renderMainAndStash(filterQ){
   }
 }
 
+function renderFriendsPlayed(){
+  const wrap = document.getElementById('friendsPlayedWrap');
+  const grid = document.getElementById('friendsPlayedGrid');
+  if (!wrap || !grid) return;
+  if (!window._friendProfiles || !ALL_GAMES) { wrap.style.display='none'; return; }
+  // Build deduped game list from friends' mostPlayedGame entries
+  const seen = new Map(); // gameId -> { game, friends:[username] }
+  const friendsArr = (typeof _friendsCache !== 'undefined' && _friendsCache) ? _friendsCache : [];
+  friendsArr.forEach(f => {
+    const pd = _friendProfiles.get(f.otherId) || {};
+    const mp = pd.mostPlayedGame;
+    if (!mp || !mp.title) return;
+    const key = String(mp.id || mp.title).toLowerCase();
+    const game = ALL_GAMES.find(g => (mp.id && g.id === mp.id) || g.title.toLowerCase() === String(mp.title).toLowerCase());
+    if (!game) return;
+    if (isHidden(game.id)) return;
+    if (!seen.has(key)) seen.set(key, { game, friends:[] });
+    seen.get(key).friends.push(f.otherUsername);
+  });
+  const list = Array.from(seen.values()).sort((a,b)=>b.friends.length - a.friends.length).slice(0,12);
+  if (!list.length) { wrap.style.display='none'; return; }
+  wrap.style.display = 'block';
+  document.getElementById('friendsPlayedCount').textContent = `(${list.length})`;
+  grid.innerHTML = list.map(({game,friends}) => cardHtml(game) +
+    `<div style="margin-top:-8px;font-size:0.7rem;color:#9aa0a6;padding:0 4px 8px;">${friends.length} friend${friends.length>1?'s':''} · ${friends.slice(0,2).map(_escHTML).join(', ')}${friends.length>2?'…':''}</div>`
+  ).join('');
+  bindCardEvents(grid);
+}
+
 function renderAllArcadeSections(){
   if (!ALL_GAMES) return;
   const q = document.getElementById('gameSearch').value;
   document.getElementById('trendingWrap').style.display = q.trim() ? 'none' : '';
   document.getElementById('favoritesWrap').style.display = q.trim() ? 'none' : '';
+  const fpw = document.getElementById('friendsPlayedWrap');
+  if (fpw && q.trim()) fpw.style.display = 'none';
   if (!q.trim()) {
     renderTrending();
     renderFavorites();
+    try { renderFriendsPlayed(); } catch(e){ console.warn(e); }
   }
   renderMainAndStash(q);
 }
@@ -3242,6 +3325,10 @@ const BACKGROUNDS = [
   'https://images.unsplash.com/photo-1539593395743-7da5ee10ff07?w=1920&q=80',
   'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1920&q=80'
 ];
+// Animated YouTube backgrounds. value format: "yt:VIDEO_ID:START_SECONDS"
+const ANIMATED_BGS = [
+  { name: 'tuff pixel backround', value: 'yt:Dgr-xtGsxCE:2220', thumb: 'https://img.youtube.com/vi/Dgr-xtGsxCE/hqdefault.jpg' }
+];
 
 function renderHiddenList(){
   const root = document.getElementById('hiddenList');
@@ -3289,10 +3376,20 @@ function buildSettingsUI(){
   document.querySelectorAll('#accentColors .color-swatch').forEach(s => s.addEventListener('click', () => {
     SETTINGS.accent = s.dataset.c; saveSettings(); buildSettingsUI();
   }));
-  // backgrounds
-  document.getElementById('bgOptions').innerHTML = BACKGROUNDS.map(b =>
+  // backgrounds (static images)
+  const bgHtml = BACKGROUNDS.map(b =>
     `<div class="bg-option ${b===SETTINGS.bgUrl?'selected':''}" data-b="${b}" style="background-image:url('${b}')"></div>`
   ).join('');
+  // animated backgrounds (YouTube)
+  const animHtml = ANIMATED_BGS.map(a =>
+    `<div class="bg-option ${a.value===SETTINGS.bgUrl?'selected':''}" data-b="${a.value}" title="${a.name}" style="background-image:url('${a.thumb}'); position:relative;">
+       <div style="position:absolute;bottom:4px;left:6px;right:6px;font-size:0.65rem;color:#fff;text-shadow:0 1px 3px #000;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">▶ ${a.name}</div>
+     </div>`
+  ).join('');
+  document.getElementById('bgOptions').innerHTML =
+    bgHtml +
+    `<div style="grid-column:1/-1;font-size:0.75rem;color:#9aa0a6;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px;font-weight:600;">Animated</div>` +
+    animHtml;
   document.querySelectorAll('#bgOptions .bg-option').forEach(s => s.addEventListener('click', () => {
     SETTINGS.bgUrl = s.dataset.b; saveSettings(); buildSettingsUI();
   }));
@@ -5452,31 +5549,20 @@ function friendsRefreshList(){
     </div>`;
   }).join('');
 }
-async function friendsSendRequest(){
+async function friendsSearchUser(){
   const inp = document.getElementById('friendAddInput');
   const msg = document.getElementById('friendAddMsg');
   const username = (inp.value || '').trim().toLowerCase().slice(0,24);
   if (!username) return;
   if (!window.ACTIVE || ACTIVE.isGuest) { msg.textContent = 'Sign in first.'; msg.style.color='#f28b82'; return; }
-  if (username === ACTIVE.username.toLowerCase()) { msg.textContent = "Can't add yourself."; msg.style.color='#f28b82'; return; }
   msg.textContent = 'Looking up…'; msg.style.color='#9aa0a6';
   const { data: target, error } = await sb.from('profiles').select('id,username').eq('username', username).maybeSingle();
   if (error || !target) { msg.textContent = 'No user with that name.'; msg.style.color='#f28b82'; return; }
-  // Already friends?
-  if (_friendsCache.some(f => f.otherId === target.id)) { msg.textContent = 'Already friends.'; msg.style.color='#9aa0a6'; return; }
-  const { error: insErr } = await sb.from('friend_requests').insert({
-    from_user: ACTIVE.userId, to_user: target.id,
-    from_username: ACTIVE.username, to_username: target.username,
-    status: 'pending'
-  });
-  if (insErr) {
-    if (String(insErr.message||'').includes('duplicate')) msg.textContent = 'Request already sent.';
-    else msg.textContent = 'Couldn\'t send (' + (insErr.message||'error') + ')';
-    msg.style.color='#f28b82'; return;
-  }
-  msg.textContent = `Invite sent to ${target.username}.`; msg.style.color='#34a853';
-  inp.value = '';
+  msg.textContent = ''; inp.value = '';
+  try { openUserCard(target.id, target.username); } catch(e){ console.warn(e); }
 }
+// legacy alias — still used by Enter key handler
+async function friendsSendRequest(){ return friendsSearchUser(); }
 async function friendsAccept(reqId, fromUserId, fromUsername){
   if (!window.ACTIVE || !ACTIVE.userId) return;
   // Insert friendship (ensure user_a < user_b)
@@ -5776,6 +5862,7 @@ async function profileSave(){
     _profileDirty = false;
     // Cache pfp locally for friends/lock screen
     try { setCachedPfp(ACTIVE.username, ACTIVE.profile.pfp || ''); } catch(e){}
+    try { updateUserPill(); } catch(e){}
     // Refresh friends list so my own change shows immediately if visible
     try { friendsRefreshList && friendsRefreshList(); } catch(e){}
     try { renderLockAccounts && renderLockAccounts(); } catch(e){}
@@ -6097,6 +6184,9 @@ let _notifs = []; // [{id, kind, text, room?, fromId?, from?, ts, read}]
 let _notifChannel = null;
 let _notifDbReady = false;
 let _seenDbNotifIds = new Set();
+// Tombstones for IDs the user explicitly cleared — never re-add even if the
+// DB delete is still in-flight or the DB row briefly survives the round-trip.
+let _clearedNotifIds = new Set();
 function notifSubscribeForMe(){
   if (!window.ACTIVE || ACTIVE.isGuest || !ACTIVE.userId) return;
   if (_notifChannel) return;
@@ -6165,19 +6255,21 @@ async function notifLoadFromDb(){
     if (error) { console.warn('notification load failed', error); return; }
     const rows = data || [];
     if (!_notifDbReady) {
-      const locals = _notifs.filter(n => !n.db && !rows.some(r => r.id === n.id));
-      _notifs = rows.map(_notifFromDb).concat(locals).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,50);
+      const fresh = rows.filter(r => !_clearedNotifIds.has(r.id));
+      const locals = _notifs.filter(n => !n.db && !fresh.some(r => r.id === n.id));
+      _notifs = fresh.map(_notifFromDb).concat(locals).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,50);
       rows.forEach(r => _seenDbNotifIds.add(r.id));
       _notifDbReady = true;
     } else {
       rows.slice().reverse().forEach(row => {
+        if (_clearedNotifIds.has(row.id)) return; // tombstoned — never re-add
         const n = _notifFromDb(row);
         const idx = _notifs.findIndex(x => x.id === n.id);
         if (!_seenDbNotifIds.has(row.id) && !n.read) {
           notifPush(n);
         } else if (idx >= 0) {
           _notifs[idx] = Object.assign({}, _notifs[idx], n);
-        } else {
+        } else if (!n.read) {
           _notifs.push(n);
         }
         _seenDbNotifIds.add(row.id);
@@ -6260,15 +6352,22 @@ function closeNotifPanel(){
   if (p) p.style.display = 'none';
 }
 function _dbNotifIds(){ return _notifs.filter(n => n.db && /^[0-9a-f-]{36}$/i.test(n.id || '')).map(n => n.id); }
-function notifMarkAllRead(){
+async function notifMarkAllRead(){
   _notifs.forEach(n => n.read = true);
   const ids = _dbNotifIds();
-  if (activeSignedIn() && ids.length) { try { sb.from('social_notifications').update({ read:true }).in('id', ids).eq('to_user', ACTIVE.userId); } catch(e){} }
+  if (activeSignedIn() && ids.length) {
+    try { await sb.from('social_notifications').update({ read:true }).in('id', ids).eq('to_user', ACTIVE.userId); } catch(e){}
+  }
   updateNotifBadge(); renderNotifPanel(); renderHomePills();
 }
-function notifClearAll(){
+async function notifClearAll(){
   const ids = _dbNotifIds();
-  if (activeSignedIn() && ids.length) { try { sb.from('social_notifications').delete().in('id', ids).eq('to_user', ACTIVE.userId); } catch(e){} }
+  // Tombstone these IDs locally so the next DB poll won't re-add them, even
+  // if the delete round-trip hasn't landed yet.
+  ids.forEach(id => _clearedNotifIds.add(id));
+  if (activeSignedIn() && ids.length) {
+    try { await sb.from('social_notifications').delete().in('id', ids).eq('to_user', ACTIVE.userId); } catch(e){}
+  }
   _notifs = []; renderNotifPanel(); updateNotifBadge(); renderHomePills();
 }
 function renderNotifPanel(){
@@ -6328,6 +6427,7 @@ function unwatchFriendRequests(){
       _notifs = [];
       _notifDbReady = false;
       _seenDbNotifIds.clear();
+      _clearedNotifIds.clear();
       _profilePresenceMeta.clear();
       _livePartiesMeta.clear();
       _lastProfilePresenceWrite = 0;
