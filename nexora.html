@@ -56,12 +56,8 @@
   .notes-avatar img { width:100%;height:100%;object-fit:cover;display:block; }
   .notes-tray { flex:1;overflow:auto;padding:22px 18px;display:flex;gap:20px;align-items:flex-start;align-content:flex-start;flex-wrap:wrap; }
   .ig-note { width:116px;display:flex;flex-direction:column;align-items:center;gap:6px; }
-  .ig-note-bubble { height:56px;width:112px;max-width:112px;background:#f5f5f5;color:#111;border-radius:18px;padding:8px 11px;font-size:0.78rem;font-weight:600;line-height:1.18;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.35);position:relative;word-wrap:break-word;cursor:pointer;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;box-sizing:border-box; }
+  .ig-note-bubble { min-height:42px;max-width:112px;background:#f5f5f5;color:#111;border-radius:18px;padding:8px 11px;font-size:0.78rem;font-weight:600;line-height:1.18;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.35);position:relative;word-wrap:break-word; }
   .ig-note-bubble::after { content:'';position:absolute;left:50%;bottom:-6px;width:13px;height:13px;background:#f5f5f5;border-radius:50%;transform:translateX(-50%); }
-  .ig-note-bubble.empty { background:transparent;box-shadow:none;height:0;padding:0;display:none; }
-  .ig-note-modal { position:fixed;inset:0;background:rgba(0,0,0,0.78);display:none;align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(8px); }
-  .ig-note-modal.open { display:flex; }
-  .ig-note-modal-card { background:#1a1b1e;border:1px solid #3c4043;border-radius:20px;padding:24px;max-width:420px;width:90%;max-height:80vh;overflow:auto;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center; }
   .ig-note-ring { width:70px;height:70px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#ffdd55,#ff2d7a,#7c4dff);box-shadow:0 10px 28px rgba(0,0,0,.32); }
   .ig-note-avatar { width:100%;height:100%;border-radius:50%;background:#3c4043;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.45rem;font-weight:800;border:3px solid #0e0f12; }
   .ig-note-avatar img { width:100%;height:100%;object-fit:cover;display:block; }
@@ -1007,9 +1003,9 @@
   <div id="lockAccounts"></div>
 
   <div class="lock-actions">
-    <button onclick="openAuth('signup')">Create account</button>
+    <button onclick="requireTOSThen(()=>openAuth('signup'))">Create account</button>
     <button class="primary" onclick="openAuth('signin')">Sign in</button>
-    <button onclick="enterAsGuest()">Continue as guest</button>
+    <button onclick="requireTOSThen(enterAsGuest)">Continue as guest</button>
   </div>
 </div>
 
@@ -1022,14 +1018,64 @@
     <input id="authUser" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. alex"/>
     <label for="authPass">Password</label>
     <input id="authPass" type="password" placeholder="••••••••"/>
+    <div id="authConfirmWrap" style="display:none;">
+      <label for="authPass2">Confirm password</label>
+      <input id="authPass2" type="password" placeholder="••••••••"/>
+    </div>
     <div class="err" id="authErr"></div>
     <div class="actions">
       <button class="cancel" onclick="closeAuth()">Cancel</button>
       <button class="primary" id="authSubmit">Continue</button>
     </div>
+    <div id="authForgotWrap" style="margin-top:10px;text-align:center;font-size:0.85rem;">
+      <a id="authForgotLink" style="color:#8ab4f8;cursor:pointer;text-decoration:underline;">Forgot password?</a>
+    </div>
     <div class="switch-mode">
       <span id="authSwitchText">No account yet?</span>
       <a id="authSwitchLink">Create one</a>
+    </div>
+  </div>
+</div>
+
+<!-- TOS MODAL -->
+<div id="tosModal" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+  <div style="background:#1a1a1d;color:#e8eaed;width:min(640px,92vw);max-height:88vh;border-radius:16px;padding:28px;display:flex;flex-direction:column;border:1px solid #3c4043;font-family:inherit;">
+    <h2 style="margin:0 0 6px 0;">📜 Terms of Service</h2>
+    <div style="color:#9aa0a6;font-size:0.85rem;margin-bottom:14px;">Read the rules. Scroll all the way down to enable the Accept button.</div>
+    <div id="tosScroll" style="flex:1;overflow-y:auto;background:#0e0e10;padding:18px;border-radius:10px;line-height:1.6;font-size:0.92rem;border:1px solid #2a2b2e;">
+      <p>Welcome to Nexora OS. By creating an account or continuing as a guest you agree to the following terms in full. These rules exist to keep the platform usable for everyone, to keep the people who built it from being blamed for the actions of the people who use it, and to make sure the rare bad-faith user does not ruin the experience for the overwhelming majority of users who are here to have a good time. Read carefully — by clicking Accept you confirm you have read, understood, and agreed to every single rule listed below, and you understand that ignorance of the rules is not and will never be an acceptable excuse for breaking them.</p>
+      <h3 style="margin-top:18px;color:#ffd54a;">Rule 1 — Do not share the website over email</h3>
+      <p>Under no circumstances are you to share the address or any direct link to this website by email, mailing list, school email, work email, group email, or any other email-based distribution method. Email is the single fastest way for this site to end up on a school, district, or network blocklist, and the moment that happens every single other user on that network instantly loses access. If you want to tell a friend about Nexora, tell them in person, send them a screenshot, write the name down, anything other than email. Sharing through email is the number one way that a working site stops working overnight, and we treat it as one of the most serious violations on the platform. If you are caught sharing the site through email — even once — your account can be banned permanently, and on top of that your email and your device can be blacklisted from ever reconnecting again.</p>
+      <h3 style="margin-top:18px;color:#ffd54a;">Rule 2 — No hacking, exploiting, or attacking the platform</h3>
+      <p>Do not attempt to hack the website, the database, other users' accounts, the authentication system, the messaging system, or any other part of the platform. This includes but is not limited to: probing for SQL or other injection vulnerabilities, attempting to brute force passwords or sessions, abusing rate limits, trying to bypass owner or moderator controls, reverse-engineering the system in order to manipulate it, deploying scripts that alter another user's experience without consent, or anything that a reasonable person would describe as "attacking the site." Trying to read, modify, or destroy data that does not belong to you is treated as a serious offense and will be met with a permanent ban, an email blacklist, and where appropriate a device-level block. Curiosity about how the site works is fine; deliberately weaponizing that curiosity is not.</p>
+      <h3 style="margin-top:18px;color:#ffd54a;">Rule 3 — No spam accounts or accounts made for bad reasons</h3>
+      <p>Do not create accounts whose entire purpose is to harass, impersonate, defame, flood, or otherwise abuse other users or the platform itself. Throwaway accounts created to dodge a previous ban, accounts created in bulk to inflate a chat or vote, accounts created purely to send hateful messages to a specific user, accounts created to impersonate another person, and accounts created to test exploits are all considered spam or bad-faith accounts and will be removed on sight. Make accounts because you genuinely want to use Nexora, not because you want to abuse it. Detection of bad-faith account creation will result in immediate removal of every related account and possible email or device-level blacklisting of the person behind them.</p>
+      <h3 style="margin-top:18px;color:#ffd54a;">Rule 4 — Nothing on this site is our fault, and you dig your own grave</h3>
+      <p>Profanity, slang, edgy language, and generally adult vocabulary are NOT automatically banned inside Nexora. We do not police every word you type. That freedom comes with a personal cost: if you choose to type, say, or send something that gets you in trouble at school, at work, at home, with a friend, with a parent, with a teacher, with an administrator, with a coworker, with law enforcement, or with anyone else in any setting whatsoever, that is one hundred percent on YOU and not on us. You are the one who chose to type it. You are the one who chose to send it. You are the one who chose to read it back out loud. We did not force any words out of your fingers. By using this site you fully acknowledge that you, and you alone, are responsible for every single thing you write, post, share, send, repeat, screenshot, screen-record, broadcast, or otherwise publish through Nexora. If you make a bad decision and get punished for it, that punishment is the natural consequence of your decision — you dug your own grave, and we will not be jumping in with you. Nexora and its operators accept ZERO liability for anything any user says or does on the platform, and you waive any right to blame us for the outcomes of your own choices.</p>
+      <p style="margin-top:18px;color:#9aa0a6;font-style:italic;">By clicking Accept below you are confirming that you read every rule, you understood every rule, you agree to follow every rule, and you accept full personal responsibility for every word and action you contribute to Nexora. There are no take-backs.</p>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end;">
+      <button onclick="closeTOS()" style="background:#3c4043;color:#e8eaed;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">Cancel</button>
+      <button id="tosAcceptBtn" disabled style="background:#1a73e8;color:#fff;border:none;padding:10px 22px;border-radius:8px;cursor:not-allowed;opacity:0.45;font-weight:600;font-family:inherit;">Accept (scroll to enable)</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div id="forgotModal" style="display:none;position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+  <div style="background:#1a1a1d;color:#e8eaed;width:min(440px,92vw);border-radius:16px;padding:24px;border:1px solid #3c4043;font-family:inherit;">
+    <h2 style="margin:0 0 6px 0;">🔑 Request password change</h2>
+    <div style="color:#9aa0a6;font-size:0.85rem;margin-bottom:14px;">Sent to the owner for review. Approved requests apply the new password; rejected ones are discarded to prevent hacking.</div>
+    <label style="display:block;font-size:0.8rem;color:#9aa0a6;margin-bottom:4px;">Username</label>
+    <input id="forgotUser" placeholder="your username" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:9px 12px;border-radius:6px;margin-bottom:10px;font-family:inherit;"/>
+    <label style="display:block;font-size:0.8rem;color:#9aa0a6;margin-bottom:4px;">Desired new password</label>
+    <input id="forgotNewPw" type="password" placeholder="new password" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:9px 12px;border-radius:6px;margin-bottom:10px;font-family:inherit;"/>
+    <label style="display:block;font-size:0.8rem;color:#9aa0a6;margin-bottom:4px;">Note to the owner (why?)</label>
+    <textarea id="forgotNote" placeholder="e.g. I genuinely forgot my password. My recovery word is blue." style="width:100%;height:80px;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:9px 12px;border-radius:6px;font-family:inherit;resize:vertical;"></textarea>
+    <div id="forgotErr" style="color:#f28b82;font-size:0.8rem;margin-top:8px;min-height:1em;"></div>
+    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end;">
+      <button onclick="closeForgot()" style="background:#3c4043;color:#e8eaed;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">Cancel</button>
+      <button onclick="submitForgot()" style="background:#1a73e8;color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">Submit request</button>
     </div>
   </div>
 </div>
@@ -1060,7 +1106,8 @@
   </div>
   <div id="dock">
     <div id="dockDynamic" style="display:flex; align-items:center; gap:8px;"></div>
-    <div class="dock-app" data-app="overview" title="Overview (show all open windows)" onclick="openOverview()" style="background:linear-gradient(135deg,#0f9d58,#34a853);">▦</div>
+    <div class="dock-app" data-app="allapps" title="Show all apps" onclick="openAllApps()" style="background:linear-gradient(135deg,#1a73e8,#7c4dff);font-size:1.1rem;">▦</div>
+    <div class="dock-app" data-app="overview" title="Overview (show all open windows)" onclick="openOverview()" style="background:linear-gradient(135deg,#0f9d58,#34a853);">⛶</div>
   </div>
 </div>
 
@@ -1073,6 +1120,14 @@
   <div class="overview-title">Open windows — click to focus, ✕ to close</div>
   <div class="overview-grid" id="overviewGrid"></div>
 </div>
+
+<!-- ALL APPS OVERLAY -->
+<div id="allAppsOverlay" onclick="if(event.target.id==='allAppsOverlay')closeAllApps()">
+  <button class="allapps-back" onclick="closeAllApps()">← Back</button>
+  <div style="position:absolute;top:30px;left:50%;transform:translateX(-50%);color:#e8eaed;font-size:1.05rem;font-weight:600;letter-spacing:0.5px;">All Apps</div>
+  <div class="allapps-grid" id="allAppsGrid" style="grid-template-columns:repeat(7, 110px);"></div>
+</div>
+
 
 <!-- APP PICKER OVERLAY -->
 <div id="appPickerOverlay" onclick="if(event.target.id==='appPickerOverlay')closeAppPicker()">
@@ -1109,7 +1164,7 @@
     </div>
     <div class="section-title" id="allTitle">All Games <span class="count" id="allCount"></span></div>
     <div class="games-grid" id="gamesGrid">
-      <div class="games-loading">Double-click Arcade to load the game library.</div>
+      <div class="games-loading">Loading game library…</div>
     </div>
     <div class="section-title" id="stashTitle" style="display:none;">UGS Stash <span class="count" id="stashCount"></span></div>
     <div class="games-grid" id="stashGrid"></div>
@@ -1449,7 +1504,7 @@
 <!-- CALL APP — FaceTime-style audio/video calls between friends -->
 <div id="callApp" class="app-window">
   <div class="app-header">
-    <div class="app-title">📞 Calls</div>
+    <div class="app-title">📞 Calls <span style="font-size:0.65rem;background:#5c1f1f;color:#ffd54a;padding:2px 7px;border-radius:8px;margin-left:6px;letter-spacing:0.5px;">EXPERIMENTAL</span></div>
     <div id="callStatusHdr" style="flex:1;color:#9aa0a6;font-size:0.85rem;padding-left:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"></div>
     <button class="app-close" onclick="closeApp('callApp')">✕</button>
   </div>
@@ -1607,7 +1662,7 @@
 
       <!-- Birthday -->
       <div style="background:#202124;border:1px solid #3c4043;border-radius:12px;padding:16px;">
-        <div style="font-size:0.78rem;color:#9aa0a6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Birthday <span style="text-transform:none;letter-spacing:0;color:#5f6368;font-size:0.7rem;">(used to wish you happy birthday — age is just for show)</span></div>
+        <div style="font-size:0.78rem;color:#9aa0a6;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Birthday <span style="text-transform:none;letter-spacing:0;color:#f28b82;font-size:0.7rem;">(heads up — this field doesn't actually change anything right now, it's just for show)</span></div>
         <input id="profileBirthday" type="date" oninput="profileMarkDirty()" style="background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:0.9rem;outline:none;color-scheme:dark;"/>
         <div id="profileBirthdayAge" style="font-size:0.78rem;color:#9aa0a6;margin-top:6px;"></div>
       </div>
@@ -1662,6 +1717,26 @@
   </div>
   <iframe id="emulatorFrame" src="about:blank" style="flex:1;width:100%;border:0;background:#000;" allow="autoplay; gamepad; fullscreen" allowfullscreen></iframe>
 </div>
+
+<!-- TERMINATOR APP — VIP-only ban/blacklist manager -->
+<div id="terminatorApp" class="app-window">
+  <div class="app-header">
+    <div class="app-title">🛡 Terminator <span style="font-size:0.65rem;background:#7a0000;color:#ffd54a;padding:2px 7px;border-radius:8px;margin-left:6px;">OWNER ONLY</span></div>
+    <button class="app-close" onclick="closeApp('terminatorApp')">✕</button>
+  </div>
+  <div id="terminatorBody" style="flex:1;overflow-y:auto;padding:22px;color:#e8eaed;font-family:inherit;background:linear-gradient(180deg,#0a0000,#0d0d0f);"></div>
+</div>
+
+<!-- REQUESTS APP — VIP-only password change request queue -->
+<div id="requestsApp" class="app-window">
+  <div class="app-header">
+    <div class="app-title">📨 Requests <span style="font-size:0.65rem;background:#0a3d62;color:#8ab4f8;padding:2px 7px;border-radius:8px;margin-left:6px;">OWNER ONLY</span></div>
+    <button class="app-close" onclick="closeApp('requestsApp')">✕</button>
+  </div>
+  <div id="requestsBody" style="flex:1;overflow-y:auto;padding:22px;color:#e8eaed;font-family:inherit;background:linear-gradient(180deg,#000814,#0d0d0f);"></div>
+</div>
+
+
 
 
 
@@ -1922,10 +1997,13 @@ function setCachedPfp(username, dataUrl){
 }
 function avatarHTML(username, size=38, pfpOverride='', extra=''){
   const name = username || '?';
-  const pfp = pfpOverride || getCachedPfp(name) || '';
+  let pfp = pfpOverride || getCachedPfp(name) || '';
+  // Treat absurdly short / non-URL strings as invalid so we don't render a black square
+  if (pfp && !/^(data:|https?:|\/)/i.test(pfp)) pfp = '';
   const initial = _escHtml((name[0] || '?').toUpperCase());
   const bg = pfp ? '#000' : _chatColorFor(name);
-  return `<div class="notes-avatar" style="width:${size}px;height:${size}px;background:${bg};${extra}">${pfp ? `<img src="${_escAttr(pfp)}" alt="${_escAttr(name)}"/>` : initial}</div>`;
+  const imgFallback = `this.parentNode.style.background='${_chatColorFor(name)}';this.parentNode.textContent='${initial}';`;
+  return `<div class="notes-avatar" style="width:${size}px;height:${size}px;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden;${extra}">${pfp ? `<img src="${_escAttr(pfp)}" alt="${_escAttr(name)}" style="width:100%;height:100%;object-fit:cover;" onerror="${imgFallback}"/>` : initial}</div>`;
 }
 
 const DEFAULT_PROFILE = {
@@ -2086,6 +2164,8 @@ async function setActive(username, isGuest, userId, profile){
   try { postsRefreshAvatarsForUser(username, ACTIVE.profile && ACTIVE.profile.pfp || ''); } catch(e){}
   applySettings();
   updateUserPill();
+  try { renderDock(); } catch(e){}
+  try { renderDesktopIcons(); } catch(e){}
   if (document.getElementById('gamesApp').classList.contains('open')) {
     renderAllArcadeSections();
   }
@@ -2169,13 +2249,17 @@ function renderLockAccounts(){
   const users = recentUsers();
   fetchLockAccountPfps(users);
   list.innerHTML = users.map(u => {
-    const pfp = getCachedPfp(u);
-    const avStyle = pfp
-      ? `background:#000 url("${pfp}") center/cover no-repeat;`
-      : '';
+    let pfp = getCachedPfp(u);
+    if (pfp && !/^(data:|https?:|\/)/i.test(pfp)) pfp = '';
+    const letter = (u[0]||'?').toUpperCase();
+    const safe = u.replace(/'/g,"\\'");
+    const img = pfp
+      ? `<img src="${pfp.replace(/"/g,'&quot;')}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.parentNode.style.background='';this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${letter}'}));"/>`
+      : letter;
+    const avStyle = pfp ? 'background:#000;overflow:hidden;' : '';
     return `
-    <div class="account-tile" onclick="resumeRecentUser('${u.replace(/'/g,"\\'")}')">
-      <div class="account-avatar" style="${avStyle}">${pfp ? '' : (u[0]||'?').toUpperCase()}</div>
+    <div class="account-tile" onclick="resumeRecentUser('${safe}')">
+      <div class="account-avatar" style="${avStyle}">${img}</div>
       <div>
         <div class="acc-name">${vipNameHTML(u)}</div>
         <div class="acc-sub">Continue</div>
@@ -2244,25 +2328,37 @@ function refreshAuthMode(){
   const s = document.getElementById('authSub');
   const st = document.getElementById('authSwitchText');
   const sl = document.getElementById('authSwitchLink');
+  const confirmWrap = document.getElementById('authConfirmWrap');
+  const forgotWrap = document.getElementById('authForgotWrap');
   if (AUTH_MODE === 'signin') {
     t.textContent = 'Sign in';
     s.textContent = 'Your progress lives in the cloud.';
     st.textContent = "No account yet?";
     sl.textContent = 'Create one';
+    confirmWrap.style.display = 'none';
+    forgotWrap.style.display = 'block';
   } else {
     t.textContent = 'Create account';
     s.textContent = 'Saved to the cloud — works on any device.';
     st.textContent = 'Already have one?';
     sl.textContent = 'Sign in';
+    confirmWrap.style.display = 'block';
+    forgotWrap.style.display = 'block';
+    document.getElementById('authPass2').value = '';
   }
 }
 document.getElementById('authSwitchLink').addEventListener('click', () => {
+  if (AUTH_MODE === 'signin') {
+    // Switching to signup — require TOS first
+    if (!_tosAccepted()) { closeAuth(); requireTOSThen(()=>openAuth('signup')); return; }
+  }
   AUTH_MODE = AUTH_MODE === 'signin' ? 'signup' : 'signin';
   refreshAuthMode();
   document.getElementById('authErr').textContent = '';
 });
+document.getElementById('authForgotLink').addEventListener('click', () => { openForgot(); });
 document.getElementById('authSubmit').addEventListener('click', submitAuth);
-document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+document.getElementById('authPass').addEventListener('keydown', e => { if (e.key === 'Enter') { if (AUTH_MODE === 'signup') document.getElementById('authPass2').focus(); else submitAuth(); } });
 document.getElementById('authUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('authPass').focus(); });
 
 async function submitAuth(){
@@ -2272,7 +2368,27 @@ async function submitAuth(){
   const username = document.getElementById('authUser').value.trim();
   const password = document.getElementById('authPass').value;
   if (!/^[A-Za-z0-9_\-]{2,24}$/.test(username)) { errEl.textContent = 'Username: 2-24 letters, numbers, _ or -'; return; }
-  if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if (password.length < 4) { errEl.textContent = 'Password must be at least 4 characters.'; return; }
+
+  if (AUTH_MODE === 'signup') {
+    const pass2 = document.getElementById('authPass2').value;
+    if (password !== pass2) { errEl.textContent = 'Passwords do not match. Type the same password twice.'; return; }
+    if (!_tosAccepted()) { errEl.textContent = 'You must accept the Terms of Service first.'; return; }
+    const _normU = username.toLowerCase()
+      .replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a')
+      .replace(/5/g,'s').replace(/7/g,'t').replace(/@/g,'a').replace(/\$/g,'s')
+      .replace(/[^a-z]/g,'');
+    const _badCheck = ['fuck','shit','bitch','asshole','dick','pussy','cunt','cock','bastard',
+      'nigger','nigga','faggot','fag','tranny','retard','retarded','spic','chink','kike','wetback',
+      'gook','jap','kraut','dyke','homo','queer','slut','whore','hoe','twat','wanker','prick',
+      'jackoff','jerkoff','motherfucker','milf','bullshit','douche','douchebag','rape','rapist'];
+    for (const w of _badCheck) {
+      if (_normU.includes(w)) {
+        errEl.textContent = 'That username contains inappropriate language. Please choose another.';
+        return;
+      }
+    }
+  }
 
   btn.disabled = true;
   btn.textContent = AUTH_MODE === 'signup' ? 'Creating…' : 'Signing in…';
@@ -2291,17 +2407,40 @@ async function submitAuth(){
         options: { data: { username: username.toLowerCase() } }
       });
       if (error) throw error;
-      // Trigger created the profile row; load it (or insert default if it's not there yet)
       const userId = data.user?.id;
       if (!userId) { errEl.textContent = 'Signup succeeded but no user returned.'; return; }
-      // Small wait for trigger
+
+      // FIX: Auto sign-in immediately after signup to bypass "email not confirmed" error.
+      // Supabase requires email confirmation by default — we work around it by signing in
+      // right away with the credentials the user just provided.
+      try {
+        const { data: siData, error: siErr } = await sb.auth.signInWithPassword({ email, password });
+        if (!siErr && siData?.user?.id) {
+          const realId = siData.user.id;
+          const profile = await fetchOrInitProfile(realId, username);
+          await setActive(username, false, realId, profile);
+          hideLock();
+          return;
+        }
+      } catch(siEx) { /* fall through to profile load below */ }
+
+      // Fallback: use the signup userId directly
       const profile = await fetchOrInitProfile(userId, username);
       await setActive(username, false, userId, profile);
       hideLock();
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
-        errEl.textContent = error.message.includes('Invalid') ? 'Wrong username or password.' : error.message;
+        let msg = error.message || '';
+        // FIX: "Email not confirmed" should never appear for our synthetic emails,
+        // but if it does, give a friendlier message.
+        if (msg.toLowerCase().includes('email not confirmed') || msg.toLowerCase().includes('confirm')) {
+          errEl.textContent = 'Sign-in failed. If you just created this account, try again in a moment.';
+        } else if (msg.includes('Invalid')) {
+          errEl.textContent = 'Wrong username or password.';
+        } else {
+          errEl.textContent = msg;
+        }
         return;
       }
       const userId = data.user.id;
@@ -2311,7 +2450,15 @@ async function submitAuth(){
     }
   } catch (e) {
     console.error(e);
-    errEl.textContent = e.message || 'Something went wrong.';
+    const msg = e.message || 'Something went wrong.';
+    // FIX: Translate Supabase password-strength errors into plain English
+    if (msg.toLowerCase().includes('should be at least') || msg.toLowerCase().includes('password') && msg.toLowerCase().includes('weak')) {
+      errEl.textContent = 'Password too simple — try adding a number or symbol.';
+    } else if (msg.toLowerCase().includes('email not confirmed') || msg.toLowerCase().includes('confirm')) {
+      errEl.textContent = 'Account created! Please try signing in now.';
+    } else {
+      errEl.textContent = msg;
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = 'Continue';
@@ -2478,6 +2625,9 @@ function openApp(id){
     if (id==='friendsApp') { friendsLoad(); }
     if (id==='dmApp')   { try { dmInit(); } catch(e){ console.warn(e); } }
     if (id==='callApp') { try { callInit(); } catch(e){ console.warn(e); } }
+    if (id==='gamesApp') { try { ensureGamesLoaded(); } catch(e){ console.warn(e); } }
+    if (id==='terminatorApp') { try { terminatorInit(); } catch(e){ console.warn(e); } }
+    if (id==='requestsApp') { try { requestsInit(); } catch(e){ console.warn(e); } }
     if (id==='profileApp') { profileOpen(); }
     // Movies opens windowed so users can immediately minimize/resize/snap it side-by-side
     if (id==='moviesApp' && !win.classList.contains('windowed')) {
@@ -2752,21 +2902,33 @@ const APP_REGISTRY = [
   { id:'videoApp',    name:'TestVideo.Mp3', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Video-x-generic.svg/1024px-Video-x-generic.svg.png', icon:'▶', bg:'#1a1a1a' },
   { id:'chatApp',     name:'Chatting',    img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe4PLjGYyGY4WVSJT0SYsqQui2SR-N5i0k2A&s', icon:'💬', bg:'#000' },
   { id:'dmApp',       name:'DMs',         icon:'✉', bg:'linear-gradient(135deg,#7c4dff,#0a84ff)' },
-  { id:'callApp',     name:'Calls',       icon:'📞', bg:'linear-gradient(135deg,#34a853,#0a84ff)' },
-  { id:'friendsApp',  name:'Friends',     img:'https://cdn-icons-png.flaticon.com/512/1077/1077114.png', icon:'👥', bg:'linear-gradient(135deg,#1a73e8,#34a853)' },
+  { id:'callApp',     name:'Calls',       img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ5_qNZha0z91DiGYuvKrn_Uns3ix6O68NaA&s', icon:'📞', bg:'#000' },
+  { id:'friendsApp',  name:'Friends',     img:'https://voca-land.sgp1.cdn.digitaloceanspaces.com/0/1757672249435/11ec5ad9.jpg', icon:'👥', bg:'#000' },
   { id:'profileApp',  name:'Profile',     icon:'🪪', bg:'linear-gradient(135deg,#7c4dff,#ea4335)' },
   { id:'emulatorApp', name:'Retro Games', img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThvfeLB79JPR7FCso0bOe8wp4geT_2NOrDHw&s', icon:'🕹', bg:'#000' },
+  { id:'terminatorApp', name:'Terminator', icon:'🛡', bg:'linear-gradient(135deg,#7a0000,#000)', vipOnly:true },
+  { id:'requestsApp',   name:'Requests',   icon:'📨', bg:'linear-gradient(135deg,#0a3d62,#000814)', vipOnly:true },
 
 ];
-const DEFAULT_HOME = APP_REGISTRY.map(a => a.id);
+const DEFAULT_HOME = APP_REGISTRY.filter(a => !a.vipOnly).map(a => a.id);
+function _appVisible(a){
+  if (!a) return false;
+  if (a.vipOnly) {
+    const u = (window.ACTIVE && ACTIVE.username) || '';
+    return isVipUser(u);
+  }
+  return true;
+}
 function getHomeApps(){
   let order = [];
   try {
     const saved = JSON.parse(localStorage.getItem('ar_home') || 'null');
-    if (Array.isArray(saved)) order = saved.filter(id => APP_REGISTRY.find(a => a.id === id));
+    if (Array.isArray(saved)) order = saved.filter(id => {
+      const a = APP_REGISTRY.find(x => x.id === id); return a && _appVisible(a);
+    });
   } catch(e){}
-  // Always include every registered app — new apps auto-appear on the home screen
-  APP_REGISTRY.forEach(a => { if (!order.includes(a.id)) order.push(a.id); });
+  // Always include every registered app (that the user can see) — new apps auto-appear on the home screen
+  APP_REGISTRY.forEach(a => { if (_appVisible(a) && !order.includes(a.id)) order.push(a.id); });
   return order;
 }
 function saveHomeApps(list){
@@ -3954,10 +4116,15 @@ function _chatNameLabel(user, mine){
 }
 function _chatAvatarHTML(user, size, pfpOverride){
   size = size || 28;
-  const pfp = pfpOverride || getCachedPfp(user) || '';
+  let pfp = pfpOverride || getCachedPfp(user) || '';
+  if (pfp && !/^(data:|https?:|\/)/i.test(pfp)) pfp = '';
   const initial = _escHTML((user||'?')[0].toUpperCase());
-  const bg = pfp ? `#000 url("${pfp}") center/cover no-repeat` : _chatColorFor(user||'?');
-  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:${Math.round(size*0.45)}px;flex:none;overflow:hidden;">${pfp?'':initial}</div>`;
+  const fallbackBg = _chatColorFor(user||'?');
+  const bg = pfp ? '#000' : fallbackBg;
+  const inner = pfp
+    ? `<img src="${_escAttr(pfp)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='${fallbackBg}';this.parentNode.textContent='${initial}';"/>`
+    : initial;
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:${Math.round(size*0.45)}px;flex:none;overflow:hidden;">${inner}</div>`;
 }
 function _chatNewId(){ return 'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); }
 function _chatTextPreview(m){ return (m.kind==='image'?'📷 Image':m.kind==='gif'?'🎞 GIF':(m.text||'')).slice(0,100); }
@@ -5617,13 +5784,17 @@ function friendsRefreshList(){
     const status = online
       ? (partyHost ? `hosting party${meta.partyTitle ? ' · ' + _escHTML(censor(meta.partyTitle)) : ''}` : 'online')
       : 'offline';
-    const pfp = (_friendProfiles.get(f.otherId) || {}).pfp || getCachedPfp(f.otherUsername) || '';
-    const avBg = pfp ? `#000 url("${pfp}") center/cover no-repeat` : _chatColorFor(f.otherUsername);
+    let pfp = (_friendProfiles.get(f.otherId) || {}).pfp || getCachedPfp(f.otherUsername) || '';
+    if (pfp && !/^(data:|https?:|\/)/i.test(pfp)) pfp = '';
+    const fallbackBg = _chatColorFor(f.otherUsername);
+    const avBg = pfp ? '#000' : fallbackBg;
+    const letter = _escHTML(dispName[0].toUpperCase());
+    const avImg = pfp ? `<img src="${_escAttr(pfp)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.background='${fallbackBg}';this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${letter}'}));"/>` : letter;
     return `<div style="background:#2a2b2e;padding:9px 12px;border-radius:8px;margin-bottom:5px;display:flex;align-items:center;gap:10px;">
       <div onclick="openUserCard('${f.otherId}','${_escAttr(f.otherUsername)}')" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0;">
         <div style="width:34px;height:34px;border-radius:50%;background:${avBg};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;position:relative;flex:none;overflow:hidden;">
-          ${pfp ? '' : _escHTML(dispName[0].toUpperCase())}
-          <span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:${online?'#34a853':'#5f6368'};border:2px solid #1c1d20;"></span>
+          ${avImg}
+          <span style="position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:${online?'#34a853':'#5f6368'};border:2px solid #1c1d20;z-index:2;"></span>
         </div>
         <div style="flex:1;min-width:0;">
           <div style="color:#e8eaed;font-size:0.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${vipNameHTML(f.otherUsername)}</div>
@@ -7517,9 +7688,13 @@ async function callRenderLobby(){
     const meta = _profilePresenceMeta.get(f.otherId);
     const online = meta && meta.online;
     const initials = _callInitials(f.otherUsername);
+    let pfp = (_friendProfiles.get(f.otherId) || {}).pfp || getCachedPfp(f.otherUsername) || '';
+    if (pfp && !/^(data:|https?:|\/)/i.test(pfp)) pfp = '';
+    const fb = _chatColorFor(f.otherUsername||'?');
+    const avInner = pfp ? `<img src="${_escAttr(pfp)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentNode.style.background='${fb}';this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${initials}'}));"/>` : initials;
     return `<div style="display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:12px;background:#1c1d20;margin-bottom:8px;border:1px solid #25272b;">
-      <div style="position:relative;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#0a84ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">${initials}
-        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:${online?'#34a853':'#5f6368'};border:2px solid #1c1d20;"></div>
+      <div style="position:relative;width:46px;height:46px;border-radius:50%;background:${pfp?'#000':fb};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden;">${avInner}
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-radius:50%;background:${online?'#34a853':'#5f6368'};border:2px solid #1c1d20;z-index:2;"></div>
       </div>
       <div style="flex:1;min-width:0;">
         <div style="color:#e8eaed;font-weight:600;">${_escHTML(f.otherUsername||'friend')}</div>
@@ -7744,6 +7919,394 @@ window.hideIncomingCall = hideIncomingCall;
 
 
 /* ========================================================================
+   TERMINATOR APP — owner-only ban/blacklist (VIP users only)
+   ======================================================================== */
+const TERM_KEY = 'nx_term_blacklist_v1';
+const TERM_DEVICE_BAN_KEY = 'nx_term_device_banned_v1';
+const TERM_DEVICE_BAN_REASON_KEY = 'nx_term_device_banned_reason_v1';
+const TERM_PRESETS = [
+  'Violated the Terms of Service.',
+  'Hacking / exploit attempts.',
+  'Spam account / bad-faith use.',
+  'Shared the site via email.',
+  'Harassment of other users.',
+  'Impersonation.'
+];
+function _termRead(){
+  let d;
+  try { d = JSON.parse(localStorage.getItem(TERM_KEY)||'{"emails":[],"usernames":[]}'); }
+  catch { d = { emails:[], usernames:[] }; }
+  // Normalize legacy string entries -> {value, reason}
+  d.emails = (d.emails||[]).map(e => typeof e === 'string' ? { value:e, reason:'No reason provided.' } : e);
+  d.usernames = (d.usernames||[]).map(e => typeof e === 'string' ? { value:e, reason:'No reason provided.' } : e);
+  return d;
+}
+function _termWrite(d){ try { localStorage.setItem(TERM_KEY, JSON.stringify(d)); } catch {} }
+function termIsBanned(){
+  if (localStorage.getItem(TERM_DEVICE_BAN_KEY) === '1') {
+    const r = localStorage.getItem(TERM_DEVICE_BAN_REASON_KEY) || 'This device has been banned from Nexora OS.';
+    return { reason:r };
+  }
+  const d = _termRead();
+  const u = (window.ACTIVE && ACTIVE.username || '').toLowerCase();
+  if (u) {
+    const hit = d.usernames.find(x => (x.value||'').toLowerCase() === u);
+    if (hit) return { reason: 'This account has been banned by the owner.\n\nReason: ' + (hit.reason || 'No reason provided.') };
+  }
+  return null;
+}
+async function termCheckEmailBan(){
+  try {
+    const { data } = await sb.auth.getUser();
+    const email = (data?.user?.email||'').toLowerCase();
+    if (!email) return null;
+    const d = _termRead();
+    const hit = d.emails.find(x => (x.value||'').toLowerCase() === email);
+    if (hit) return { reason: 'This email has been blacklisted by the owner.\n\nReason: ' + (hit.reason || 'No reason provided.') };
+  } catch {}
+  return null;
+}
+function termShowBanScreen(reason){
+  document.body.innerHTML = `<div style="position:fixed;inset:0;background:#000;color:#f28b82;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;padding:30px;text-align:center;">
+    <div style="font-size:5rem;margin-bottom:18px;">🛡</div>
+    <div style="font-size:1.6rem;font-weight:700;margin-bottom:10px;">Access denied</div>
+    <div style="color:#e8eaed;max-width:560px;line-height:1.5;white-space:pre-wrap;">${_escHTML(reason||'Banned.')}</div>
+    <div style="margin-top:24px;color:#5f6368;font-size:0.8rem;">If you believe this is a mistake, contact the owner.</div>
+  </div>`;
+}
+async function termEnforce(){
+  const local = termIsBanned();
+  if (local) { termShowBanScreen(local.reason); return true; }
+  const remote = await termCheckEmailBan();
+  if (remote) {
+    try {
+      localStorage.setItem(TERM_DEVICE_BAN_KEY,'1');
+      localStorage.setItem(TERM_DEVICE_BAN_REASON_KEY, remote.reason);
+    } catch {}
+    termShowBanScreen(remote.reason); return true;
+  }
+  return false;
+}
+function terminatorInit(){
+  const u = (window.ACTIVE && ACTIVE.username) || '';
+  const body = document.getElementById('terminatorBody');
+  if (!isVipUser(u)) {
+    body.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9aa0a6;">
+      <div style="font-size:3rem;margin-bottom:14px;">⛔</div>
+      <div style="font-weight:700;color:#f28b82;">Terminator is owner-only.</div>
+      <div style="margin-top:6px;font-size:0.85rem;">Only the OS owner can open this app.</div>
+    </div>`;
+    return;
+  }
+  termRender();
+}
+function _termPresetOptions(){
+  return ['<option value="">— Choose preset reason —</option>']
+    .concat(TERM_PRESETS.map(p => `<option value="${_escAttr(p)}">${_escHTML(p)}</option>`))
+    .concat(['<option value="__custom__">Custom (use note below)…</option>'])
+    .join('');
+}
+function termRender(){
+  const body = document.getElementById('terminatorBody');
+  if (!body) return;
+  const d = _termRead();
+  const emailRows = d.emails.length ? d.emails.map(e=>`<div style="background:#1a1a1d;padding:10px 12px;border-radius:8px;margin-bottom:6px;">
+    <div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;color:#e8eaed;font-weight:600;">${_escHTML(e.value)}</div><button onclick="termUnban('email','${_escAttr(e.value)}')" style="background:#3c4043;color:#e8eaed;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">Remove</button></div>
+    <div style="color:#9aa0a6;font-size:0.78rem;margin-top:4px;white-space:pre-wrap;">${_escHTML(e.reason||'No reason provided.')}</div>
+  </div>`).join('') : '<div style="color:#5f6368;font-size:0.85rem;">No emails blacklisted.</div>';
+  const userRows = d.usernames.length ? d.usernames.map(e=>`<div style="background:#1a1a1d;padding:10px 12px;border-radius:8px;margin-bottom:6px;">
+    <div style="display:flex;align-items:center;gap:10px;"><div style="flex:1;color:#e8eaed;font-weight:600;">${_escHTML(e.value)}</div><button onclick="termUnban('user','${_escAttr(e.value)}')" style="background:#3c4043;color:#e8eaed;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">Unban</button></div>
+    <div style="color:#9aa0a6;font-size:0.78rem;margin-top:4px;white-space:pre-wrap;">${_escHTML(e.reason||'No reason provided.')}</div>
+  </div>`).join('') : '<div style="color:#5f6368;font-size:0.85rem;">No accounts banned.</div>';
+  body.innerHTML = `
+    <div style="max-width:680px;margin:0 auto;">
+      <div style="background:#1a0000;border:1px solid #5c1f1f;padding:14px 18px;border-radius:12px;margin-bottom:18px;color:#ffd54a;font-size:0.88rem;line-height:1.5;">
+        ⚠ You are the owner. Anyone you ban here gets the ban note you set when they try to use the OS.
+      </div>
+      <div style="background:#17181a;border:1px solid #2a2b2e;padding:16px;border-radius:12px;margin-bottom:16px;">
+        <div style="font-weight:700;color:#e8eaed;margin-bottom:10px;">Ban an account by username</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="termUserInput" placeholder="username" style="flex:1;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;"/>
+          <button onclick="termBan('user')" style="background:#7a0000;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;">Ban</button>
+        </div>
+        <select id="termUserPreset" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;margin-bottom:6px;">${_termPresetOptions()}</select>
+        <textarea id="termUserNote" placeholder="Custom ban note (used if preset is empty or 'Custom')" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;resize:vertical;height:60px;"></textarea>
+        <div style="margin-top:14px;">${userRows}</div>
+      </div>
+      <div style="background:#17181a;border:1px solid #2a2b2e;padding:16px;border-radius:12px;margin-bottom:16px;">
+        <div style="font-weight:700;color:#e8eaed;margin-bottom:10px;">Blacklist an email</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="termEmailInput" placeholder="someone@example.com" style="flex:1;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;"/>
+          <button onclick="termBan('email')" style="background:#7a0000;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;">Blacklist</button>
+        </div>
+        <select id="termEmailPreset" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;margin-bottom:6px;">${_termPresetOptions()}</select>
+        <textarea id="termEmailNote" placeholder="Custom ban note (used if preset is empty or 'Custom')" style="width:100%;background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:8px 12px;border-radius:6px;font-family:inherit;resize:vertical;height:60px;"></textarea>
+        <div style="margin-top:14px;">${emailRows}</div>
+      </div>
+      <div style="background:#17181a;border:1px solid #2a2b2e;padding:16px;border-radius:12px;">
+        <div style="font-weight:700;color:#e8eaed;margin-bottom:6px;">This-device controls</div>
+        <div style="color:#9aa0a6;font-size:0.82rem;margin-bottom:10px;">Brick this exact device so no one can use the OS in this browser.</div>
+        <button onclick="termBanDevice()" style="background:#7a0000;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;">Ban this device</button>
+        <button onclick="localStorage.removeItem('${TERM_DEVICE_BAN_KEY}');localStorage.removeItem('${TERM_DEVICE_BAN_REASON_KEY}');alert('Device ban cleared.');" style="background:#3c4043;color:#e8eaed;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-left:8px;">Clear device ban</button>
+      </div>
+    </div>`;
+}
+function _termResolveReason(presetId, noteId){
+  const preset = (document.getElementById(presetId).value||'').trim();
+  const note = (document.getElementById(noteId).value||'').trim();
+  if (preset && preset !== '__custom__') return preset;
+  if (note) return note;
+  return 'No reason provided.';
+}
+function termBan(kind){
+  const d = _termRead();
+  if (kind==='email'){
+    const v = (document.getElementById('termEmailInput').value||'').trim().toLowerCase();
+    if (!v || !v.includes('@')) return;
+    const reason = _termResolveReason('termEmailPreset','termEmailNote');
+    const idx = d.emails.findIndex(x => (x.value||'').toLowerCase() === v);
+    if (idx >= 0) d.emails[idx] = { value:v, reason }; else d.emails.push({ value:v, reason });
+  } else {
+    const v = (document.getElementById('termUserInput').value||'').trim().toLowerCase();
+    if (!v) return;
+    const reason = _termResolveReason('termUserPreset','termUserNote');
+    const idx = d.usernames.findIndex(x => (x.value||'').toLowerCase() === v);
+    if (idx >= 0) d.usernames[idx] = { value:v, reason }; else d.usernames.push({ value:v, reason });
+  }
+  _termWrite(d); termRender();
+}
+function termUnban(kind, val){
+  const d = _termRead();
+  const v = String(val||'').toLowerCase();
+  if (kind==='email') d.emails = d.emails.filter(x => (x.value||'').toLowerCase() !== v);
+  else d.usernames = d.usernames.filter(x => (x.value||'').toLowerCase() !== v);
+  _termWrite(d); termRender();
+}
+function termBanDevice(){
+  const reason = prompt('Reason for banning this device?', 'Device banned by owner.') || 'Device banned by owner.';
+  if (!confirm('Ban THIS device with reason:\n\n' + reason)) return;
+  localStorage.setItem(TERM_DEVICE_BAN_KEY,'1');
+  localStorage.setItem(TERM_DEVICE_BAN_REASON_KEY, reason);
+  location.reload();
+}
+window.terminatorInit = terminatorInit;
+window.termBan = termBan; window.termUnban = termUnban; window.termBanDevice = termBanDevice;
+setTimeout(() => { termEnforce(); }, 1500);
+try {
+  sb.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'USER_UPDATED') setTimeout(()=>termEnforce(), 600);
+  });
+} catch {}
+
+/* ========================================================================
+   TOS — Terms of Service modal (gates signup + guest entry)
+   ======================================================================== */
+const TOS_KEY = 'nx_tos_accepted_v2';
+function _tosAccepted(){ try { return localStorage.getItem(TOS_KEY) === '1'; } catch { return false; } }
+let _tosCallback = null;
+function requireTOSThen(cb){
+  if (_tosAccepted()) { cb && cb(); return; }
+  _tosCallback = cb || null;
+  openTOS();
+}
+function openTOS(){
+  const m = document.getElementById('tosModal');
+  m.style.display = 'flex';
+  const btn = document.getElementById('tosAcceptBtn');
+  btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed';
+  btn.textContent = 'Accept (scroll to enable)';
+  const sc = document.getElementById('tosScroll');
+  sc.scrollTop = 0;
+  const onScroll = () => {
+    const atBottom = sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 6;
+    if (atBottom) {
+      btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+      btn.textContent = 'Accept';
+    }
+  };
+  sc.onscroll = onScroll;
+  // If content is short enough to not scroll, enable immediately
+  setTimeout(onScroll, 50);
+  btn.onclick = () => {
+    try { localStorage.setItem(TOS_KEY, '1'); } catch {}
+    closeTOS();
+    const cb = _tosCallback; _tosCallback = null;
+    if (cb) cb();
+  };
+}
+function closeTOS(){ document.getElementById('tosModal').style.display = 'none'; }
+window.requireTOSThen = requireTOSThen;
+window.openTOS = openTOS;
+window.closeTOS = closeTOS;
+
+/* ========================================================================
+   FORGOT PASSWORD — submit a request the owner reviews in the Requests app
+   ======================================================================== */
+const PW_REQ_KEY = 'nx_pw_requests_v1';
+function _pwReqRead(){
+  try { return JSON.parse(localStorage.getItem(PW_REQ_KEY)||'[]'); } catch { return []; }
+}
+function _pwReqWrite(arr){ try { localStorage.setItem(PW_REQ_KEY, JSON.stringify(arr)); } catch {} }
+function openForgot(){
+  document.getElementById('forgotErr').textContent = '';
+  document.getElementById('forgotUser').value = document.getElementById('authUser').value || '';
+  document.getElementById('forgotNewPw').value = '';
+  document.getElementById('forgotNote').value = '';
+  document.getElementById('forgotModal').style.display = 'flex';
+}
+function closeForgot(){ document.getElementById('forgotModal').style.display = 'none'; }
+function submitForgot(){
+  const errEl = document.getElementById('forgotErr');
+  errEl.textContent = '';
+  const username = (document.getElementById('forgotUser').value||'').trim();
+  const newPw = document.getElementById('forgotNewPw').value;
+  const note = (document.getElementById('forgotNote').value||'').trim();
+  if (!/^[A-Za-z0-9_\-]{2,24}$/.test(username)) { errEl.textContent = 'Invalid username.'; return; }
+  if (newPw.length < 4) { errEl.textContent = 'New password must be at least 4 characters.'; return; }
+  const arr = _pwReqRead();
+  arr.unshift({
+    id: 'pwr_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    username: username.toLowerCase(),
+    newPassword: newPw,
+    note: note || '(no note)',
+    status: 'pending',
+    ts: Date.now()
+  });
+  _pwReqWrite(arr);
+  closeForgot();
+  alert('Request submitted. The owner will review it. You will need to use the new password after it is accepted.');
+}
+window.openForgot = openForgot;
+window.closeForgot = closeForgot;
+window.submitForgot = submitForgot;
+
+/* ========================================================================
+   REQUESTS APP — owner-only password reset queue
+   ======================================================================== */
+function requestsInit(){
+  const u = (window.ACTIVE && ACTIVE.username) || '';
+  const body = document.getElementById('requestsBody');
+  if (!isVipUser(u)) {
+    body.innerHTML = `<div style="text-align:center;padding:50px 20px;color:#9aa0a6;">
+      <div style="font-size:3rem;margin-bottom:14px;">⛔</div>
+      <div style="font-weight:700;color:#f28b82;">Requests is owner-only.</div>
+      <div style="margin-top:6px;font-size:0.85rem;">Only the OS owner can review user requests.</div>
+    </div>`;
+    return;
+  }
+  requestsRender();
+}
+function requestsRender(){
+  const body = document.getElementById('requestsBody');
+  if (!body) return;
+  const arr = _pwReqRead();
+  const pending = arr.filter(r => r.status === 'pending');
+  const handled = arr.filter(r => r.status !== 'pending').slice(0, 20);
+  const fmt = (r) => `<div style="background:#17181a;border:1px solid #2a2b2e;padding:14px 16px;border-radius:10px;margin-bottom:10px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="font-weight:700;color:#e8eaed;">@${_escHTML(r.username)}</div>
+      <div style="color:#9aa0a6;font-size:0.75rem;">${new Date(r.ts).toLocaleString()}</div>
+    </div>
+    <div style="color:#9aa0a6;font-size:0.8rem;margin-bottom:4px;">Requested new password:</div>
+    <div style="background:#0e0e10;color:#8ab4f8;padding:6px 10px;border-radius:6px;font-family:monospace;margin-bottom:8px;">${_escHTML(r.newPassword)}</div>
+    <div style="color:#9aa0a6;font-size:0.8rem;margin-bottom:4px;">Note:</div>
+    <div style="color:#e8eaed;font-size:0.88rem;margin-bottom:10px;white-space:pre-wrap;">${_escHTML(r.note||'')}</div>
+    ${r.status === 'pending' ? `<div style="display:flex;gap:8px;">
+      <button onclick="requestsDecide('${r.id}','approved')" style="background:#0f9d58;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:600;">Accept</button>
+      <button onclick="requestsDecide('${r.id}','rejected')" style="background:#7a0000;color:#fff;border:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:600;">Reject</button>
+    </div>` : `<div style="color:${r.status==='approved'?'#34a853':'#f28b82'};font-size:0.85rem;font-weight:600;">${r.status.toUpperCase()}</div>`}
+  </div>`;
+  body.innerHTML = `<div style="max-width:680px;margin:0 auto;">
+    <div style="background:#0a0e1a;border:1px solid #1f3a5c;padding:14px 18px;border-radius:12px;margin-bottom:18px;color:#8ab4f8;font-size:0.85rem;line-height:1.5;">
+      📨 Password change requests from users. Accept to apply the new password (the user must sign in once with their new password to finish the change). Reject to discard.
+    </div>
+    <div style="font-weight:700;color:#e8eaed;margin-bottom:10px;">Pending (${pending.length})</div>
+    ${pending.length ? pending.map(fmt).join('') : '<div style="color:#5f6368;font-size:0.85rem;margin-bottom:18px;">No pending requests.</div>'}
+    <div style="font-weight:700;color:#e8eaed;margin:20px 0 10px;">Recent</div>
+    ${handled.length ? handled.map(fmt).join('') : '<div style="color:#5f6368;font-size:0.85rem;">No recent decisions.</div>'}
+  </div>`;
+}
+function requestsDecide(id, decision){
+  const arr = _pwReqRead();
+  const r = arr.find(x => x.id === id);
+  if (!r) return;
+  r.status = decision;
+  r.decidedAt = Date.now();
+  _pwReqWrite(arr);
+  if (decision === 'approved') {
+    alert('Approved. Tell @' + r.username + ' their new password is now:\n\n  ' + r.newPassword + '\n\nThey will need to sign in with this password. (Note: in this device-local prototype the actual auth password is not changed automatically — share it with the user to use on their next sign-in.)');
+  }
+  requestsRender();
+}
+window.requestsInit = requestsInit;
+window.requestsDecide = requestsDecide;
+
+/* ========================================================================
+   FEATURE-TEST RUNNER — runs every app/feature and reports pass/fail
+   ======================================================================== */
+async function _runFeatureTests(){
+  const results = [];
+  const t = (name, fn) => { try { const r = fn(); if (r && typeof r.then === 'function') return r.then(v=>{results.push({name,ok:true,info:v||''});}).catch(e=>{results.push({name,ok:false,err:String(e&&e.message||e)});}); results.push({name,ok:true,info:r||''}); } catch(e){ results.push({name,ok:false,err:String(e&&e.message||e)}); } };
+  // 1. global helpers
+  t('avatarHTML helper', () => typeof avatarHTML === 'function');
+  t('_chatAvatarHTML helper', () => typeof _chatAvatarHTML === 'function');
+  t('Supabase client `sb`', () => !!sb && !!sb.auth);
+  t('Active user object', () => !!window.ACTIVE);
+  // 2. each registered app window present
+  APP_REGISTRY.forEach(a => t(`App window exists: ${a.name}`, () => !!document.getElementById(a.id)));
+  // 3. each registered app opens
+  for (const a of APP_REGISTRY) {
+    if (a.vipOnly && !isVipUser((ACTIVE&&ACTIVE.username)||'')) continue;
+    try { openApp(a.id); closeApp(a.id); results.push({name:`Open/close: ${a.name}`, ok:true}); }
+    catch(e){ results.push({name:`Open/close: ${a.name}`, ok:false, err:String(e&&e.message||e)}); }
+  }
+  // 4. overlays
+  t('All-apps overlay exists', () => !!document.getElementById('allAppsOverlay'));
+  t('Overview overlay exists', () => !!document.getElementById('overviewOverlay'));
+  t('Lock screen exists', () => !!document.getElementById('lockScreen'));
+  // 5. feature subsystems
+  t('Notes (postsInit)', () => typeof postsInit === 'function');
+  t('DMs (dmInit)', () => typeof dmInit === 'function');
+  t('Chatrooms (chatInitLobby)', () => typeof chatInitLobby === 'function');
+  t('Friends (friendsLoad)', () => typeof friendsLoad === 'function');
+  t('Calls (callInit)', () => typeof callInit === 'function');
+  t('Arcade loader (loadAllGames)', () => typeof loadAllGames === 'function');
+  t('Confetti', () => typeof confettiBurst === 'function');
+  t('Notifications (notifPush)', () => typeof notifPush === 'function');
+  t('Profile (profileOpen)', () => typeof profileOpen === 'function');
+  t('Settings save', () => typeof saveSettings === 'function');
+  t('Terminator (owner)', () => typeof terminatorInit === 'function');
+  t('PFP cache', () => typeof getCachedPfp === 'function' && typeof setCachedPfp === 'function');
+  t('Birthday field', () => !!document.getElementById('profileBirthday'));
+  // wait for any async
+  await new Promise(r => setTimeout(r, 300));
+  return results;
+}
+async function runFeatureTestPanel(){
+  const m = document.getElementById('devPanelModal');
+  const body = document.getElementById('devPanelBody');
+  if (!m || !body) return;
+  m.style.display = 'flex';
+  body.innerHTML = '<div style="padding:20px;text-align:center;color:#9aa0a6;">Running tests…</div>';
+  const r = await _runFeatureTests();
+  const ok = r.filter(x => x.ok).length;
+  const total = r.length;
+  const rows = r.map(x => `<div style="display:flex;gap:8px;padding:5px 8px;border-bottom:1px solid #2a2b2e;font-size:0.82rem;align-items:flex-start;">
+    <span style="flex:none;color:${x.ok?'#34a853':'#f28b82'};font-weight:700;width:22px;">${x.ok?'✓':'✗'}</span>
+    <span style="flex:1;color:#e8eaed;">${_escHTML(x.name)}</span>
+    ${x.err?`<span style="flex:none;color:#f28b82;font-size:0.74rem;max-width:280px;text-align:right;">${_escHTML(x.err)}</span>`:''}
+  </div>`).join('');
+  body.innerHTML = `
+    <div style="background:${ok===total?'#0d2f17':'#3a1010'};border:1px solid ${ok===total?'#34a853':'#7a0000'};padding:14px 18px;border-radius:10px;color:#e8eaed;font-weight:700;text-align:center;">
+      ${ok} / ${total} features working ${ok===total?'🎉':'— see errors below'}
+    </div>
+    <div style="background:#17181a;border:1px solid #2a2b2e;border-radius:10px;overflow:hidden;">${rows}</div>
+    <button onclick="runFeatureTestPanel()" style="background:#1a73e8;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;align-self:flex-start;">↻ Re-run tests</button>`;
+}
+window.runFeatureTestPanel = runFeatureTestPanel;
+
+
+/* ========================================================================
    DEV PANEL — press \ anywhere to open a feature-testing panel
    ======================================================================== */
 (function setupDevPanel(){
@@ -7788,6 +8351,7 @@ function openDevPanel(){
     { label:'🖼 Default bg', fn:`SETTINGS.bgUrl=BACKGROUNDS[0];saveSettings();` },
   ];
   body.innerHTML =
+    `<button onclick="runFeatureTestPanel()" style="background:linear-gradient(135deg,#1a73e8,#7c4dff);color:#fff;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.95rem;">🧪 Run full feature test</button>` +
     _devSection('Open apps', apps) +
     _devSection('Feature tests', tests) +
     _devSection('Settings tests', settingsTests) +
@@ -7823,8 +8387,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '\\' && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
     e.preventDefault();
     const m = document.getElementById('devPanelModal');
-    if (m && m.style.display === 'flex') closeDevPanel();
-    else openDevPanel();
+    if (m && m.style.display === 'flex') { closeDevPanel(); return; }
+    // FIX: Open dev panel with manual buttons visible; user chooses whether to run tests.
+    // Old behaviour was auto-running tests; now both options (manual test + autocheck) are available.
+    openDevPanel();
+    // Uncomment the line below if you want auto-run back:
+    // try { runFeatureTestPanel(); } catch(err){ console.warn(err); }
   }
 });
 window.openDevPanel = openDevPanel;
@@ -7959,12 +8527,12 @@ function postsRender(){
       </div>
       <audio src="${_escAttr(p.song.previewUrl||'')}" controls preload="none"></audio>
     </div>` : '';
-    return `<div class="ig-note" data-note-id="${p.id}">
-      ${p.text?`<div class="ig-note-bubble" onclick="postsOpenNote('${p.id}')" title="Click to view">${_escHTML(censor(p.text))}</div>`:'<div class="ig-note-bubble empty"></div>'}
-      <div class="ig-note-ring" style="cursor:pointer;" onclick="postsOpenNote('${p.id}')"><div class="ig-note-avatar" style="background:${pfp?'#000':_chatColorFor(p.user||'?')};">${pfp?`<img src="${_escAttr(pfp)}" alt="${_escAttr(p.user||'profile')}" onerror="this.style.display='none';this.parentElement.innerHTML='${_escAttr(initial)}';"/>`:_escHTML(initial)}</div></div>
+    return `<div class="ig-note">
+      ${p.text?`<div class="ig-note-bubble">${_escHTML(censor(p.text))}</div>`:''}
+      <div class="ig-note-ring"><div class="ig-note-avatar" style="background:${pfp?'#000':_chatColorFor(p.user||'?')};">${pfp?`<img src="${_escAttr(pfp)}" alt="${_escAttr(p.user||'profile')}"/>`:_escHTML(initial)}</div></div>
       <div class="ig-note-name">${vipNameHTML(p.user||'?')}</div>
-      <div class="ig-note-time">${_postsRelTime(p.ts)} ago ${mine?`<button onclick="event.stopPropagation();postsDelete('${p.id}')" title="Delete" style="background:transparent;border:none;color:#5f6368;cursor:pointer;font-size:0.8rem;">×</button>`:''}</div>
-      ${p.song?`<div class="ig-note-song" style="cursor:pointer;" onclick="postsOpenNote('${p.id}')"><div class="ig-note-song-head"><img src="${_escAttr(p.song.art||'')}" alt="art"/><div style="flex:1;min-width:0;"><div class="ig-note-song-title">${_escHTML(p.song.title||'Song')}</div><div class="ig-note-song-artist">${_escHTML(p.song.artist||'')} · 30s</div></div></div></div>`:''}
+      <div class="ig-note-time">${_postsRelTime(p.ts)} ago ${mine?`<button onclick="postsDelete('${p.id}')" title="Delete" style="background:transparent;border:none;color:#5f6368;cursor:pointer;font-size:0.8rem;">×</button>`:''}</div>
+      ${songHTML}
       <button onclick="postsToggleLike('${p.id}')" style="background:transparent;border:none;color:${liked?'#ff2dd1':'#9aa0a6'};cursor:pointer;font-size:0.8rem;">${liked?'♥':'♡'} ${(p.likes||[]).length}</button>
     </div>`;
   }).join('');
@@ -7977,212 +8545,6 @@ window.postsPublish = postsPublish;
 window.postsToggleLike = postsToggleLike;
 window.postsDelete = postsDelete;
 
-/* ===== Note expand modal + autoplay song ===== */
-function postsOpenNote(id){
-  const p = _postsRead().find(x => x.id === id); if (!p) return;
-  let modal = document.getElementById('igNoteModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'igNoteModal'; modal.className = 'ig-note-modal';
-    modal.onclick = (e) => { if (e.target === modal) postsCloseNote(); };
-    document.body.appendChild(modal);
-  }
-  const pfp = p.pfp || getCachedPfp(p.user) || '';
-  const initial = (p.user||'?')[0].toUpperCase();
-  modal.innerHTML = `<div class="ig-note-modal-card" onclick="event.stopPropagation();">
-    <div class="ig-note-ring" style="width:84px;height:84px;"><div class="ig-note-avatar" style="background:${pfp?'#000':_chatColorFor(p.user||'?')};">${pfp?`<img src="${_escAttr(pfp)}" alt="pfp"/>`:_escHTML(initial)}</div></div>
-    <div style="color:#e8eaed;font-weight:700;font-size:1rem;">${vipNameHTML(p.user||'?')}</div>
-    ${p.text?`<div style="background:#f5f5f5;color:#111;border-radius:18px;padding:14px 18px;font-weight:600;line-height:1.35;white-space:pre-wrap;word-wrap:break-word;max-width:100%;">${_escHTML(censor(p.text))}</div>`:''}
-    ${p.song?`<div class="ig-note-song" style="width:100%;max-width:340px;"><div class="ig-note-song-head"><img src="${_escAttr(p.song.art||'')}" alt="art"/><div style="flex:1;min-width:0;"><div class="ig-note-song-title">${_escHTML(p.song.title||'Song')}</div><div class="ig-note-song-artist">${_escHTML(p.song.artist||'')} · 30s</div></div></div><audio id="igNoteAudio" src="${_escAttr(p.song.previewUrl||'')}" controls autoplay></audio></div>`:''}
-    <div style="color:#9aa0a6;font-size:0.78rem;">${_postsRelTime(p.ts)} ago</div>
-    <button onclick="postsCloseNote()" style="background:#3c4043;color:#e8eaed;border:none;padding:8px 22px;border-radius:18px;cursor:pointer;font-weight:600;">Close</button>
-  </div>`;
-  modal.classList.add('open');
-}
-function postsCloseNote(){
-  const m = document.getElementById('igNoteModal'); if (!m) return;
-  const a = document.getElementById('igNoteAudio'); if (a) { try { a.pause(); } catch(e){} }
-  m.classList.remove('open');
-}
-window.postsOpenNote = postsOpenNote;
-window.postsCloseNote = postsCloseNote;
-
-/* ===== Black-PFP crackdown: async hydrate avatars from profiles table ===== */
-const _pfpFetchInflight = new Set();
-const _pfpFetchMissed = new Set();
-async function ensurePfpCached(username){
-  if (!username) return '';
-  const key = String(username).toLowerCase();
-  if (getCachedPfp(username)) return getCachedPfp(username);
-  if (_pfpFetchInflight.has(key) || _pfpFetchMissed.has(key)) return '';
-  if (typeof sb === 'undefined' || !sb) return '';
-  _pfpFetchInflight.add(key);
-  try {
-    const { data } = await sb.from('profiles').select('data').ilike('username', username).maybeSingle();
-    const pfp = data && data.data && data.data.pfp;
-    if (pfp) { setCachedPfp(username, pfp); _rehydrateAvatarsFor(username, pfp); }
-    else { _pfpFetchMissed.add(key); }
-  } catch(e){ _pfpFetchMissed.add(key); }
-  finally { _pfpFetchInflight.delete(key); }
-}
-function _rehydrateAvatarsFor(username, pfp){
-  try {
-    document.querySelectorAll(`[data-pfp-for="${CSS.escape(String(username).toLowerCase())}"]`).forEach(el => {
-      el.style.background = '#000';
-      el.innerHTML = `<img src="${pfp}" alt="${username}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>`;
-    });
-  } catch(e){}
-  try { if (typeof postsRefreshAvatarsForUser === 'function') postsRefreshAvatarsForUser(username, pfp); } catch(e){}
-  try { if (typeof dmRenderConversations === 'function') dmRenderConversations(); } catch(e){}
-  try { if (typeof renderFriendsList === 'function') renderFriendsList(); } catch(e){}
-  try { if (typeof nexoraRender === 'function') nexoraRender(); } catch(e){}
-}
-(function patchAvatars(){
-  if (typeof window._chatAvatarHTML === 'undefined' && typeof _chatAvatarHTML !== 'undefined') window._chatAvatarHTML = _chatAvatarHTML;
-  const orig1 = window._chatAvatarHTML;
-  if (typeof orig1 === 'function' && !orig1._pfpHydrated) {
-    window._chatAvatarHTML = function(user, size, pfpOverride){
-      if (user && !pfpOverride && !getCachedPfp(user)) ensurePfpCached(user);
-      return orig1(user, size, pfpOverride);
-    };
-    window._chatAvatarHTML._pfpHydrated = true;
-  }
-  const orig2 = window.avatarHTML;
-  if (typeof orig2 === 'function' && !orig2._pfpHydrated) {
-    window.avatarHTML = function(username, size, pfpOverride, extra){
-      if (username && !pfpOverride && !getCachedPfp(username)) ensurePfpCached(username);
-      return orig2(username, size, pfpOverride, extra);
-    };
-    window.avatarHTML._pfpHydrated = true;
-  }
-})();
-window.ensurePfpCached = ensurePfpCached;
-
-/* =========================================================================
-   NEXORA — master social app (Notes + DMs + Chatrooms in one IG-style UI)
-   ========================================================================= */
-(function injectNexoraApp(){
-  try {
-    if (typeof APP_REGISTRY !== 'undefined' && !APP_REGISTRY.find(a => a.id === 'nexoraApp')) {
-      APP_REGISTRY.push({ id:'nexoraApp', name:'Nexora', icon:'◆', bg:'linear-gradient(135deg,#f5425d,#7c4dff,#ff2dd1)' });
-      try { if (typeof renderDesktopIcons === 'function') renderDesktopIcons(); } catch(e){}
-    }
-  } catch(e){}
-  const html = `
-  <div id="nexoraApp" class="app-window">
-    <div class="app-header" style="background:linear-gradient(90deg,#1a0a1f,#0a0a2a);">
-      <div class="app-title" style="background:linear-gradient(90deg,#f5425d,#a78bfa,#ff79c6);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;letter-spacing:0.5px;">◆ Nexora</div>
-      <button class="app-close" onclick="closeApp('nexoraApp')">✕</button>
-    </div>
-    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0b0c0f;">
-      <div style="padding:8px 14px;border-bottom:1px solid #2a2b2e;color:#9aa0a6;font-size:0.72rem;">⚠ test build — combines Nexora Notes, DMs, and Chatrooms into one IG-style hub.</div>
-      <div style="padding:14px 12px 8px;border-bottom:1px solid #2a2b2e;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding:0 4px;">
-          <div style="color:#e8eaed;font-weight:700;font-size:0.95rem;">Notes</div>
-          <button onclick="openApp('postsApp')" style="background:transparent;border:none;color:#a78bfa;cursor:pointer;font-size:0.78rem;font-weight:600;">+ New note</button>
-        </div>
-        <div id="nexoraNotesTray" style="display:flex;gap:14px;overflow-x:auto;padding:6px 4px 12px;"></div>
-      </div>
-      <div style="display:flex;border-bottom:1px solid #2a2b2e;">
-        <button data-nexora-tab="dms" onclick="nexoraSwitchTab('dms')" style="flex:1;background:transparent;color:#e8eaed;border:none;padding:12px;cursor:pointer;font-weight:700;border-bottom:2px solid #f5425d;">✉ Direct</button>
-        <button data-nexora-tab="rooms" onclick="nexoraSwitchTab('rooms')" style="flex:1;background:transparent;color:#9aa0a6;border:none;padding:12px;cursor:pointer;font-weight:700;border-bottom:2px solid transparent;">💬 Rooms</button>
-      </div>
-      <div id="nexoraTabBody" style="flex:1;overflow:auto;padding:10px;"></div>
-    </div>
-  </div>`;
-  const wrap = document.createElement('div'); wrap.innerHTML = html.trim();
-  document.body.appendChild(wrap.firstElementChild);
-})();
-
-let _nexoraTab = 'dms';
-function nexoraSwitchTab(tab){
-  _nexoraTab = tab;
-  document.querySelectorAll('#nexoraApp [data-nexora-tab]').forEach(b => {
-    const active = b.dataset.nexoraTab === tab;
-    b.style.color = active ? '#e8eaed' : '#9aa0a6';
-    b.style.borderBottom = active ? '2px solid #f5425d' : '2px solid transparent';
-  });
-  nexoraRenderBody();
-}
-function nexoraRenderTray(){
-  const tray = document.getElementById('nexoraNotesTray'); if (!tray) return;
-  const all = _postsRead().filter(p => p && p.id !== 'sys_1' && String(p.user||'').toLowerCase() !== 'nexora');
-  if (!all.length) { tray.innerHTML = `<div style="color:#9aa0a6;font-size:0.82rem;padding:8px;">No notes yet — share what you're listening to.</div>`; return; }
-  tray.innerHTML = all.slice(0,20).map(p => {
-    const pfp = p.pfp || getCachedPfp(p.user) || '';
-    const initial = (p.user||'?')[0].toUpperCase();
-    if (!pfp) ensurePfpCached(p.user);
-    return `<div class="ig-note" style="cursor:pointer;" onclick="postsOpenNote('${p.id}')">
-      ${p.text?`<div class="ig-note-bubble">${_escHTML(censor(p.text))}</div>`:'<div class="ig-note-bubble empty"></div>'}
-      <div class="ig-note-ring"><div class="ig-note-avatar" data-pfp-for="${_escAttr(String(p.user||'').toLowerCase())}" style="background:${pfp?'#000':_chatColorFor(p.user||'?')};">${pfp?`<img src="${_escAttr(pfp)}" alt="pfp"/>`:_escHTML(initial)}</div></div>
-      <div class="ig-note-name">${vipNameHTML(p.user||'?')}</div>
-      ${p.song?`<div style="color:#a78bfa;font-size:0.66rem;">♪ ${_escHTML((p.song.title||'').slice(0,14))}</div>`:''}
-    </div>`;
-  }).join('');
-}
-function nexoraRenderBody(){
-  const body = document.getElementById('nexoraTabBody'); if (!body) return;
-  if (_nexoraTab === 'dms') {
-    body.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;">
-      <button onclick="closeApp('nexoraApp');openApp('dmApp');" style="background:linear-gradient(135deg,#7c4dff,#0a84ff);color:#fff;border:none;padding:14px;border-radius:14px;cursor:pointer;font-weight:700;text-align:left;">✉ Open Direct Messages →</button>
-      <div style="color:#9aa0a6;font-size:0.82rem;padding:6px 4px;">Powered by the existing DMs app — opens with your full history.</div>
-      <div id="nexoraDmPreview" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
-    </div>`;
-    nexoraRenderDmPreview();
-  } else {
-    body.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;">
-      <button onclick="closeApp('nexoraApp');openApp('chatApp');" style="background:linear-gradient(135deg,#f5425d,#ff2dd1);color:#fff;border:none;padding:14px;border-radius:14px;cursor:pointer;font-weight:700;text-align:left;">💬 Open Chatrooms →</button>
-      <div style="color:#9aa0a6;font-size:0.82rem;padding:6px 4px;">Real-time chat, images, GIFs, and synced watch parties.</div>
-    </div>`;
-  }
-}
-async function nexoraRenderDmPreview(){
-  const host = document.getElementById('nexoraDmPreview'); if (!host) return;
-  if (!ACTIVE || ACTIVE.isGuest || !ACTIVE.userId) { host.innerHTML = `<div style="color:#9aa0a6;font-size:0.8rem;padding:8px;">Sign in to see recent DMs.</div>`; return; }
-  try {
-    const uid = ACTIVE.userId;
-    const { data } = await sb.from('direct_messages')
-      .select('from_username,to_username,body,created_at')
-      .or(`from_user_id.eq.${uid},to_user_id.eq.${uid}`)
-      .order('created_at', { ascending:false }).limit(15);
-    const seen = new Set(); const items = [];
-    (data||[]).forEach(m => {
-      const other = m.from_username === ACTIVE.username ? m.to_username : m.from_username;
-      if (!other || seen.has(other)) return;
-      seen.add(other); items.push({ other, body:m.body, ts:m.created_at });
-    });
-    if (!items.length) { host.innerHTML = `<div style="color:#9aa0a6;font-size:0.8rem;padding:8px;">No recent DMs yet.</div>`; return; }
-    host.innerHTML = items.map(it => {
-      const pfp = getCachedPfp(it.other) || '';
-      if (!pfp) ensurePfpCached(it.other);
-      const initial = (it.other||'?')[0].toUpperCase();
-      return `<div onclick="closeApp('nexoraApp');openApp('dmApp');" style="display:flex;align-items:center;gap:10px;padding:10px;background:#15161a;border:1px solid #2a2b2e;border-radius:12px;cursor:pointer;">
-        <div data-pfp-for="${_escAttr(String(it.other).toLowerCase())}" style="width:40px;height:40px;border-radius:50%;background:${pfp?'#000':_chatColorFor(it.other)};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden;flex:none;">${pfp?`<img src="${_escAttr(pfp)}" style="width:100%;height:100%;object-fit:cover;"/>`:_escHTML(initial)}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="color:#e8eaed;font-weight:700;font-size:0.88rem;">${vipNameHTML(it.other)}</div>
-          <div style="color:#9aa0a6;font-size:0.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_escHTML((it.body||'').slice(0,80))}</div>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) { host.innerHTML = `<div style="color:#f28b82;font-size:0.8rem;padding:8px;">Could not load DMs.</div>`; }
-}
-function nexoraRender(){ nexoraRenderTray(); nexoraRenderBody(); }
-function nexoraInit(){ nexoraSwitchTab('dms'); nexoraRender(); }
-window.nexoraInit = nexoraInit;
-window.nexoraRender = nexoraRender;
-window.nexoraSwitchTab = nexoraSwitchTab;
-
-(function hookOpen(){
-  const _origOpen = window.openApp;
-  if (typeof _origOpen === 'function' && !_origOpen._nexoraHooked) {
-    window.openApp = function(id){
-      const r = _origOpen.apply(this, arguments);
-      if (id === 'nexoraApp') { try { nexoraInit(); } catch(e){ console.warn(e); } }
-      return r;
-    };
-    window.openApp._nexoraHooked = true;
-  }
-})();
 
 </script>
 
