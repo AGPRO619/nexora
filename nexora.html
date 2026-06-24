@@ -896,6 +896,31 @@
     animation:none !important; transition:none !important;
     backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
   }
+  /* Terminator burn-to-flames animation */
+  @keyframes nxBurn {
+    0%   { filter:none; transform:scale(1) rotate(0); opacity:1; }
+    35%  { filter:brightness(1.3) sepia(.7) hue-rotate(-30deg) saturate(3); transform:scale(1.02) rotate(.5deg); opacity:1; }
+    70%  { filter:brightness(.9) sepia(1) hue-rotate(-40deg) saturate(4) blur(1px); transform:scale(.96) rotate(-1deg); opacity:.7; }
+    100% { filter:brightness(.3) sepia(1) hue-rotate(-50deg) saturate(5) blur(6px); transform:scale(.6) translateY(40px) rotate(2deg); opacity:0; }
+  }
+  .nx-burning { animation:nxBurn 1.6s ease-in forwards; position:relative; overflow:hidden; }
+  .nx-burning::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(ellipse at 20% 100%, rgba(255,140,0,.9) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 100%, rgba(255,60,0,.85) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(255,200,0,.8) 0%, transparent 50%);
+    mix-blend-mode:screen; animation:nxBurn 1.6s ease-in forwards;
+  }
+  /* Comms Hub feed */
+  .ch-card { background:#16181c; border:1px solid #26282d; border-radius:14px; overflow:hidden; margin-bottom:14px; }
+  .ch-head { display:flex; align-items:center; gap:10px; padding:10px 14px; }
+  .ch-av { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#7c4dff,#0a84ff); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.85rem; }
+  .ch-body { padding:0 14px 12px; color:#e8eaed; white-space:pre-wrap; font-size:.95rem; line-height:1.45; }
+  .ch-actions { display:flex; gap:6px; padding:6px 10px 12px; border-top:1px solid #1f2125; }
+  .ch-btn { flex:1; background:transparent; border:none; color:#9aa0a6; padding:8px; border-radius:8px; cursor:pointer; font-size:.85rem; font-weight:600; }
+  .ch-btn:hover { background:#22252a; color:#e8eaed; }
+  .ch-pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.7rem; font-weight:700; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1734,6 +1759,35 @@
     <button class="app-close" onclick="closeApp('requestsApp')">✕</button>
   </div>
   <div id="requestsBody" style="flex:1;overflow-y:auto;padding:22px;color:#e8eaed;font-family:inherit;background:linear-gradient(180deg,#000814,#0d0d0f);"></div>
+</div>
+
+
+<!-- COMMUNICATIONS HUB DELUXE HD 20000 — feed mixing chat/dms/calls/notes -->
+<div id="commsHubApp" class="app-window">
+  <div class="app-header">
+    <div class="app-title">📡 Communications Hub Deluxe HD 20000</div>
+    <button class="app-close" onclick="closeApp('commsHubApp')">✕</button>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#0a0d14,#0d0d0f);color:#e8eaed;overflow:hidden;">
+    <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #1f2125;overflow-x:auto;flex-wrap:nowrap;">
+      <button onclick="commsHubFilter('all')"   class="ch-tab" data-tab="all"   style="background:#22252a;border:none;color:#e8eaed;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">✨ All</button>
+      <button onclick="commsHubFilter('note')"  class="ch-tab" data-tab="note"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">♪ Notes</button>
+      <button onclick="commsHubFilter('dm')"    class="ch-tab" data-tab="dm"    style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">✉ DMs</button>
+      <button onclick="commsHubFilter('chat')"  class="ch-tab" data-tab="chat"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">💬 Rooms</button>
+      <button onclick="commsHubFilter('call')"  class="ch-tab" data-tab="call"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">📞 Calls</button>
+    </div>
+    <div style="padding:12px 14px;border-bottom:1px solid #1f2125;display:flex;gap:8px;align-items:flex-start;">
+      <textarea id="commsHubInput" placeholder="Share an update with everyone…" style="flex:1;background:#16181c;border:1px solid #26282d;color:#e8eaed;padding:10px 12px;border-radius:10px;font-family:inherit;resize:vertical;min-height:44px;max-height:140px;"></textarea>
+      <button onclick="commsHubPost()" style="background:linear-gradient(135deg,#7c4dff,#0a84ff);color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:700;align-self:stretch;">Post</button>
+    </div>
+    <div id="commsHubFeed" style="flex:1;overflow-y:auto;padding:14px;"></div>
+    <div style="padding:8px 14px;border-top:1px solid #1f2125;display:flex;gap:6px;justify-content:space-around;">
+      <button onclick="openApp('chatApp')"   style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">💬 Open Chat</button>
+      <button onclick="openApp('dmApp')"     style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">✉ Open DMs</button>
+      <button onclick="openApp('callApp')"   style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">📞 Open Calls</button>
+      <button onclick="openApp('postsApp')"  style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">♪ Open Notes</button>
+    </div>
+  </div>
 </div>
 
 
@@ -2628,6 +2682,7 @@ function openApp(id){
     if (id==='gamesApp') { try { ensureGamesLoaded(); } catch(e){ console.warn(e); } }
     if (id==='terminatorApp') { try { terminatorInit(); } catch(e){ console.warn(e); } }
     if (id==='requestsApp') { try { requestsInit(); } catch(e){ console.warn(e); } }
+    if (id==='commsHubApp') { try { commsHubInit(); } catch(e){ console.warn(e); } }
     if (id==='profileApp') { profileOpen(); }
     // Movies opens windowed so users can immediately minimize/resize/snap it side-by-side
     if (id==='moviesApp' && !win.classList.contains('windowed')) {
@@ -2908,6 +2963,7 @@ const APP_REGISTRY = [
   { id:'emulatorApp', name:'Retro Games', img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThvfeLB79JPR7FCso0bOe8wp4geT_2NOrDHw&s', icon:'🕹', bg:'#000' },
   { id:'terminatorApp', name:'Terminator', icon:'🛡', bg:'linear-gradient(135deg,#7a0000,#000)', vipOnly:true },
   { id:'requestsApp',   name:'Requests',   icon:'📨', bg:'linear-gradient(135deg,#0a3d62,#000814)', vipOnly:true },
+  { id:'commsHubApp',   name:'Comms Hub Deluxe HD 20000', icon:'📡', bg:'linear-gradient(135deg,#7c4dff,#0a84ff)' },
 
 ];
 const DEFAULT_HOME = APP_REGISTRY.filter(a => !a.vipOnly).map(a => a.id);
@@ -8049,8 +8105,68 @@ function termRender(){
         <button onclick="termBanDevice()" style="background:#7a0000;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;">Ban this device</button>
         <button onclick="localStorage.removeItem('${TERM_DEVICE_BAN_KEY}');localStorage.removeItem('${TERM_DEVICE_BAN_REASON_KEY}');alert('Device ban cleared.');" style="background:#3c4043;color:#e8eaed;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-left:8px;">Clear device ban</button>
       </div>
+      <div style="background:#17181a;border:1px solid #2a2b2e;padding:16px;border-radius:12px;margin-top:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="font-weight:700;color:#e8eaed;flex:1;">🔥 All Accounts</div>
+          <input id="termAcctSearch" oninput="termRenderAccounts()" placeholder="Search username…" style="background:#2a2b2e;border:1px solid #3c4043;color:#e8eaed;padding:6px 10px;border-radius:6px;font-family:inherit;font-size:.85rem;width:180px;"/>
+          <button onclick="termRefreshAccounts()" style="background:#3c4043;color:#e8eaed;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:.8rem;">↻ Refresh</button>
+        </div>
+        <div style="color:#9aa0a6;font-size:.78rem;margin-bottom:10px;">Click 🔥 Burn to permanently delete an account (incinerates the card and removes the user from the cloud).</div>
+        <div id="termAcctList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">Loading…</div>
+      </div>
     </div>`;
+  termRefreshAccounts();
 }
+async function termRefreshAccounts(){
+  const list = document.getElementById('termAcctList');
+  if (!list) return;
+  list.innerHTML = '<div style="color:#5f6368;font-size:.85rem;">Loading accounts…</div>';
+  try {
+    const { data, error } = await sb.functions.invoke('terminator-admin', { body:{ action:'list_users' } });
+    if (error) throw error;
+    window._termAccounts = (data && data.users) || [];
+    termRenderAccounts();
+  } catch(e) {
+    list.innerHTML = '<div style="color:#f28b82;font-size:.85rem;">Could not load accounts: '+_escHTML(e.message||String(e))+'</div>';
+  }
+}
+function termRenderAccounts(){
+  const list = document.getElementById('termAcctList');
+  if (!list) return;
+  const q = (document.getElementById('termAcctSearch')?.value||'').trim().toLowerCase();
+  const all = window._termAccounts || [];
+  const filtered = q ? all.filter(u => (u.username||'').toLowerCase().includes(q)) : all;
+  if (!filtered.length) { list.innerHTML = '<div style="color:#5f6368;font-size:.85rem;">No accounts found.</div>'; return; }
+  list.innerHTML = filtered.map(u => {
+    const uname = _escHTML(u.username||'?');
+    const aid = 'acct_'+(u.id||u.username||'').toString().replace(/[^a-z0-9]/gi,'');
+    const initial = (u.username||'?').charAt(0).toUpperCase();
+    return `<div id="${aid}" style="background:#0e0e10;border:1px solid #2a2b2e;border-radius:10px;padding:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7a0000,#000);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">${initial}</div>
+        <div style="flex:1;min-width:0;"><div style="color:#e8eaed;font-weight:700;overflow:hidden;text-overflow:ellipsis;">@${uname}</div><div style="color:#5f6368;font-size:.7rem;">${u.created_at ? new Date(u.created_at).toLocaleDateString() : ''}</div></div>
+      </div>
+      <button onclick="termBurnUser('${_escAttr(u.username||'')}','${aid}')" style="width:100%;background:linear-gradient(135deg,#ff6b1a,#7a0000);color:#fff;border:none;padding:7px;border-radius:6px;cursor:pointer;font-weight:700;font-size:.82rem;">🔥 Burn Account</button>
+    </div>`;
+  }).join('');
+}
+async function termBurnUser(username, cardId){
+  if (!username) return;
+  if (!confirm('🔥 Permanently delete @' + username + '?\n\nThis incinerates the account and removes it from the cloud.')) return;
+  const card = document.getElementById(cardId);
+  if (card) card.classList.add('nx-burning');
+  try {
+    const { data, error } = await sb.functions.invoke('terminator-admin', { body:{ action:'delete_user', username } });
+    if (error) throw error;
+    setTimeout(() => { if (card) card.remove(); window._termAccounts = (window._termAccounts||[]).filter(u => (u.username||'').toLowerCase() !== username.toLowerCase()); }, 1600);
+  } catch(e) {
+    if (card) card.classList.remove('nx-burning');
+    alert('Could not delete: ' + (e.message||e));
+  }
+}
+window.termRefreshAccounts = termRefreshAccounts;
+window.termRenderAccounts = termRenderAccounts;
+window.termBurnUser = termBurnUser;
 function _termResolveReason(presetId, noteId){
   const preset = (document.getElementById(presetId).value||'').trim();
   const note = (document.getElementById(noteId).value||'').trim();
@@ -8226,16 +8342,32 @@ function requestsRender(){
     ${handled.length ? handled.map(fmt).join('') : '<div style="color:#5f6368;font-size:0.85rem;">No recent decisions.</div>'}
   </div>`;
 }
-function requestsDecide(id, decision){
+async function requestsDecide(id, decision){
   const arr = _pwReqRead();
   const r = arr.find(x => x.id === id);
   if (!r) return;
+  if (decision === 'approved') {
+    try {
+      const { data, error } = await sb.functions.invoke('terminator-admin', {
+        body: { action:'submit_request', username:r.username, new_password:r.newPassword, note:r.note||'' }
+      });
+      if (error) throw error;
+      // Now approve it server-side (owner is signed in, edge function will updateUserById)
+      // Find the inserted request id then approve via list_requests
+      const list = await sb.functions.invoke('terminator-admin', { body:{ action:'list_requests' } });
+      const remoteId = (list.data && list.data.requests || []).find(x => x.username===r.username && x.new_password===r.newPassword)?.id;
+      if (!remoteId) throw new Error('Could not locate submitted request.');
+      const ap = await sb.functions.invoke('terminator-admin', { body:{ action:'approve_request', id:remoteId } });
+      if (ap.error) throw ap.error;
+      alert('✅ Password changed for @' + r.username + '. They can now sign in with the new password.');
+    } catch(e) {
+      alert('❌ Could not change password automatically: ' + (e.message||e) + '\n\nThe request will remain pending. You can retry once the cloud backend is reachable.');
+      return;
+    }
+  }
   r.status = decision;
   r.decidedAt = Date.now();
   _pwReqWrite(arr);
-  if (decision === 'approved') {
-    alert('Approved. Tell @' + r.username + ' their new password is now:\n\n  ' + r.newPassword + '\n\nThey will need to sign in with this password. (Note: in this device-local prototype the actual auth password is not changed automatically — share it with the user to use on their next sign-in.)');
-  }
   requestsRender();
 }
 window.requestsInit = requestsInit;
@@ -8545,6 +8677,142 @@ window.postsPublish = postsPublish;
 window.postsToggleLike = postsToggleLike;
 window.postsDelete = postsDelete;
 
+
+
+/* ========================================================================
+   COMMUNICATIONS HUB DELUXE HD 20000 — feed mixing notes/dms/chat/calls
+   ======================================================================== */
+const CH_FEED_KEY = 'nx_commshub_feed_v1';
+let _commsHubTab = 'all';
+function _chRead(){ try { return JSON.parse(localStorage.getItem(CH_FEED_KEY)||'[]'); } catch { return []; } }
+function _chWrite(arr){ try { localStorage.setItem(CH_FEED_KEY, JSON.stringify(arr.slice(0,200))); } catch {} }
+function commsHubInit(){
+  // Strip any old "Welcome" seed cards from prior versions
+  try { const arr = _chRead().filter(x => x && x.id !== 'seed1'); _chWrite(arr); } catch {}
+  commsHubFilter(_commsHubTab);
+}
+function commsHubFilter(tab){
+  _commsHubTab = tab;
+  document.querySelectorAll('.ch-tab').forEach(b => {
+    if (b.dataset.tab === tab) { b.style.background='#22252a'; b.style.color='#e8eaed'; b.style.border='none'; }
+    else { b.style.background='transparent'; b.style.color='#9aa0a6'; b.style.border='1px solid #2a2d33'; }
+  });
+  commsHubRender();
+}
+function _chCollectAll(){
+  let items = _chRead();
+  // Real notes from the Notes app (POSTS_KEY = nx_notes_v2)
+  try {
+    const notes = (JSON.parse(localStorage.getItem(POSTS_KEY)||'[]')||[]).map(n => ({
+      id:'note_'+(n.id||n.ts||Math.random()),
+      kind:'note',
+      user:n.author||n.user||((window.ACTIVE&&ACTIVE.username)||'me'),
+      text:n.text||n.title||n.body||'(note)',
+      ts:n.ts||n.createdAt||Date.now(),
+      likes:n.likes||0
+    }));
+    items = items.concat(notes);
+  } catch {}
+  // Recent DMs (last message per thread)
+  try {
+    const dmKeys = Object.keys(localStorage).filter(k => k.startsWith('nx_dm_'));
+    dmKeys.forEach(k => {
+      const msgs = JSON.parse(localStorage.getItem(k)||'[]');
+      if (Array.isArray(msgs) && msgs.length){
+        const last = msgs[msgs.length-1];
+        items.push({ id:'dm_'+k, kind:'dm', user:last.from||k.replace('nx_dm_',''), text:last.text||'(dm)', ts:last.ts||Date.now(), likes:0, _thread:k.replace('nx_dm_','') });
+      }
+    });
+  } catch {}
+  // Active rooms (chatrooms list)
+  try {
+    const rooms = JSON.parse(localStorage.getItem('nx_rooms_v1')||'[]');
+    rooms.slice(0,8).forEach(r => {
+      items.push({ id:'room_'+(r.id||r.name), kind:'chat', user:r.host||'room', text:r.name||'Room', ts:r.ts||Date.now(), likes:0 });
+    });
+  } catch {}
+  // Recent calls
+  try {
+    const calls = JSON.parse(localStorage.getItem('nx_call_log_v1')||'[]');
+    calls.slice(0,8).forEach(c => {
+      items.push({ id:'call_'+(c.id||c.ts), kind:'call', user:c.peer||'call', text:(c.kind||'Call')+' • '+(c.duration||'0s'), ts:c.ts||Date.now(), likes:0 });
+    });
+  } catch {}
+  return items;
+}
+function commsHubRender(){
+  const feed = document.getElementById('commsHubFeed');
+  if (!feed) return;
+  let items = _chCollectAll();
+  if (_commsHubTab !== 'all') items = items.filter(i => i.kind === _commsHubTab);
+  items.sort((a,b) => (b.ts||0) - (a.ts||0));
+  if (!items.length) { feed.innerHTML = '<div style="color:#5f6368;text-align:center;padding:30px;font-size:.9rem;">Nothing here yet. Post a note, DM a friend, or start a room — it all shows up here.</div>'; return; }
+  const badge = { note:'♪ Note', dm:'✉ DM', chat:'💬 Room', call:'📞 Call' };
+  const badgeColor = { note:'#7c4dff', dm:'#0a84ff', chat:'#34a853', call:'#ff6b1a' };
+  feed.innerHTML = items.map(i => {
+    const u = _escHTML(i.user||'someone');
+    const t = _escHTML(i.text||'');
+    const initial = (i.user||'?').charAt(0).toUpperCase();
+    const when = i.ts ? new Date(i.ts).toLocaleString() : '';
+    const b = badge[i.kind] || '✨';
+    const bc = badgeColor[i.kind] || '#9aa0a6';
+    const actionBtn = i.kind === 'dm'
+      ? `<button class="ch-btn" onclick="commsHubOpenDM('${_escAttr(i._thread||i.user||'')}')">✉ Open</button>`
+      : i.kind === 'chat' ? `<button class="ch-btn" onclick="openApp('chatApp')">💬 Join</button>`
+      : i.kind === 'call' ? `<button class="ch-btn" onclick="openApp('callApp')">📞 Call back</button>`
+      : `<button class="ch-btn" onclick="commsHubReply('${_escAttr(i.user||'')}')">💬 Reply</button>`;
+    return `<div class="ch-card">
+      <div class="ch-head">
+        <div class="ch-av">${initial}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;"><div style="color:#e8eaed;font-weight:700;">@${u}</div><span class="ch-pill" style="background:${bc};color:#fff;">${b}</span></div>
+          <div style="color:#5f6368;font-size:.72rem;">${when}</div>
+        </div>
+      </div>
+      <div class="ch-body">${t}</div>
+      <div class="ch-actions">
+        <button class="ch-btn" onclick="commsHubLike('${i.id}')">♥ ${i.likes||0}</button>
+        ${actionBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+function commsHubPost(){
+  const ta = document.getElementById('commsHubInput');
+  const text = (ta.value||'').trim();
+  if (!text) return;
+  const me = (window.ACTIVE && ACTIVE.username) || 'guest';
+  // Write into the real Notes store so it appears in the Notes app too
+  try {
+    const notes = JSON.parse(localStorage.getItem(POSTS_KEY)||'[]');
+    notes.unshift({ id:'p_'+Date.now(), author:me, text, ts:Date.now(), likes:0 });
+    localStorage.setItem(POSTS_KEY, JSON.stringify(notes.slice(0,200)));
+  } catch {}
+  ta.value = '';
+  commsHubRender();
+}
+function commsHubLike(id){
+  // Likes are ephemeral overlay (real notes own their own likes)
+  const arr = _chRead();
+  const it = arr.find(x => x.id === id);
+  if (it) { it.likes = (it.likes||0) + 1; _chWrite(arr); }
+  commsHubRender();
+}
+function commsHubReply(user){
+  const ta = document.getElementById('commsHubInput');
+  if (!ta) return;
+  ta.value = '@' + user + ' ';
+  ta.focus();
+}
+function commsHubOpenDM(thread){
+  try { openApp('dmApp'); if (typeof dmOpenThread === 'function' && thread) dmOpenThread(thread); } catch { openApp('dmApp'); }
+}
+window.commsHubInit = commsHubInit;
+window.commsHubFilter = commsHubFilter;
+window.commsHubPost = commsHubPost;
+window.commsHubLike = commsHubLike;
+window.commsHubReply = commsHubReply;
+window.commsHubOpenDM = commsHubOpenDM;
 
 </script>
 
