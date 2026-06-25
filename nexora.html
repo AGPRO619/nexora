@@ -1031,8 +1031,10 @@
     <button onclick="requireTOSThen(()=>openAuth('signup'))">Create account</button>
     <button class="primary" onclick="openAuth('signin')">Sign in</button>
     <button onclick="requireTOSThen(enterAsGuest)">Continue as guest</button>
+    <button onclick="openOGNexora()" style="background:linear-gradient(135deg,#5ce1ff,#7c3aed);color:#fff;border:none;">🕹 OG Nexora</button>
   </div>
 </div>
+
 
 <!-- AUTH MODAL -->
 <div id="authModal">
@@ -1763,32 +1765,8 @@
 
 
 <!-- COMMUNICATIONS HUB DELUXE HD 20000 — feed mixing chat/dms/calls/notes -->
-<div id="commsHubApp" class="app-window">
-  <div class="app-header">
-    <div class="app-title">📡 Communications Hub Deluxe HD 20000</div>
-    <button class="app-close" onclick="closeApp('commsHubApp')">✕</button>
-  </div>
-  <div style="flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#0a0d14,#0d0d0f);color:#e8eaed;overflow:hidden;">
-    <div style="display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #1f2125;overflow-x:auto;flex-wrap:nowrap;">
-      <button onclick="commsHubFilter('all')"   class="ch-tab" data-tab="all"   style="background:#22252a;border:none;color:#e8eaed;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">✨ All</button>
-      <button onclick="commsHubFilter('note')"  class="ch-tab" data-tab="note"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">♪ Notes</button>
-      <button onclick="commsHubFilter('dm')"    class="ch-tab" data-tab="dm"    style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">✉ DMs</button>
-      <button onclick="commsHubFilter('chat')"  class="ch-tab" data-tab="chat"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">💬 Rooms</button>
-      <button onclick="commsHubFilter('call')"  class="ch-tab" data-tab="call"  style="background:transparent;border:1px solid #2a2d33;color:#9aa0a6;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:600;font-size:.85rem;white-space:nowrap;">📞 Calls</button>
-    </div>
-    <div style="padding:12px 14px;border-bottom:1px solid #1f2125;display:flex;gap:8px;align-items:flex-start;">
-      <textarea id="commsHubInput" placeholder="Share an update with everyone…" style="flex:1;background:#16181c;border:1px solid #26282d;color:#e8eaed;padding:10px 12px;border-radius:10px;font-family:inherit;resize:vertical;min-height:44px;max-height:140px;"></textarea>
-      <button onclick="commsHubPost()" style="background:linear-gradient(135deg,#7c4dff,#0a84ff);color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:700;align-self:stretch;">Post</button>
-    </div>
-    <div id="commsHubFeed" style="flex:1;overflow-y:auto;padding:14px;"></div>
-    <div style="padding:8px 14px;border-top:1px solid #1f2125;display:flex;gap:6px;justify-content:space-around;">
-      <button onclick="openApp('chatApp')"   style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">💬 Open Chat</button>
-      <button onclick="openApp('dmApp')"     style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">✉ Open DMs</button>
-      <button onclick="openApp('callApp')"   style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">📞 Open Calls</button>
-      <button onclick="openApp('postsApp')"  style="flex:1;background:transparent;border:none;color:#9aa0a6;padding:8px;border-radius:8px;cursor:pointer;font-size:.8rem;">♪ Open Notes</button>
-    </div>
-  </div>
-</div>
+<!-- Communications Hub removed -->
+
 
 
 
@@ -2682,7 +2660,6 @@ function openApp(id){
     if (id==='gamesApp') { try { ensureGamesLoaded(); } catch(e){ console.warn(e); } }
     if (id==='terminatorApp') { try { terminatorInit(); } catch(e){ console.warn(e); } }
     if (id==='requestsApp') { try { requestsInit(); } catch(e){ console.warn(e); } }
-    if (id==='commsHubApp') { try { commsHubInit(); } catch(e){ console.warn(e); } }
     if (id==='profileApp') { profileOpen(); }
     // Movies opens windowed so users can immediately minimize/resize/snap it side-by-side
     if (id==='moviesApp' && !win.classList.contains('windowed')) {
@@ -2963,7 +2940,6 @@ const APP_REGISTRY = [
   { id:'emulatorApp', name:'Retro Games', img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThvfeLB79JPR7FCso0bOe8wp4geT_2NOrDHw&s', icon:'🕹', bg:'#000' },
   { id:'terminatorApp', name:'Terminator', icon:'🛡', bg:'linear-gradient(135deg,#7a0000,#000)', vipOnly:true },
   { id:'requestsApp',   name:'Requests',   icon:'📨', bg:'linear-gradient(135deg,#0a3d62,#000814)', vipOnly:true },
-  { id:'commsHubApp',   name:'Comms Hub Deluxe HD 20000', icon:'📡', bg:'linear-gradient(135deg,#7c4dff,#0a84ff)' },
 
 ];
 const DEFAULT_HOME = APP_REGISTRY.filter(a => !a.vipOnly).map(a => a.id);
@@ -8680,139 +8656,176 @@ window.postsDelete = postsDelete;
 
 
 /* ========================================================================
-   COMMUNICATIONS HUB DELUXE HD 20000 — feed mixing notes/dms/chat/calls
+   NEXORA OS — INTERACTIVE TUTORIAL
    ======================================================================== */
-const CH_FEED_KEY = 'nx_commshub_feed_v1';
-let _commsHubTab = 'all';
-function _chRead(){ try { return JSON.parse(localStorage.getItem(CH_FEED_KEY)||'[]'); } catch { return []; } }
-function _chWrite(arr){ try { localStorage.setItem(CH_FEED_KEY, JSON.stringify(arr.slice(0,200))); } catch {} }
-function commsHubInit(){
-  // Strip any old "Welcome" seed cards from prior versions
-  try { const arr = _chRead().filter(x => x && x.id !== 'seed1'); _chWrite(arr); } catch {}
-  commsHubFilter(_commsHubTab);
+const TUT_KEY = 'nx_tutorial_done_v1';
+let _tutStep = 0;
+let _tutSteps = [];
+
+function _tutBuildSteps(){
+  return [
+    { sel: null,
+      title: '👋 Welcome to Nexora OS',
+      text: 'This quick tour will show you around. Use Next/Previous to move through it, or Skip to jump straight in.' },
+    { sel: '#desktopIcons',
+      title: '🏠 The Home Screen',
+      text: 'This is your desktop. All of your apps live right here — double‑click any tile to open it.' },
+    { sel: '#desktopIcons [data-app="chatApp"]',
+      title: '💬 Chatting',
+      text: 'The Chatting app lets you join rooms, talk in real time, host watch parties, and share files with friends.' },
+    { sel: '#desktopIcons [data-app="gamesApp"]',
+      title: '🎮 Arcade',
+      text: 'The Arcade is your library of built‑in games. Pick one and start playing — your progress saves automatically.' },
+    { sel: '#desktopIcons [data-app="friendsApp"]',
+      title: '👥 Friends',
+      text: 'Add friends by username, see who is online, and start DMs or calls right from your friends list.' },
+    { sel: '#desktopIcons [data-app="profileApp"]',
+      title: '🪪 Your Profile',
+      text: 'Edit your username, avatar, and bio here. Anything you change shows up to other people across Nexora.' },
+    { sel: null,
+      title: '🚀 You are all set!',
+      text: 'That is the basics. Explore the other apps on the desktop whenever you are ready — and have fun!' }
+  ];
 }
-function commsHubFilter(tab){
-  _commsHubTab = tab;
-  document.querySelectorAll('.ch-tab').forEach(b => {
-    if (b.dataset.tab === tab) { b.style.background='#22252a'; b.style.color='#e8eaed'; b.style.border='none'; }
-    else { b.style.background='transparent'; b.style.color='#9aa0a6'; b.style.border='1px solid #2a2d33'; }
-  });
-  commsHubRender();
-}
-function _chCollectAll(){
-  let items = _chRead();
-  // Real notes from the Notes app (POSTS_KEY = nx_notes_v2)
-  try {
-    const notes = (JSON.parse(localStorage.getItem(POSTS_KEY)||'[]')||[]).map(n => ({
-      id:'note_'+(n.id||n.ts||Math.random()),
-      kind:'note',
-      user:n.author||n.user||((window.ACTIVE&&ACTIVE.username)||'me'),
-      text:n.text||n.title||n.body||'(note)',
-      ts:n.ts||n.createdAt||Date.now(),
-      likes:n.likes||0
-    }));
-    items = items.concat(notes);
-  } catch {}
-  // Recent DMs (last message per thread)
-  try {
-    const dmKeys = Object.keys(localStorage).filter(k => k.startsWith('nx_dm_'));
-    dmKeys.forEach(k => {
-      const msgs = JSON.parse(localStorage.getItem(k)||'[]');
-      if (Array.isArray(msgs) && msgs.length){
-        const last = msgs[msgs.length-1];
-        items.push({ id:'dm_'+k, kind:'dm', user:last.from||k.replace('nx_dm_',''), text:last.text||'(dm)', ts:last.ts||Date.now(), likes:0, _thread:k.replace('nx_dm_','') });
-      }
-    });
-  } catch {}
-  // Active rooms (chatrooms list)
-  try {
-    const rooms = JSON.parse(localStorage.getItem('nx_rooms_v1')||'[]');
-    rooms.slice(0,8).forEach(r => {
-      items.push({ id:'room_'+(r.id||r.name), kind:'chat', user:r.host||'room', text:r.name||'Room', ts:r.ts||Date.now(), likes:0 });
-    });
-  } catch {}
-  // Recent calls
-  try {
-    const calls = JSON.parse(localStorage.getItem('nx_call_log_v1')||'[]');
-    calls.slice(0,8).forEach(c => {
-      items.push({ id:'call_'+(c.id||c.ts), kind:'call', user:c.peer||'call', text:(c.kind||'Call')+' • '+(c.duration||'0s'), ts:c.ts||Date.now(), likes:0 });
-    });
-  } catch {}
-  return items;
-}
-function commsHubRender(){
-  const feed = document.getElementById('commsHubFeed');
-  if (!feed) return;
-  let items = _chCollectAll();
-  if (_commsHubTab !== 'all') items = items.filter(i => i.kind === _commsHubTab);
-  items.sort((a,b) => (b.ts||0) - (a.ts||0));
-  if (!items.length) { feed.innerHTML = '<div style="color:#5f6368;text-align:center;padding:30px;font-size:.9rem;">Nothing here yet. Post a note, DM a friend, or start a room — it all shows up here.</div>'; return; }
-  const badge = { note:'♪ Note', dm:'✉ DM', chat:'💬 Room', call:'📞 Call' };
-  const badgeColor = { note:'#7c4dff', dm:'#0a84ff', chat:'#34a853', call:'#ff6b1a' };
-  feed.innerHTML = items.map(i => {
-    const u = _escHTML(i.user||'someone');
-    const t = _escHTML(i.text||'');
-    const initial = (i.user||'?').charAt(0).toUpperCase();
-    const when = i.ts ? new Date(i.ts).toLocaleString() : '';
-    const b = badge[i.kind] || '✨';
-    const bc = badgeColor[i.kind] || '#9aa0a6';
-    const actionBtn = i.kind === 'dm'
-      ? `<button class="ch-btn" onclick="commsHubOpenDM('${_escAttr(i._thread||i.user||'')}')">✉ Open</button>`
-      : i.kind === 'chat' ? `<button class="ch-btn" onclick="openApp('chatApp')">💬 Join</button>`
-      : i.kind === 'call' ? `<button class="ch-btn" onclick="openApp('callApp')">📞 Call back</button>`
-      : `<button class="ch-btn" onclick="commsHubReply('${_escAttr(i.user||'')}')">💬 Reply</button>`;
-    return `<div class="ch-card">
-      <div class="ch-head">
-        <div class="ch-av">${initial}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:8px;"><div style="color:#e8eaed;font-weight:700;">@${u}</div><span class="ch-pill" style="background:${bc};color:#fff;">${b}</span></div>
-          <div style="color:#5f6368;font-size:.72rem;">${when}</div>
-        </div>
-      </div>
-      <div class="ch-body">${t}</div>
-      <div class="ch-actions">
-        <button class="ch-btn" onclick="commsHubLike('${i.id}')">♥ ${i.likes||0}</button>
-        ${actionBtn}
+
+function _tutEnsureUI(){
+  if (document.getElementById('nxTutorial')) return;
+  const css = document.createElement('style');
+  css.textContent = `
+    #nxTutOverlay{position:fixed;inset:0;z-index:99998;pointer-events:none;}
+    #nxTutHole{position:absolute;border:3px solid #7c4dff;border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.65),0 0 28px rgba(124,77,255,.7);transition:all .35s cubic-bezier(.4,.0,.2,1);pointer-events:none;}
+    #nxTutArrow{position:absolute;font-size:42px;color:#7c4dff;text-shadow:0 0 10px rgba(124,77,255,.8);animation:nxTutBounce 1.2s ease-in-out infinite;pointer-events:none;}
+    @keyframes nxTutBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    #nxTutorial{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);width:min(620px,92vw);background:linear-gradient(135deg,#161a22,#0f1218);color:#e8eaed;border:1px solid #2a2d33;border-radius:16px;padding:18px 20px;z-index:99999;box-shadow:0 14px 40px rgba(0,0,0,.55);font-family:inherit;}
+    #nxTutorial .nxt-title{font-weight:800;font-size:1.05rem;margin-bottom:6px;color:#fff;}
+    #nxTutorial .nxt-text{font-size:.92rem;line-height:1.45;color:#cfd2d6;margin-bottom:12px;}
+    #nxTutorial .nxt-row{display:flex;align-items:center;gap:10px;justify-content:space-between;}
+    #nxTutorial .nxt-dots{display:flex;gap:6px;}
+    #nxTutorial .nxt-dot{width:8px;height:8px;border-radius:50%;background:#2a2d33;}
+    #nxTutorial .nxt-dot.active{background:#7c4dff;}
+    #nxTutorial button{font-family:inherit;border-radius:10px;cursor:pointer;font-weight:700;padding:8px 14px;border:none;}
+    #nxTutorial .nxt-skip{background:transparent;color:#9aa0a6;}
+    #nxTutorial .nxt-prev{background:#22252a;color:#e8eaed;}
+    #nxTutorial .nxt-next{background:linear-gradient(135deg,#7c4dff,#0a84ff);color:#fff;}
+    #nxTutorial button:disabled{opacity:.4;cursor:not-allowed;}
+  `;
+  document.head.appendChild(css);
+
+  const ov = document.createElement('div');
+  ov.id = 'nxTutOverlay';
+  ov.innerHTML = '<div id="nxTutHole" style="display:none;"></div><div id="nxTutArrow" style="display:none;">⬆</div>';
+  document.body.appendChild(ov);
+
+  const box = document.createElement('div');
+  box.id = 'nxTutorial';
+  box.innerHTML = `
+    <div class="nxt-title" id="nxtTitle"></div>
+    <div class="nxt-text" id="nxtText"></div>
+    <div class="nxt-row">
+      <button class="nxt-skip" onclick="tutSkip()">Skip tour</button>
+      <div class="nxt-dots" id="nxtDots"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="nxt-prev" id="nxtPrev" onclick="tutPrev()">← Previous</button>
+        <button class="nxt-next" id="nxtNext" onclick="tutNext()">Next →</button>
       </div>
     </div>`;
-  }).join('');
+  document.body.appendChild(box);
 }
-function commsHubPost(){
-  const ta = document.getElementById('commsHubInput');
-  const text = (ta.value||'').trim();
-  if (!text) return;
-  const me = (window.ACTIVE && ACTIVE.username) || 'guest';
-  // Write into the real Notes store so it appears in the Notes app too
+
+function _tutPaint(){
+  const step = _tutSteps[_tutStep]; if (!step) return;
+  document.getElementById('nxtTitle').textContent = step.title;
+  document.getElementById('nxtText').textContent  = step.text;
+  const dots = _tutSteps.map((_,i)=>`<div class="nxt-dot ${i===_tutStep?'active':''}"></div>`).join('');
+  document.getElementById('nxtDots').innerHTML = dots;
+  document.getElementById('nxtPrev').disabled = _tutStep === 0;
+  document.getElementById('nxtNext').textContent = (_tutStep === _tutSteps.length-1) ? 'Finish ✓' : 'Next →';
+
+  const hole = document.getElementById('nxTutHole');
+  const arrow = document.getElementById('nxTutArrow');
+  const tutBox = document.getElementById('nxTutorial');
+  const tutTop = tutBox.getBoundingClientRect().top;
+
+  let target = step.sel ? document.querySelector(step.sel) : null;
+  if (target && target.offsetParent === null) target = null;
+  if (target){
+    const r = target.getBoundingClientRect();
+    const pad = 8;
+    hole.style.display = 'block';
+    hole.style.left   = (r.left - pad) + 'px';
+    hole.style.top    = (r.top - pad) + 'px';
+    hole.style.width  = (r.width + pad*2) + 'px';
+    hole.style.height = (r.height + pad*2) + 'px';
+    arrow.style.display = 'block';
+    const arrowAbove = r.top > 120;
+    arrow.textContent = arrowAbove ? '⬇' : '⬆';
+    arrow.style.left = (r.left + r.width/2 - 20) + 'px';
+    if (arrowAbove) arrow.style.top = (r.top - 56) + 'px';
+    else            arrow.style.top = (r.top + r.height + 8) + 'px';
+    try { target.scrollIntoView({ behavior:'smooth', block:'center' }); } catch {}
+  } else {
+    hole.style.display = 'none';
+    arrow.style.display = 'none';
+  }
+}
+
+function tutStart(force){
+  try { if (!force && localStorage.getItem(TUT_KEY) === '1') return; } catch {}
+  _tutSteps = _tutBuildSteps();
+  _tutStep = 0;
+  _tutEnsureUI();
+  document.getElementById('nxTutorial').style.display = '';
+  document.getElementById('nxTutOverlay').style.display = '';
+  setTimeout(_tutPaint, 250);
+  window.addEventListener('resize', _tutPaint);
+}
+function tutNext(){
+  if (_tutStep >= _tutSteps.length - 1) { tutFinish(); return; }
+  _tutStep++; _tutPaint();
+}
+function tutPrev(){ if (_tutStep > 0) { _tutStep--; _tutPaint(); } }
+function tutSkip(){ tutFinish(); }
+function tutFinish(){
+  try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+  const ov = document.getElementById('nxTutOverlay'); if (ov) ov.style.display = 'none';
+  const box = document.getElementById('nxTutorial'); if (box) box.style.display = 'none';
+  window.removeEventListener('resize', _tutPaint);
+}
+function tutReset(){ try { localStorage.removeItem(TUT_KEY); } catch {} tutStart(true); }
+
+window.tutStart = tutStart;
+window.tutNext = tutNext;
+window.tutPrev = tutPrev;
+window.tutSkip = tutSkip;
+window.tutFinish = tutFinish;
+window.tutReset = tutReset;
+
+/* Auto-start tutorial first time the desktop is shown (after unlock) */
+(function _tutHook(){
+  const orig = window.hideLock;
+  if (typeof orig !== 'function') return;
+  window.hideLock = function(){
+    const r = orig.apply(this, arguments);
+    setTimeout(()=>{ try { tutStart(false); } catch(e){ console.warn('tutorial start failed', e); } }, 600);
+    return r;
+  };
+})();
+
+
+/* OG Nexora launcher (lock-screen button) */
+const OG_NEXORA_URL = 'https://id-preview--22b129b0-c2cb-46cc-9979-2d1e0810a94e.lovable.app/__l5e/assets-v1/3800144d-08bd-4501-bec5-92141e15fcaf/nexora-og.html';
+function openOGNexora(){
   try {
-    const notes = JSON.parse(localStorage.getItem(POSTS_KEY)||'[]');
-    notes.unshift({ id:'p_'+Date.now(), author:me, text, ts:Date.now(), likes:0 });
-    localStorage.setItem(POSTS_KEY, JSON.stringify(notes.slice(0,200)));
-  } catch {}
-  ta.value = '';
-  commsHubRender();
+    const w = window.open('about:blank', '_blank');
+    if (!w) { window.location.href = OG_NEXORA_URL; return; }
+    // Load OG Nexora into the blank tab so the URL bar stays about:blank-ish
+    w.document.open();
+    w.document.write('<!doctype html><meta charset="utf-8"><title>OG Nexora</title><style>html,body{margin:0;height:100%;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style><iframe src="'+OG_NEXORA_URL+'" allow="autoplay; fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>');
+    w.document.close();
+  } catch (e) { window.open(OG_NEXORA_URL, '_blank'); }
 }
-function commsHubLike(id){
-  // Likes are ephemeral overlay (real notes own their own likes)
-  const arr = _chRead();
-  const it = arr.find(x => x.id === id);
-  if (it) { it.likes = (it.likes||0) + 1; _chWrite(arr); }
-  commsHubRender();
-}
-function commsHubReply(user){
-  const ta = document.getElementById('commsHubInput');
-  if (!ta) return;
-  ta.value = '@' + user + ' ';
-  ta.focus();
-}
-function commsHubOpenDM(thread){
-  try { openApp('dmApp'); if (typeof dmOpenThread === 'function' && thread) dmOpenThread(thread); } catch { openApp('dmApp'); }
-}
-window.commsHubInit = commsHubInit;
-window.commsHubFilter = commsHubFilter;
-window.commsHubPost = commsHubPost;
-window.commsHubLike = commsHubLike;
-window.commsHubReply = commsHubReply;
-window.commsHubOpenDM = commsHubOpenDM;
+window.openOGNexora = openOGNexora;
+
 
 </script>
 
