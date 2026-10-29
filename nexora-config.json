@@ -1,0 +1,7 @@
+{
+  "GEMINI_API_KEY": "AIzaSyDcDs1UKEFaJb_YJkcWq0OzMoCoH3IFsYM",
+  "GEMINI_MODEL": "gemini-2.5-flash",
+  "FINNHUB_API_KEY": "dbb6hdpr01qrv06or7b0dbb6hdpr01qrv06or7bg",
+  "STOCK_PROVIDER": "finnhub",
+  "YAHOO_CORS_PROXY": ""
+}
