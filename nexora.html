@@ -270,10 +270,26 @@ async function nxLoadExternalApp(el,id){
     const documentHtml=/<head[\s>]/i.test(html)?html.replace(/<head([\s>])/i,'<head$1'+base):base+html;
     const iframe=document.createElement('iframe');
     iframe.title=id+' — GitHub app';
-    iframe.style.cssText='display:block;width:100%;height:100%;border:0;background:#0d1015';
+    iframe.style.cssText='display:block;width:100%;flex:1;min-height:0;border:0;background:#0d1015';
     iframe.setAttribute('allow','fullscreen; clipboard-read; clipboard-write');
-    iframe.srcdoc=documentHtml;
-    el.replaceChildren(iframe);
+    const appBlob=URL.createObjectURL(new Blob([documentHtml],{type:'text/html'}));
+    iframe.src=appBlob;
+    iframe.addEventListener('load',()=>setTimeout(()=>URL.revokeObjectURL(appBlob),30000),{once:true});
+    const tools=document.createElement('div');
+    tools.style.cssText='display:flex;gap:8px;align-items:center;padding:7px 12px;background:#0b1015;border-bottom:1px solid #2c3840;flex-shrink:0';
+    tools.innerHTML='<span style="flex:1;color:#8d9ba9;font-size:12px">GitHub app</span><button class="btn" data-nx-open>↗ Open code in new tab</button><button class="btn" data-nx-download>↓ Download HTML</button>';
+    const fileName=id+'.html';
+    tools.querySelector('[data-nx-open]').onclick=()=>{
+      const tab=window.open('about:blank','_blank');
+      if(!tab){toast('Allow pop-ups to open the app in a new tab');return}
+      tab.document.open();tab.document.write(documentHtml);tab.document.close();
+    };
+    tools.querySelector('[data-nx-download]').onclick=()=>{
+      const u=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+      const a=document.createElement('a');a.href=u;a.download=fileName;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),15000);
+    };
+    el.replaceChildren(tools,iframe);
+    el.style.display='flex';el.style.flexDirection='column';
     el.style.padding='0';el.style.overflow='hidden';
   }catch(err){
     el.innerHTML='<div class="card" style="margin:18px"><h3>Could not load '+esc(id)+'</h3><p class="muted">'+esc(err.message)+'</p><p>Check that <code>'+esc(id)+'.html</code> exists on branch <code>'+esc(NX_BRANCH)+'</code> and your internet connection is working.</p><button class="btn primary" id="nxRetryApp">Retry</button> <a target="_blank" rel="noopener noreferrer" href="'+NX_RAW+encodeURIComponent(id)+'.html">View source on GitHub</a></div>';
