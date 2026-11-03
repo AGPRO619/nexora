@@ -235,57 +235,70 @@ function nxGameTabTip(w){
  anchor.appendChild(tip);
  tip.querySelector('.nx-tip-ok').onclick=e=>{e.stopPropagation();tip.remove()};
 }
-function openGame(g){let id='play:'+g.id;if(windows.has(id)){const existing=windows.get(id);existing.style.display='flex';nxGameTabTip(existing);return}let w=document.createElement('section');w.className='window full';w.style.zIndex=++topZ;
- w.innerHTML=`<div class="bar"><span class="title">🎮 ${esc(g.title)}</span><button class="btn" id="playTab">↗ New tab</button><button class="btn" id="playClose">✕</button></div><div class="content" id="playArea" style="padding:0;display:flex;flex-direction:column;overflow:hidden"></div>`;
- $('#workspace').append(w);windows.set(id,w);let el=w.querySelector('#playArea'),blobUrl=null;
+function nxStandaloneGame(g,html){
+ let output=html;
+ if(g.url){try{
+   const base=new URL('.',new URL(g.url,location.href)).href;
+   const tag='<base href="'+base.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">';
+   output=/<head\b[^>]*>/i.test(output)?output.replace(/<head([^>]*)>/i,'<head$1>'+tag):tag+output;
+ }catch(e){}}
+ return output;
+}
+function nxLocalGameHtml(g){
+ const name=g.id==='snake'?'snakeGame':'clickGame';
+ const fn=g.id==='snake'?snakeGame:clickGame;
+ return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(g.title)+'</title><style>body{margin:0;padding:20px;background:#080e18;color:#f4fbff;font:16px system-ui;text-align:center}.btn{background:#18283b;border:1px solid #53ffbf;color:white;padding:12px 18px;border-radius:10px;cursor:pointer}canvas{max-width:95vw}</style></head><body><main id="game"></main><script>'+fn.toString()+';('+name+')(document.getElementById("game"));<\/script></body></html>';
+}
+async function nxGetPlayableHtml(g){
+ if(g.kind==='local')return nxLocalGameHtml(g);
+ const html=await nxGameHtml(g);
+ if(!html)throw Error('This game provides a URL, but no downloadable HTML source');
+ return nxStandaloneGame(g,html);
+}
+function openGame(g){
+ let id='play:'+g.id;
+ if(windows.has(id)){let old=windows.get(id);old.style.display='flex';old.style.zIndex=++topZ;return}
+ let w=document.createElement('section');w.className='window full';w.style.zIndex=++topZ;
+ w.innerHTML=`<div class="bar"><span class="title">🎮 ${esc(g.title)}</span><button class="btn" id="playTab">↗ New tab</button><button class="btn" id="playDownload">↓ Download game</button><button class="btn" id="playFull">⛶ Fullscreen</button><button class="btn" id="playClose">✕</button></div><div class="content" id="playArea" style="padding:0;display:flex;flex-direction:column;overflow:hidden;min-height:0"></div>`;
+ $('#workspace').append(w);windows.set(id,w);
+ const el=w.querySelector('#playArea');let blobUrl=null;
  const release=()=>{if(blobUrl){URL.revokeObjectURL(blobUrl);blobUrl=null}};
  w.querySelector('#playClose').onclick=()=>{release();w.remove();windows.delete(id)};
- if(g.id==='click')clickGame(el);else if(g.id==='snake')snakeGame(el);else{
- el.innerHTML=`<div class="notice" id="playNotice">Loading ${esc(g.title)}... <a id="playFallback" target="_blank" rel="noopener noreferrer" href="${esc(g.url||'#')}">Open original source</a></div><iframe title="${esc(g.title)}" style="flex:1;min-height:0;width:100%;border:0;background:#000" allow="fullscreen; gamepad" sandbox="allow-scripts allow-forms allow-pointer-lock allow-popups allow-modals allow-downloads"></iframe>`;
- let frame=el.querySelector('iframe'),notice=el.querySelector('#playNotice');
- (async()=>{try{const html=await nxGameHtml(g);if(!el.isConnected)return;if(html){blobUrl=URL.createObjectURL(new Blob([html],{type:'text/html'}));frame.src=blobUrl;notice.textContent='Game loaded from source. If it remains blank, the game may require a different browser environment.'}else if(g.url){frame.src=g.url;notice.textContent='Launching external game. If it remains blank, use New tab.'}else throw Error('No playable content')}catch(e){if(g.url)frame.src=g.url;notice.textContent='Direct loading failed ('+e.message+'). Try New tab.'}})();
+ const notice=document.createElement('div');notice.className='notice';notice.style.cssText='flex:none;padding:8px 12px;font-size:12px';notice.textContent='Loading '+g.title+'…';
+ if(g.kind==='local'){
+   if(g.id==='snake')snakeGame(el);else clickGame(el);
+ }else{
+   el.append(notice);
+   const frame=document.createElement('iframe');frame.title=g.title;frame.style.cssText='flex:1;min-height:0;width:100%;border:0;background:#000';frame.setAttribute('allow','fullscreen; gamepad');frame.setAttribute('allowfullscreen','');
+   frame.setAttribute('sandbox','allow-scripts allow-forms allow-pointer-lock allow-popups allow-modals allow-downloads allow-same-origin');el.append(frame);
+   (async()=>{try{const html=await nxGetPlayableHtml(g);if(!el.isConnected)return;blobUrl=URL.createObjectURL(new Blob([html],{type:'text/html'}));frame.src=blobUrl;notice.textContent='If the embedded game is blank, try New tab to run its HTML directly.'}catch(e){if(g.url){frame.src=g.url;notice.textContent='Embedding the original URL. If blocked, try New tab. '+e.message}else notice.textContent=e.message}})();
  }
- nxGameTabTip(w);
- w.querySelector('#playTab').onclick=async e=>{
-  if(e.target.closest('.nx-game-tab-tip'))return;
-  const tip=w.querySelector('.nx-game-tab-tip');if(tip)tip.remove();
-  // Open immediately while the click gesture is active, before any async fetching.
-  const tab=window.open('about:blank','_blank');
-  if(!tab){toast('Please allow pop-ups for NEXORA to launch games in new tabs.');return}
-  tab.document.title='Loading '+g.title+' · NEXORA';
-  tab.document.body.style.cssText='margin:0;background:#080b10;color:#dfffee;font:16px system-ui;display:grid;place-items:center;min-height:100vh';
-  tab.document.body.textContent='Loading '+g.title+'…';
-  try{
-    if(g.kind==='local'){
-      // Built-in games are native NEXORA functions; give them a standalone host.
-      const gameName=g.id==='snake'?'snakeGame':'clickGame';
-      const gameFn=gameName==='snakeGame'?snakeGame:clickGame;
-      const standalone='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(g.title)+'</title><style>body{margin:0;padding:20px;background:#080e18;color:#f4fbff;font:16px system-ui;text-align:center}.btn{background:#18283b;border:1px solid #53ffbf;color:white;padding:12px 18px;border-radius:10px;cursor:pointer}canvas{max-width:95vw}</style></head><body><main id="game"></main><script>'+gameFn.toString()+';('+gameName+')(document.getElementById("game"));<\/script></body></html>';
-      tab.document.open();tab.document.write(standalone);tab.document.close();return;
-    }
-     const html=await nxGameHtml(g);
-     if(html){
-       // Keep the new tab at about:blank and write the source directly into its document.
-       // This does not use blob:, srcdoc, or a NEXORA iframe.
-       let standalone=html;
-       if(g.url){
-         try{
-           const base=new URL('.',new URL(g.url,location.href)).href.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-           if(/<head\b[^>]*>/i.test(standalone))standalone=standalone.replace(/<head([^>]*)>/i,'<head$1><base href="'+base+'">');
-           else standalone='<base href="'+base+'">'+standalone;
-         }catch(_){}
-       }
-       tab.document.open();tab.document.write(standalone);tab.document.close();
-     }else if(g.url){
-       // URL-only games have no source HTML available to copy into about:blank.
-       tab.document.body.textContent='This source provides only a game URL, not standalone HTML. Opening its original site…';
-       tab.location.replace(g.url);
-     }else{tab.document.body.textContent='No standalone HTML is available for this game.'}
-  }catch(e){
-    if(g.source==='GN-Math'){tab.document.body.textContent='Unable to load GN-Math game HTML: '+e.message+'. The source may block cross-origin downloads or require its original host.';const a=tab.document.createElement('a');a.href=g.url;a.textContent='Open original game source';a.target='_self';a.style.cssText='color:#53ffbf;display:block;margin:20px';tab.document.body.append(a)}
-    else if(g.url){tab.location.replace(g.url)}
-    else{tab.document.body.textContent='Unable to launch '+g.title+': '+e.message}
-  }
+ w.querySelector('#playFull').onclick=async()=>{
+   const target=el.querySelector('iframe')||el;
+   try{if(document.fullscreenElement)await document.exitFullscreen();else if(target.requestFullscreen)await target.requestFullscreen();else throw Error('Fullscreen unavailable in this browser')}catch(e){toast('Fullscreen unavailable: '+e.message)}
+ };
+ w.querySelector('#playTab').onclick=async()=>{
+   // Open synchronously inside click, before any fetch, to avoid popup blocking.
+   const tab=window.open('about:blank','_blank');
+   if(!tab){toast('Allow pop-ups to open games in a new tab');return}
+   try{tab.document.title='Loading '+g.title;tab.document.body.style.cssText='background:#080b10;color:#dfffee;font:16px system-ui;padding:30px';tab.document.body.textContent='Loading '+g.title+'…'}catch(e){}
+   try{
+     const html=await nxGetPlayableHtml(g);
+     if(tab.closed)return;
+     tab.document.open();tab.document.write(html);tab.document.close();
+   }catch(e){
+     if(g.url){try{tab.location.replace(g.url)}catch(_){};toast('HTML could not be retrieved; opened the game source instead')}
+     else{try{tab.document.body.textContent='Unable to load game: '+e.message}catch(_){}}
+   }
+ };
+ w.querySelector('#playDownload').onclick=async()=>{
+   const btn=w.querySelector('#playDownload');btn.disabled=true;btn.textContent='Preparing…';
+   try{
+     const html=await nxGetPlayableHtml(g);
+     const blob=new Blob([html],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob);
+     const a=document.createElement('a');a.href=url;a.download=(g.title||'game').replace(/[^a-z0-9._ -]/gi,'_').slice(0,90)+'.html';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+   }catch(e){toast('Cannot download game HTML: '+e.message)}
+   finally{btn.disabled=false;btn.textContent='↓ Download game'}
  };
 }
 function clickGame(el){el.innerHTML='<div style="text-align:center;padding:25px"><h2>⚡ Click Rush</h2><p>Click as many times as you can in 10 seconds.</p><h1 id="score">0</h1><p id="remaining">10 seconds</p><button class="btn primary" id="tap" style="font-size:24px;padding:25px 45px">START / TAP</button></div>';let score=0,started=0,interval;el.querySelector('#tap').onclick=()=>{if(!started){started=Date.now();interval=setInterval(()=>{let left=Math.max(0,10-Math.floor((Date.now()-started)/1000));if(!el.isConnected){clearInterval(interval);return}el.querySelector('#remaining').textContent=left+' seconds';if(!left){clearInterval(interval);el.querySelector('#tap').disabled=true;el.querySelector('#remaining').textContent='Finished!'}} ,100)}if(Date.now()-started<10000)el.querySelector('#score').textContent=++score}}
