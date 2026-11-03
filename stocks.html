@@ -1,0 +1,250 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stocks — NEXORA App</title><style>
+:root{--bg:#0e1422;--panel:#172235;--panel2:#202e45;--text:#eef4ff;--muted:#99abc4;--accent:#82adff;--border:#33445e;--shadow:0 20px 60px #0007}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,Segoe UI,Arial,sans-serif;overflow:hidden}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.icon{font-size:24px}.shell{height:100dvh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 78% 12%,#30446b77,transparent 45%),linear-gradient(135deg,#111c2e,#0c1120);background-size:cover;background-position:center}.top{display:flex;align-items:center;gap:12px;padding:17px 22px}.brand{font-weight:850;font-size:19px;letter-spacing:2px}.brand b{color:var(--accent)}.grow{flex:1}.small{font-size:12px;color:var(--muted)}.ghost{background:#ffffff0c;color:var(--text);border:1px solid #ffffff20;border-radius:12px;padding:9px 12px}.ghost:hover,.tile:hover,.game:hover{background:#ffffff19}.home{flex:1;overflow:auto;padding:5vh 24px 30px;display:flex;flex-direction:column;align-items:center}.welcome{font-size:clamp(28px,5vw,56px);font-weight:750;letter-spacing:-2px;margin:0}.subtitle{color:var(--muted);margin:5px 0 24px}.search{background:#ffffff13;color:var(--text);border:1px solid #ffffff23;border-radius:17px;padding:14px 17px;width:min(530px,100%)}.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:19px;margin:35px 0;width:min(580px,100%)}.tile{border:0;background:transparent;color:var(--text);display:flex;align-items:center;flex-direction:column;gap:8px;padding:8px;border-radius:15px}.tile .square{width:clamp(60px,10vw,91px);aspect-ratio:1;background:#ffffff13;border:1px solid #ffffff15;border-radius:22px;display:grid;place-items:center;font-size:35px}.tile span:last-child{font-size:13px}.dock{display:flex;gap:9px;background:#202e43d9;border:1px solid #ffffff1b;border-radius:22px;padding:9px 13px;margin:0 auto 15px;box-shadow:var(--shadow)}.dock button{background:transparent;border:0;color:var(--text);font-size:22px;border-radius:12px;padding:8px 12px}.dock button:hover{background:#ffffff22}.workspace{position:fixed;inset:0;pointer-events:none;z-index:10}.window{pointer-events:auto;position:absolute;left:8%;top:8%;width:84%;height:80%;min-width:290px;min-height:250px;background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;resize:both}.window.full{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0;resize:none}.bar{height:49px;flex-shrink:0;display:flex;align-items:center;gap:9px;padding:0 12px;background:#101a2b;border-bottom:1px solid var(--border);user-select:none;cursor:move}.bar .title{font-weight:700;flex:1}.bar button{background:#ffffff10;border:0;color:var(--text);border-radius:8px;padding:6px 9px}.bar button:hover{background:#ffffff28}.content{flex:1;overflow:auto;padding:20px}.content:has(iframe){padding:0}.content iframe{width:100%;height:100%;border:0;background:white}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.head h2{margin:0;font-size:23px}.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);border-radius:11px;padding:10px 13px}.btn.primary{background:var(--accent);color:#0c1425;border-color:transparent;font-weight:750}.btn:hover{filter:brightness(1.15)}.field{background:#0c1525;border:1px solid var(--border);color:var(--text);border-radius:11px;padding:11px;width:100%}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.stack{display:grid;gap:12px}.card{background:#ffffff0b;border:1px solid #ffffff16;border-radius:15px;padding:16px}.card h3{margin:0 0 9px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:13px}.game{background:#ffffff0b;border:1px solid #ffffff14;border-radius:14px;overflow:hidden;text-align:left;color:var(--text);padding:0}.game img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#29354a}.game .glabel{padding:11px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chip{display:inline-block;border:1px solid var(--border);border-radius:99px;padding:5px 9px;font-size:11px;color:var(--muted)}.notice{border:1px solid #648ac055;background:#41679a18;border-radius:12px;padding:12px;color:#c7ddff}.list{display:grid;gap:9px}.item{display:flex;align-items:center;gap:12px;padding:12px;background:#ffffff0b;border-radius:12px}.item strong{flex:1}.mini{font-size:12px}.overlay{position:fixed;inset:0;z-index:30;background:#080e19db;display:none;overflow:auto;padding:5vh 20px}.overlay.open{display:block}.overlay-inner{max-width:750px;margin:auto}.widgets{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}.widget{min-width:190px;background:#ffffff12;padding:15px;border:1px solid #ffffff1c;border-radius:14px}.toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);z-index:60;background:#263951;border:1px solid #6e9bd5;border-radius:12px;padding:12px 18px;display:none;max-width:90vw}.wall{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.wall button{height:60px;border:2px solid #ffffff50;border-radius:12px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}a{color:var(--accent)}label{display:block;margin-bottom:5px;color:var(--muted)}@media(max-width:600px){.top{padding:12px}.tiles{gap:8px}.tile .square{width:65px;font-size:28px;border-radius:17px}.home{padding-top:7vh}.window{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0;resize:none}.content{padding:13px}.dock{margin-bottom:9px}.dock button{padding:6px 9px}}
+
+/* NEXORA 5 / ARCADE OVERHAUL — solid surfaces, neon edges, no gradients */
+:root{--bg:#050609;--panel:#0d1015;--panel2:#151a20;--text:#f5f7fc;--muted:#8d9ba9;--accent:#53ffbf;--border:#2c3840;--shadow:0 18px 65px #000b}
+body{background:#050609;font-family:Inter,'Segoe UI',system-ui,sans-serif;letter-spacing:.01em}
+.shell{position:relative;isolation:isolate;background:#050609!important;overflow:hidden}
+#particleNet{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.9}
+.shell:after{content:'';position:absolute;inset:0;pointer-events:none;z-index:-1;background:#05060933}
+.top{padding:22px clamp(18px,4vw,65px);border-bottom:1px solid #ffffff12;background:#0506098c;backdrop-filter:blur(8px)}
+.brand{font-size:22px;letter-spacing:.13em;font-weight:950;color:#fff}.brand b{color:var(--accent)}
+.top .ghost{border:1px solid #26343c;border-radius:7px;background:#10151a;color:#e9f4f7;font-size:12px;font-weight:800;letter-spacing:.07em}
+.top .ghost:hover{border-color:var(--accent);color:var(--accent)}
+.home{justify-content:center;padding:40px 18px 100px;position:relative;overflow-y:auto}
+.hero-kicker{font-size:11px;color:var(--accent);font-weight:900;letter-spacing:.3em;margin-bottom:16px;text-shadow:0 0 16px #53ffbf66}
+.welcome{font-size:clamp(55px,10vw,122px);font-weight:1000;line-height:.95;letter-spacing:-.075em;color:#fff;text-shadow:0 7px 45px #000}
+.welcome span{color:var(--accent);margin-left:.12em}
+.subtitle{color:#abb8c2;font-size:clamp(13px,2vw,17px);margin:18px 0 26px}
+.search{background:#0e1319e8;border:1px solid #40515a;color:#fff;border-radius:8px;padding:16px 20px;width:min(590px,100%);box-shadow:0 10px 30px #0009}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 2px #53ffbf2c;outline:none}
+.home-label{width:min(740px,100%);display:flex;justify-content:space-between;margin:38px 0 12px;font-size:11px;font-weight:900;letter-spacing:.2em;color:#e5f0f3}
+.home-label span{color:var(--accent)}
+.home .tiles{width:min(740px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0}
+.home .tile{padding:16px 4px 14px;background:#10161dcf;border:1px solid #2b3a43;border-radius:10px;transition:transform .18s,border-color .18s,background .18s}
+.home .tile:hover{background:#162229;transform:translateY(-5px);border-color:var(--accent)}
+.home .tile .square{width:clamp(44px,6vw,70px);border:0;border-radius:10px;background:#1a252b;font-size:clamp(23px,3vw,33px);box-shadow:none}
+.home .tile span:last-child{font-size:12px;font-weight:800;letter-spacing:.03em}
+.more-home{margin:18px auto 0;padding:12px 20px;background:#0e1419;border:1px solid var(--accent);color:var(--accent);border-radius:7px;font-size:11px;letter-spacing:.18em;font-weight:900}
+.more-home:hover{background:#172c27}.more-home span{margin-left:12px}
+.dock{position:absolute;bottom:17px;left:50%;transform:translateX(-50%);margin:0;padding:7px;background:#0b1015f2;border:1px solid #32434a;border-radius:12px;box-shadow:0 14px 35px #000c;gap:3px;max-width:calc(100vw - 24px)}
+.dock button{font-size:19px;display:flex;align-items:center;gap:7px;padding:10px 13px;border-radius:7px;white-space:nowrap}
+.dock button span{font-size:10px;font-weight:900;letter-spacing:.09em}
+.dock button:hover{background:#17252a;color:var(--accent)}.dock .dock-more{background:#193329;color:var(--accent)}
+.window{background:#0d1015;border-radius:10px}.bar{background:#090d11}.bar button{border-radius:5px}
+.content{background:#0d1015}.card,.game,.item,.widget{background:#13191e;border-color:#2b353d;border-radius:9px}
+.btn,.field{border-radius:7px}.btn.primary{background:var(--accent);color:#06120d}.ghost,.btn,.card,.game,.window,.overlay,.widget{backdrop-filter:none}
+.overlay{background:#070b0ff7}.overlay-inner{max-width:920px}.overlay .tiles{width:100%;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.overlay .tile{background:#11191e;border:1px solid #2b3a43;border-radius:9px}.overlay .tile:hover{border-color:var(--accent)}
+.notice{background:#111e20;border-color:#2a6660;color:#bfe8dd}.chip{border-radius:5px}
+@media(max-width:650px){.top{padding:14px}.top .small{display:none}.home{padding:25px 12px 95px}.welcome{font-size:clamp(52px,13vw,82px)}.home .tiles{gap:6px}.home .tile{padding:11px 2px 10px}.home .tile .square{width:42px;height:42px;font-size:23px}.home .tile span:last-child{font-size:10px}.dock button{padding:9px 10px}.dock button span{display:none}.home-label{margin-top:26px}.overlay .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.home .tile{transition:none}}
+
+/* NEXORA 5 — UI polish and Visuals Studio */
+:root{--motion-scale:1;--glow-strength:.38}
+button,.tile,.game,.card,.item,.widget,.ghost,.btn,.field,.dock button,.bar button{transition:transform calc(.2s * var(--motion-scale)) cubic-bezier(.2,.8,.2,1),border-color calc(.2s * var(--motion-scale)),background-color calc(.2s * var(--motion-scale)),box-shadow calc(.22s * var(--motion-scale)),color calc(.2s * var(--motion-scale)),filter calc(.2s * var(--motion-scale))}
+button:active{transform:scale(.96)}.btn:hover,.ghost:hover,.bar button:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 24%,transparent)}
+.btn.primary:hover{box-shadow:0 0 24px color-mix(in srgb,var(--accent) 42%,transparent)}
+.tile:hover,.game:hover{box-shadow:0 10px 30px #0009,0 0 19px color-mix(in srgb,var(--accent) 26%,transparent)}
+.tile .square{transition:transform calc(.25s * var(--motion-scale)),box-shadow calc(.25s * var(--motion-scale))}.tile:hover .square{transform:translateY(-3px) rotate(-3deg);box-shadow:0 0 22px color-mix(in srgb,var(--accent) 20%,transparent)}
+.game img{transition:transform calc(.35s * var(--motion-scale))}.game:hover img{transform:scale(1.07)}
+.field:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.window{animation:nxWindowIn calc(.34s * var(--motion-scale)) cubic-bezier(.16,1,.3,1) both;transform-origin:50% 55%}
+.overlay.open{animation:nxOverlayIn calc(.25s * var(--motion-scale)) ease-out both}.overlay.open .overlay-inner{animation:nxPanelIn calc(.35s * var(--motion-scale)) cubic-bezier(.2,.8,.2,1) both}
+.content>.head,.content>.stack,.content>.two,.content>.grid{animation:nxPanelIn calc(.33s * var(--motion-scale)) ease-out both}
+.toast{box-shadow:0 15px 50px #000b,0 0 24px color-mix(in srgb,var(--accent) 18%,transparent)}
+@keyframes nxWindowIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes nxOverlayIn{from{opacity:0}to{opacity:1}}@keyframes nxPanelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nxPulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 20px color-mix(in srgb,var(--accent) 25%,transparent)}}
+.visual-studio{display:grid;gap:18px}.vs-intro{display:flex;align-items:center;gap:14px;padding:17px;border:1px solid var(--border);background:#10171b;border-radius:12px}.vs-symbol{font-size:31px;background:#1a262a;padding:12px;border-radius:10px}.vs-intro h3{margin:0 0 4px;font-size:19px}.vs-intro p{margin:0;color:var(--muted)}
+.vs-label{font-size:11px;font-weight:900;letter-spacing:.18em;color:var(--accent);margin:0 0 10px}.vs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.vs-theme{position:relative;display:block;text-align:left;padding:9px;background:#12191e;border:2px solid #2b3840;border-radius:11px;color:var(--text)}.vs-theme:hover{transform:translateY(-3px);border-color:#6b8993}.vs-theme.selected{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 15%,transparent)}
+.vs-theme .mock{height:92px;border-radius:7px;padding:9px;overflow:hidden;background:var(--mock-bg);border:1px solid var(--mock-line)}.mock .mock-top{height:9px;width:58%;border-radius:2px;background:var(--mock-accent);margin-bottom:9px}.mock .mock-row{display:flex;gap:5px}.mock .mock-tile{height:42px;flex:1;background:var(--mock-panel);border:1px solid var(--mock-line);border-radius:5px}.mock .mock-tile:first-child{border-color:var(--mock-accent)}.vs-theme .theme-name{display:block;margin:9px 3px 2px;font-size:12px;font-weight:800}.vs-theme .theme-sub{display:block;margin:0 3px 4px;font-size:10px;color:var(--muted)}
+.vs-swatches{display:flex;flex-wrap:wrap;gap:12px}.vs-swatch{width:42px;height:42px;border:3px solid #222c31;border-radius:11px;background:var(--swatch);position:relative}.vs-swatch:hover{transform:translateY(-3px) scale(1.06)}.vs-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px var(--swatch),0 0 20px var(--swatch)}.vs-swatch.selected:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#07100d;font-weight:1000;text-shadow:0 1px #fff}
+.vs-control{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:13px 0;border-bottom:1px solid #26333a}.vs-control strong{display:block;margin-bottom:3px}.vs-control p{margin:0;font-size:12px;color:var(--muted)}.vs-control input[type=range]{width:min(170px,40vw);accent-color:var(--accent)}.vs-control select{width:140px}.vs-switch{appearance:none;width:48px;height:27px;background:#39464e;border-radius:99px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}.vs-switch:before{content:'';position:absolute;width:19px;height:19px;top:4px;left:4px;background:#fff;border-radius:50%;transition:transform .2s}.vs-switch:checked{background:var(--accent)}.vs-switch:checked:before{transform:translateX(21px)}
+.vs-live{padding:16px;border:1px solid var(--border);border-radius:12px;background:var(--panel);display:grid;gap:11px}.vs-live-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.vs-live-title{font-size:17px;font-weight:900;letter-spacing:.1em}.vs-live-dots{display:flex;gap:5px}.vs-live-dots i{width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.8}.vs-live-content{display:flex;gap:9px;flex-wrap:wrap}.vs-live-chip{border:1px solid var(--accent);color:var(--accent);padding:9px 14px;border-radius:6px;font-weight:800;font-size:12px}.vs-live-chip.filled{background:var(--accent);color:#07100d}.vs-live-card{border:1px solid var(--border);background:var(--panel2);border-radius:7px;padding:12px;flex:1;min-width:130px}
+body[data-nx-motion='off']{--motion-scale:0}body[data-nx-motion='off'] *,body[data-nx-motion='off'] *:before,body[data-nx-motion='off'] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+body[data-nx-glow='off'] .tile:hover,body[data-nx-glow='off'] .game:hover,body[data-nx-glow='off'] .btn:hover,body[data-nx-glow='off'] .ghost:hover{box-shadow:none!important}
+body[data-nx-compact='on'] .card{padding:11px}body[data-nx-compact='on'] .grid{gap:8px}body[data-nx-compact='on'] .game .glabel{padding:7px}
+@media(max-width:600px){.vs-intro{align-items:flex-start}.vs-control{align-items:flex-start}.vs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.window,.overlay,.overlay-inner,.content>*{animation:none!important}}
+
+/* Home: one-screen arcade, stationary quick launch buttons, animated particles */
+.home{min-height:0;overflow:hidden!important;justify-content:center;padding:10px 18px 8px;gap:0}.home .tiles{margin:12px 0 6px;grid-template-columns:repeat(5,minmax(0,1fr));width:min(680px,100%);gap:7px}.home .tile,.home .tile:hover,.home .tile .square{animation:none!important;transform:none!important;transition:none!important}.home .tile .square{width:clamp(45px,8vh,82px);border-radius:17px}.home .tile:hover .square{border-color:var(--accent)}.home .welcome{font-size:clamp(30px,6vh,66px)}.home .subtitle{margin:4px 0 12px}.home .search{padding:11px 15px}.home .home-label{margin-top:12px}.home .widgets{max-height:13vh;overflow:hidden}.more-home{margin-top:6px}.dock{flex-shrink:0;margin-bottom:8px;padding:7px 13px;gap:14px}.dock button{font-size:27px;min-width:48px;height:48px;display:grid;place-items:center}.dock button span{display:none!important}.dock button:hover{transform:translateY(-4px)}.movie-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}.movie-card{background:var(--panel2);border:1px solid var(--border);border-radius:13px;overflow:hidden;text-decoration:none;color:var(--text);transition:border-color .18s,transform .18s}.movie-card:hover{border-color:var(--accent);transform:translateY(-3px)}.movie-card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#1b2429}.movie-caption{padding:10px;display:grid;gap:4px}.movie-caption strong{font-size:13px}.movie-caption span{color:var(--muted);font-size:11px}.chat-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:14px;height:min(76vh,760px);min-height:380px}.chat-main{display:flex;flex-direction:column;min-height:0;background:var(--panel2);border:1px solid var(--border);border-radius:15px;overflow:hidden}.chat-top{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--border)}.chat-top .small{margin-left:auto}.online-dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}.chat-feed{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:11px}.chat-message{display:flex;flex-direction:column;gap:4px;background:#ffffff08;border-radius:10px;padding:9px 12px;overflow-wrap:anywhere}.chat-message b{color:var(--accent);font-size:12px}.chat-message.system{background:transparent;color:var(--muted);font-size:12px;font-style:italic}.chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border)}.chat-compose #chatName{width:110px;flex-shrink:0}.chat-compose #chatText{min-width:0;flex:1}.party-panel{background:var(--panel2);border:1px solid var(--border);border-radius:15px;padding:16px;overflow:auto}.party-heading{font-weight:850;letter-spacing:1px;margin-bottom:9px}@media(max-width:680px){.chat-layout{grid-template-columns:1fr;height:auto}.chat-main{height:55vh}.party-panel{min-height:180px}.chat-compose{flex-wrap:wrap}.chat-compose #chatText{flex-basis:60%}.home .tiles{gap:2px}.home .tile .square{width:clamp(40px,11vw,65px)}.home .tile span:last-child{font-size:11px}.dock button{min-width:43px}}
+
+/* NEXORA 5: cinematic arcade title and dependable particle canvas */
+.shell{position:relative;isolation:isolate;background:var(--bg)!important}
+#particleNet{position:fixed!important;inset:0!important;z-index:0!important;opacity:.85!important;display:block;pointer-events:none}
+.top,.home,.dock{position:relative;z-index:1}
+.home .welcome{font-size:clamp(60px,13vw,146px)!important;line-height:1.04;letter-spacing:-.065em;margin:0 0 18px;text-shadow:0 0 24px color-mix(in srgb,var(--accent) 28%,transparent)}
+.home{padding:4px 18px 5px!important}
+.home .home-label{margin-top:15px}
+.home .tiles{margin:12px 0 7px}
+.home .widgets{max-height:9vh}
+.nx-diagnostics{width:min(650px,100%);margin:12px auto 0;background:#0b1016e8;border:1px solid #32454b;border-radius:12px;padding:10px 13px;font-size:12px;color:var(--muted);max-height:95px;overflow:auto}
+.nx-diagnostics summary{cursor:pointer;font-weight:750;color:var(--accent);display:flex;gap:8px;align-items:center}
+.nx-diagnostics .diag-line{padding:5px 0;border-top:1px solid #ffffff12;overflow-wrap:anywhere}
+.nx-diagnostics .diag-line:first-of-type{margin-top:9px}
+.nx-diagnostics .warn{color:#ffba72}.nx-diagnostics .ok{color:var(--accent)}
+.movie-source-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:99px;padding:5px 9px;font-size:11px;color:var(--muted)}
+.movie-card .movie-caption{min-height:68px}
+.movie-card .movie-poster-placeholder{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:43px;background:#101a20}
+@media(max-height:720px){.home .welcome{font-size:clamp(42px,10vh,85px)!important;margin-bottom:7px}.nx-diagnostics{margin-top:5px;max-height:60px}.home .tiles{margin:5px 0}}
+
+/* v5.4 - consolidated layout repair. Overrides earlier cramped one-screen rules. */
+html,body{min-height:100%;overflow-x:hidden}
+.shell{height:100dvh;min-height:520px;display:flex;flex-direction:column;overflow:hidden!important}
+.top{flex:0 0 auto;min-height:58px;padding:12px clamp(16px,3vw,40px)!important;display:flex;align-items:center}
+.home{flex:1 1 auto;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-start!important;gap:0!important;padding:clamp(28px,6vh,80px) 18px 115px!important;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.home .welcome{font-size:clamp(58px,11vw,132px)!important;line-height:1.04!important;margin:0 0 24px!important;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.home .search{flex-shrink:0;width:min(620px,100%);max-width:100%;padding:15px 18px!important}
+.home .home-label{margin:30px 0 13px!important;width:min(760px,100%)}
+.home .tiles{width:min(760px,100%)!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:clamp(5px,1.4vw,14px)!important;margin:0 0 14px!important}
+.home .tile{min-width:0;padding:clamp(8px,1.5vw,18px) 2px 12px!important;border-radius:14px!important;display:flex;flex-direction:column;align-items:center;gap:8px}
+.home .tile .square{width:clamp(44px,7vw,80px)!important;height:clamp(44px,7vw,80px)!important;aspect-ratio:1!important;border-radius:14px!important;display:grid;place-items:center;line-height:1;font-size:clamp(22px,3.6vw,36px)}
+.home .tile span:last-child{font-size:clamp(10px,1.4vw,13px);overflow-wrap:anywhere}
+.home .tile,.home .tile:hover,.home .tile .square,.home .tile:hover .square{animation:none!important;transform:none!important;transition:border-color .18s ease,background-color .18s ease!important}
+.more-home{flex-shrink:0;margin:4px auto 10px!important}
+.home .widgets{max-height:none!important;overflow:visible!important}
+.nx-diagnostics{flex-shrink:0;max-height:none!important;overflow:visible!important;margin:12px auto 0!important;width:min(680px,100%)}
+.dock{position:absolute!important;bottom:clamp(12px,2vh,22px)!important;left:50%!important;transform:translateX(-50%)!important;z-index:8!important;display:flex!important;align-items:center;justify-content:center;gap:8px!important;width:max-content;max-width:calc(100vw - 24px);margin:0!important;padding:8px 11px!important;border-radius:17px!important;background:#0a0f14f5!important}
+.dock button{flex:0 0 auto!important;width:52px!important;height:52px!important;min-width:0!important;display:grid!important;place-items:center!important;padding:0!important;font-size:26px!important;border-radius:12px!important;line-height:1!important}
+.dock button span{display:none!important}.dock button:hover{transform:translateY(-3px)}
+#particleNet{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:0!important;pointer-events:none!important}
+.top,.home,.dock{z-index:1}
+.overlay .tile .square,.overlay .allapps-icon,.vs-symbol,.dock button{border-radius:12px!important}
+.nx-movie-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.nx-movie-search-wrap{flex:1 1 240px;position:relative}.nx-movie-search-wrap>span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:23px}.nx-movie-search-wrap input{width:100%;padding-left:42px}
+.nx-import-btn{cursor:pointer}.nx-movie-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:11px;letter-spacing:.04em;margin:12px 0 17px}
+.nx-movie-summary #movieCount{color:var(--accent);font-weight:900}
+.movie-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:15px}
+.movie-card{min-width:0;border-radius:13px!important;display:flex;flex-direction:column;overflow:hidden!important}
+.nx-poster{display:block;position:relative;aspect-ratio:2/3;background:#10191f;overflow:hidden}
+.nx-poster img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:auto}
+.nx-poster .movie-poster-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:40px}
+.nx-movie-tag{position:absolute;top:8px;right:8px;background:#080c10ee;border:1px solid #39484e;border-radius:5px;padding:5px 6px;color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.04em}
+.nx-unlinked{opacity:.68;cursor:default!important}.nx-unlinked:hover{transform:none!important;border-color:var(--border)!important}
+.movie-caption{display:grid;gap:6px;padding:11px 12px;flex:1}.movie-caption strong{line-height:1.35}.movie-caption span{font-size:11px;color:var(--muted)}
+.nx-movie-note{margin-top:24px;border:1px solid var(--border);background:var(--panel2);border-radius:10px;padding:14px;color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:600px){.home{padding:34px 12px 112px!important}.home .welcome{font-size:clamp(50px,12vw,80px)!important}.home .tiles{gap:5px!important}.home .tile{padding:8px 0!important;gap:5px}.home .tile .square{width:clamp(39px,11vw,59px)!important;height:clamp(39px,11vw,59px)!important;border-radius:11px!important}.dock button{width:46px!important;height:46px!important}.movie-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
+@media(max-width:360px){.home .tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important}.home .welcome{font-size:49px!important}}
+
+/* NEXORA AI: isolated chat app styles, no changes to other app layouts */
+.nx-ai-shell{height:100%;min-height:0;display:grid;grid-template-columns:220px minmax(0,1fr);background:#0b1014;color:var(--text)}
+.content:has(>.nx-ai-shell){padding:0!important;overflow:hidden}
+.nx-ai-side{background:#10171c;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:22px;padding:20px 14px}
+.nx-ai-logo{font-weight:950;letter-spacing:.12em;color:var(--accent);font-size:15px}.nx-ai-side-note{font-size:12px;color:var(--muted);line-height:2}.nx-ai-side-bottom{margin-top:auto;color:var(--muted);font-size:11px}
+.nx-ai-main{min-width:0;min-height:0;display:flex;flex-direction:column}.nx-ai-top{height:68px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:12px 20px}.nx-ai-top .btn{margin-left:auto}.nx-ai-badge{width:38px;height:38px;display:grid;place-items:center;background:#19382c;color:var(--accent);border-radius:12px;font-size:23px}
+.nx-ai-feed{flex:1;min-height:0;overflow-y:auto;padding:25px clamp(15px,4vw,55px);display:flex;flex-direction:column;gap:19px;scrollbar-width:thin}.nx-ai-welcome{margin:auto;text-align:center;max-width:430px}.nx-ai-welcome-mark{font-size:60px;color:var(--accent)}.nx-ai-welcome h2{font-size:26px;margin:8px 0}.nx-ai-welcome p{color:var(--muted);line-height:1.6}
+.nx-ai-message{display:flex;align-items:flex-start;gap:12px;max-width:850px;width:100%;margin:0 auto}.nx-ai-message.is-user{flex-direction:row-reverse}.nx-ai-avatar{flex-shrink:0;width:32px;height:32px;display:grid;place-items:center;background:#1c302a;color:var(--accent);border-radius:10px;font-weight:900;font-size:11px}.nx-ai-message.is-user .nx-ai-avatar{background:#263242;color:#e7f0ff}.nx-ai-bubble{max-width:min(92%,700px);padding:13px 17px;border-radius:15px;background:#182127;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}.nx-ai-message.is-user .nx-ai-bubble{background:#1c3931;border:1px solid #315c4d}
+.nx-ai-composer{padding:12px clamp(12px,4vw,45px) 17px;border-top:1px solid var(--border)}.nx-ai-input-wrap{max-width:900px;margin:auto;display:flex;align-items:end;gap:10px;background:#182027;border:1px solid #40534f;border-radius:17px;padding:10px}.nx-ai-input{flex:1;min-width:0;max-height:160px;resize:vertical;background:transparent;color:var(--text);border:0;outline:none;padding:9px;font:inherit;line-height:1.5}.nx-ai-send{width:42px;height:42px;border-radius:12px!important}.nx-ai-foot{text-align:center;color:var(--muted);font-size:10px;margin-top:8px}
+@media(max-width:700px){.nx-ai-shell{grid-template-columns:1fr}.nx-ai-side{display:none}.nx-ai-feed{padding:18px 12px}.nx-ai-top{padding:10px 12px}.nx-ai-composer{padding:10px}.nx-ai-bubble{max-width:86%}}
+.nx-test-notice{width:min(100%,760px);text-align:center;background:#18283c;border:1px solid #45617f;border-radius:13px;padding:13px 18px;margin:0 auto 22px;color:#e8f1ff;font-size:14px;line-height:1.5}.dock{display:none!important}
+body{min-height:100vh;background:#070b10;color:#f5f7fc;margin:0}#standaloneTop{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid #304047;background:#101820}#standaloneTop h1{font-size:18px;margin:0;flex:1}#appRoot{padding:20px;max-width:1440px;margin:0 auto;min-height:calc(100vh - 65px)}#workspace{position:fixed;inset:0;pointer-events:none;z-index:100}#workspace>.window{pointer-events:auto;display:flex}#toast{position:fixed;right:15px;bottom:20px;padding:12px 16px;background:#1e3530;border:1px solid #53ffbf;border-radius:10px;color:white;display:none;z-index:9999}@media(max-width:650px){#appRoot{padding:12px}}
+</style></head><body><header id="standaloneTop"><span style="font-size:27px">📈</span><h1>Stocks</h1><span class="muted">Standalone app</span></header><main id="appRoot"></main><div id="workspace"></div><div id="toast"></div><script>
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem('nx5_'+k))??d}catch{return d}};
+const put=(k,v)=>{try{localStorage.setItem('nx5_'+k,JSON.stringify(v))}catch(e){toast('Storage unavailable')}};
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',3600)}
+function header(name,sub=''){return `<div class="head"><div><h2>${name}</h2>${sub?`<div class="muted">${sub}</div>`:''}</div></div>`}
+const RENDER={};let windows=new Map(),topZ=11,db,custom=[];
+const NEXORA_API={GEMINI_API_KEY:'',GEMINI_MODEL:'gemini-2.5-flash',FINNHUB_API_KEY:'',STOCK_PROVIDER:'finnhub',YAHOO_CORS_PROXY:'',GITHUB_CONFIG_URL:'',GITHUB_CONFIG_BASE:'https://raw.githubusercontent.com/AGPRO619/nexora/main/'};
+
+const NX_MAG7=['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA'];
+const NX_MOVER_UNIVERSE=['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA','AMD','AVGO','PLTR','COIN','HOOD','SOFI','MU','SMCI','ARM','TSM','NFLX','UBER','SHOP','RBLX','SNAP','PYPL','INTC','QCOM','CRWD','PANW','NET','SNOW','DKNG','MSTR','RIVN','NIO','F','BAC','JPM','WMT','COST','DIS','BABA','PFE','LLY','UNH','XOM','CVX'];
+let nxRemoteConfigPromise;
+async function nxLoadRemoteConfig(){
+ if(nxRemoteConfigPromise)return nxRemoteConfigPromise;
+ nxRemoteConfigPromise=(async()=>{
+  const base=String(NEXORA_API.GITHUB_CONFIG_BASE||'').trim();
+  const exact=String(NEXORA_API.GITHUB_CONFIG_URL||'').trim();
+  const candidates=[];
+  if(exact){
+   candidates.push(exact);
+   // If a configured file was renamed, try the alternative in the same folder.
+   if(/\/(?:nexora-config|file)\.json(?:[?#].*)?$/i.test(exact)){
+    const folder=exact.replace(/(?:nexora-config|file)\.json(?:[?#].*)?$/i,'');
+    candidates.push(folder+'nexora-config.json',folder+'file.json');
+   }
+  }
+  if(base){const folder=base.endsWith('/')?base:base+'/';candidates.push(folder+'nexora-config.json',folder+'file.json')}
+  const unique=[...new Set(candidates)];
+  if(!unique.length)return 'Local HTML settings (no GitHub config location set)';
+  const errors=[];
+  for(const address of unique){
+   try{
+    const u=new URL(address,location.href);
+    if(u.protocol!=='https:')throw Error('HTTPS required');
+    const r=await fetch(u.href,{cache:'no-store'});
+    if(!r.ok)throw Error('HTTP '+r.status);
+    const cfg=await r.json();
+    if(!cfg||typeof cfg!=='object'||Array.isArray(cfg))throw Error('Invalid JSON object');
+    for(const k of ['GEMINI_API_KEY','GEMINI_MODEL','FINNHUB_API_KEY','STOCK_PROVIDER','YAHOO_CORS_PROXY']){
+     if(typeof cfg[k]==='string'&&cfg[k].trim())NEXORA_API[k]=cfg[k].trim();
+    }
+    return 'GitHub config loaded: '+u.pathname.split('/').pop();
+   }catch(e){errors.push(e.message)}
+  }
+  throw Error('Could not load nexora-config.json or file.json from GitHub ('+errors.join('; ')+')');
+ })();return nxRemoteConfigPromise;
+}
+
+RENDER.stocks=el=>{
+ let watch=get('watch',['AAPL','MSFT','NVDA','AMZN','GOOGL','META','TSLA']);
+ el.innerHTML=header('Stocks','Magnificent Seven · Top Movers · Momentum Watch')+`
+ <div class="notice" id="stockStatus">Connecting to stock data… Daily percentage changes are not predictions or buy signals.</div>
+ <div class="row" style="margin:16px 0;flex-wrap:wrap"><input class="field" style="max-width:180px" id="ticker" placeholder="Ticker e.g. AAPL"><button class="btn primary" id="addTicker">Add ticker</button><button class="btn" id="refreshStocks">↻ Refresh</button><select class="field" id="stockProvider" style="max-width:185px"><option value="finnhub">Finnhub</option><option value="yahoo">Yahoo (experimental)</option></select></div>
+ <div class="card" style="margin-bottom:17px"><h3>⭐ Magnificent Seven</h3><p class="small">Seven major technology stocks, sorted by daily percentage change.</p><div id="mag7" class="list">Loading…</div></div>
+ <div class="card" style="margin-bottom:17px"><h3>🚀 Top Movers <span class="chip">Watched universe</span></h3><p class="small">Largest percentage gainers among ${NX_MOVER_UNIVERSE.length} selected US tickers, not the entire stock market. Quotes may be delayed.</p><div id="topMovers" class="list">Loading…</div></div>
+ <div class="card" style="margin-bottom:17px"><h3>📡 Momentum Watch</h3><p class="small">Strongest positive daily moves in the tracked universe. This does not forecast future prices.</p><div id="momentumWatch" class="list">Loading…</div></div>
+ <div class="card"><h3>📌 Your Watchlist</h3><div id="watchlist" class="list"></div></div>`;
+ const provider=el.querySelector('#stockProvider'),status=el.querySelector('#stockStatus');let generation=0;
+ provider.value=NEXORA_API.STOCK_PROVIDER==='yahoo'?'yahoo':'finnhub';
+ const money=n=>'$'+Number(n).toFixed(2);
+ const pct=n=>(n>=0?'+':'')+Number(n).toFixed(2)+'%';
+ function line(t,q,extra=''){return `<div class="item" style="flex-wrap:wrap"><strong>${esc(t)}</strong><span>${money(q.price)}</span><b style="color:${q.change>=0?'#53ffbf':'#ff8686'}">${pct(q.change)}</b>${extra}<a href="https://www.tradingview.com/symbols/${encodeURIComponent(t)}/" target="_blank" rel="noopener noreferrer">Chart ↗</a></div>`}
+ async function quote(t){
+  if(provider.value==='finnhub'){
+   if(!NEXORA_API.FINNHUB_API_KEY)throw Error('Finnhub key missing');
+   const r=await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(t)+'&token='+encodeURIComponent(NEXORA_API.FINNHUB_API_KEY));
+   if(!r.ok)throw Error('Finnhub HTTP '+r.status);const j=await r.json();if(!(j.c>0))throw Error('Quote unavailable');
+   return {price:j.c,change:Number.isFinite(j.dp)?j.dp:(j.pc?100*(j.c/j.pc-1):0),time:j.t||null};
+  }
+  const url='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(t)+'?interval=1d&range=5d';
+  const r=await fetch(NEXORA_API.YAHOO_CORS_PROXY?NEXORA_API.YAHOO_CORS_PROXY+url:url);
+  if(!r.ok)throw Error('Yahoo HTTP '+r.status);const j=await r.json(),m=j.chart?.result?.[0]?.meta;
+  if(!(m?.regularMarketPrice>0))throw Error('Quote unavailable');let pc=m.chartPreviousClose||m.previousClose;
+  return {price:m.regularMarketPrice,change:pc?100*(m.regularMarketPrice/pc-1):0,time:m.regularMarketTime||null};
+ }
+ function watchDraw(data){el.querySelector('#watchlist').innerHTML=watch.map((t,i)=>{let q=data.get(t);return `<div class="item" style="flex-wrap:wrap"><strong>${esc(t)}</strong><span>${q?money(q.price)+' ('+pct(q.change)+')':'Unavailable'}</span><a href="https://www.tradingview.com/symbols/${encodeURIComponent(t)}/" target="_blank" rel="noopener noreferrer">Chart ↗</a><button class="btn" data-del="${i}">Remove</button></div>`}).join('')||'<p class="small">Your watchlist is empty.</p>';el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{watch.splice(+b.dataset.del,1);put('watch',watch);refresh()})}
+ async function refresh(){
+  const gen=++generation;status.textContent='Loading configuration and quotes…';
+  try{await nxLoadRemoteConfig()}catch(e){status.textContent='GitHub configuration failed: '+e.message+'; using local settings.'}
+  if(gen!==generation)return;
+  if(provider.value==='finnhub'&&!NEXORA_API.FINNHUB_API_KEY){status.textContent='Add FINNHUB_API_KEY in the HTML or nexora-config.json to load stock quotes.';for(let id of ['mag7','topMovers','momentumWatch'])el.querySelector('#'+id).textContent='Waiting for a Finnhub API key.';watchDraw(new Map());return}
+  const universe=[...new Set([...NX_MOVER_UNIVERSE,...watch])],data=new Map();let errors=0;
+  status.textContent='Fetching '+universe.length+' quotes in batches…';
+  // Batches and pauses reduce the chance of exceeding free-tier API limits.
+  for(let i=0;i<universe.length;i+=5){
+   if(gen!==generation||!el.isConnected)return;
+   const batch=universe.slice(i,i+5);
+   await Promise.all(batch.map(async t=>{try{data.set(t,await quote(t))}catch(e){errors++}}));
+   status.textContent='Loaded '+data.size+'/'+universe.length+' quotes…';
+   if(i+5<universe.length)await new Promise(resolve=>setTimeout(resolve,1100));
+  }
+  if(gen!==generation||!el.isConnected)return;
+  const ranked=ts=>ts.filter(t=>data.has(t)).sort((a,b)=>data.get(b).change-data.get(a).change);
+  const mag=ranked(NX_MAG7);el.querySelector('#mag7').innerHTML=mag.map(t=>line(t,data.get(t))).join('')||'<p class="small">No quotes available.</p>';
+  const gainers=ranked(NX_MOVER_UNIVERSE).filter(t=>data.get(t).change>0);
+  el.querySelector('#topMovers').innerHTML=gainers.slice(0,12).map((t,i)=>line(t,data.get(t),`<span class="chip">#${i+1}</span>`)).join('')||'<p class="small">No positive movers available in this selection.</p>';
+  el.querySelector('#momentumWatch').innerHTML=gainers.slice(0,6).map(t=>line(t,data.get(t),'<span class="chip">Daily gain</span>')).join('')||'<p class="small">No positive momentum in available quotes.</p>';
+  watchDraw(data);status.textContent=`${data.size} quotes received · ${errors} unavailable · Provider: ${provider.value}. Ranked only within the selected ticker universe. Refresh manually for new data.`;
+ }
+ el.querySelector('#addTicker').onclick=()=>{let t=el.querySelector('#ticker').value.toUpperCase().trim();if(!/^[A-Z0-9.^-]{1,15}$/.test(t))return toast('Enter a valid ticker');if(!watch.includes(t))watch.push(t);put('watch',watch);el.querySelector('#ticker').value='';refresh()};
+ el.querySelector('#refreshStocks').onclick=refresh;provider.onchange=refresh;refresh();
+};
+
+try{const root=document.getElementById('appRoot');RENDER["stocks"](root)}catch(err){document.getElementById('appRoot').textContent='Could not start Stocks: '+err.message;console.error(err)}
+</script></body></html>
